@@ -24,7 +24,7 @@ export const store = {
   learned: load(KEYS.learned, {}),
   selected: load(KEYS.selected, {}),
   ui: load(KEYS.ui, {
-    tab: 'patterns',
+    tab: 'words',
     status: { patterns: 'all', words: 'all' },
     sort: { patterns: 'common', words: 'topic' },
     type: 'all',

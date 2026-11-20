@@ -4,8 +4,10 @@ A small, fast web app for learning the most common Turkish sentence patterns and
 
 - **Patterns** tab: 82 everyday patterns (*___ istiyorum*, *-meden önce*, *-dikçe*, *-se bile*…), most useful first, with chips for Everyday, Verbs & tenses, and Connectors. Each has a few common ways to say the same thing.
 - **Words** tab: about 710 words grouped by topic. They are sorted by how often they appear in spoken Turkish, and coloured dots show the word type.
-- Tap a block to open it. Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **✓ Mark** in the header to mark blocks with taps.
-- Open a pattern and its examples are built from your green words. Open a word and it is shown inside your green patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
+- Tap blocks to select words and patterns, on both tabs; **Clear** unselects them. Tap **ⓘ** on a block to open it.
+- An open pattern shows examples with every selected word that fits, then its own examples, then a few with your learned words (or common words). An open word works the same way with selected and learned patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
+- Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **Mark as learned** in the open block.
+- The gear at the top opens Settings.
 - Optional **More examples** button that asks a free AI (Gemini, Groq, Mistral or OpenRouter) for extra sentences. Answers are saved on the phone.
 - A speaker button reads Turkish aloud using the phone's built-in Turkish voice.
 
@@ -21,6 +23,10 @@ The app has to be served over HTTPS to work offline from the home screen. GitHub
 4. Open that address in **Safari** on the iPhone, tap **Share → Add to Home Screen**.
 
 The app now opens full screen and works offline. Your progress is stored on the phone. Use **Settings → Copy backup** now and then.
+
+Safari and the home-screen app keep separate progress. To move it, use **Copy backup** in one and **Restore** in the other.
+
+No sound from the speaker buttons? The iPhone's silent mode mutes them.
 
 ### Quick test without hosting
 

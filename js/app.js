@@ -64,6 +64,12 @@ function speak(text) {
   const v = turkishVoice();
   if (v) u.voice = v;
   u.rate = 0.9;
+  // iPhone silent mode mutes web audio; 'playback' asks Safari (iOS 17+) to play it like media.
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = 'playback';
+  } catch {
+    /* not supported: silent mode keeps it muted */
+  }
   speechSynthesis.speak(u);
 }
 
@@ -157,7 +163,7 @@ function renderList() {
 
 function renderProgress() {
   const all = ui.tab === 'patterns' ? PATTERNS : ui.tab === 'words' ? WORDS : null;
-  $('#progress').textContent = all ? `${all.filter(learned).length} / ${all.length} learned` : '';
+  $('#progress').textContent = all ? `${all.filter(learned).length} / ${all.length} learned` : 'Settings';
 }
 
 function renderControls() {
@@ -167,9 +173,12 @@ function renderControls() {
   $('#toggle-tr').hidden = !listTab;
   renderClear();
   $('#toggle-tr').setAttribute('aria-pressed', String(ui.showTr));
-  $('#title').textContent = tab === 'patterns' ? 'Patterns' : tab === 'words' ? 'Words' : 'Settings';
+  $('#gear').setAttribute('aria-pressed', String(!listTab));
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
-  if (!listTab) return;
+  if (!listTab) {
+    renderProgress();
+    return;
+  }
 
   document.querySelectorAll('#status button').forEach((b) => b.classList.toggle('on', b.dataset.status === ui.status[tab]));
   $('#sort').innerHTML = SORTS[tab]
@@ -198,7 +207,11 @@ function render() {
   else renderList();
 }
 
+// Settings opens from the gear; the gear again goes back to the list it came from.
+let lastListTab = 'words';
+
 function setTab(tab) {
+  if (tab !== 'settings') lastListTab = tab;
   ui.tab = tab;
   store.saveUi();
   $('#search').value = '';
@@ -398,6 +411,7 @@ function renderSettings() {
     (voice
       ? `<p>Turkish voice found: ${esc(voice.name)}. Tap the speaker icons to listen.</p>`
       : `<p>No Turkish voice found yet. On iPhone, add one in Settings → Accessibility → Spoken Content → Voices → Turkish.</p>`) +
+    `<p>No sound? Silent mode mutes it on iPhone.</p>` +
     `<div class="btns"><button class="btn" data-say="Merhaba! Nasılsın?">Try it: Merhaba! Nasılsın?</button></div></section>` +
     `<section class="card"><h2>Progress</h2><p>${nP} of ${PATTERNS.length} patterns and ${nW} of ${WORDS.length} words learned.</p>` +
     `<p>Progress is saved on this phone. Copy a backup now and then, for example into Notes.</p>` +
@@ -559,6 +573,8 @@ document.querySelector('.tabs').addEventListener('click', (e) => {
   if (b) setTab(b.dataset.tab);
 });
 
+$('#gear').addEventListener('click', () => setTab(ui.tab === 'settings' ? lastListTab : 'settings'));
+
 $('#status').addEventListener('click', (e) => {
   const b = e.target.closest('[data-status]');
   if (!b) return;
@@ -600,6 +616,7 @@ if ('speechSynthesis' in window) {
   });
 }
 
+ui.tab = 'words'; // the app always opens on Words
 render();
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
