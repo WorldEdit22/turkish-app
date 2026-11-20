@@ -4,6 +4,7 @@ import { RANKS } from '../data/ranks.js';
 import { fill, fits } from './combine.js';
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
+import { longPress } from './longpress.js';
 
 // ---------- data ----------
 
@@ -118,11 +119,12 @@ function blockHtml(x, showIcon) {
   const on = learned(x);
   const dot = isPattern(x) ? '' : `<span class="dot t-${x.type}"></span>`;
   return (
-    `<div class="block${on ? ' on' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0">` +
+    `<div class="block${on ? ' on' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
+    ` aria-label="${esc(`${x.label}, ${x.tr}${on ? ', learned' : ''}`)}">` +
     `<div class="b-en">${dot}<span>${esc(x.label)}</span></div>` +
     (ui.showTr ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
     (showIcon ? `<span class="b-icon">${CAT[x.cat].icon}</span>` : '') +
-    `<button class="check" aria-label="${on ? 'Learned. Tap to unmark' : 'Mark as learned'}" aria-pressed="${on}"></button>` +
+    `<span class="check" aria-hidden="true"></span>` +
     `</div>`
   );
 }
@@ -280,7 +282,8 @@ function headHtml(title, tr, on, meta) {
     `<div class="s-head"><h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div>` +
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
     `<div class="s-meta">${meta}</div>` +
-    `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>`
+    `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>` +
+    `<p class="tip">Tip: press and hold a block in the list to mark it quickly.</p>`
   );
 }
 
@@ -515,27 +518,29 @@ $('#settings').addEventListener('input', (e) => {
 
 // ---------- events ----------
 
+let toastTimer = null;
+function toast(message) {
+  const el = $('#toast');
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// Press and hold a block to mark it; a normal tap opens it.
+const hold = longPress($('#list'), {
+  find: (e) => e.target.closest?.('.block') || null,
+  onLongPress: (block) => {
+    store.toggleLearned(block.dataset.key);
+    toast(store.isLearned(block.dataset.key) ? '✓ Marked as learned' : 'Not learned');
+    renderList();
+  },
+});
+
 $('#list').addEventListener('click', (e) => {
   const block = e.target.closest('.block');
-  if (!block) return;
-  const key = block.dataset.key;
-  if (e.target.closest('.check')) {
-    store.toggleLearned(key);
-    if (ui.status[ui.tab] === 'all' && !ui.sort[ui.tab].match(/todo|learned/)) {
-      const on = store.isLearned(key);
-      block.classList.toggle('on', on);
-      const check = block.querySelector('.check');
-      check.setAttribute('aria-pressed', String(on));
-      check.setAttribute('aria-label', on ? 'Learned. Tap to unmark' : 'Mark as learned');
-      renderProgress();
-      const sec = block.closest('.grid')?.previousElementSibling;
-      if (sec?.classList.contains('sec')) renderList();
-    } else {
-      renderList();
-    }
-  } else {
-    openSheet(key);
-  }
+  if (!block || hold.consumeClick()) return;
+  openSheet(block.dataset.key);
 });
 
 $('#list').addEventListener('keydown', (e) => {

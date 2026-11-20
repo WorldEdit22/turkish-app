@@ -220,9 +220,7 @@ main { padding: 14px 16px calc(84px + env(safe-area-inset-bottom)); max-width: 9
   right: 0;
   width: 44px;
   height: 44px;
-  border: 0;
-  background: none;
-  padding: 0;
+  pointer-events: none;
 }
 .check::before {
   content: "";
@@ -250,6 +248,26 @@ main { padding: 14px 16px calc(84px + env(safe-area-inset-bottom)); max-width: 9
 }
 
 .empty { text-align: center; color: var(--muted); padding: 40px 16px; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(72px + env(safe-area-inset-bottom));
+  z-index: 20;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  background: var(--text);
+  color: var(--card);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: var(--shadow-lift);
+  transition: opacity 0.18s, transform 0.18s;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ---------- tabs ---------- */
 
@@ -335,6 +353,7 @@ dialog#sheet::backdrop { background: rgba(10, 12, 16, 0.35); }
 .learn-btn.on { background: var(--green); border-color: var(--green); color: #fff; }
 
 .note { color: var(--muted); font-size: 14px; margin: 6px 0; }
+.tip { color: var(--faint); font-size: 12px; margin: 2px 0 0; text-align: center; }
 
 .variant { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 16px; }
 .v-tr { font-weight: 700; font-size: 17px; }

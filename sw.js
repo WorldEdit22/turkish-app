@@ -11,6 +11,7 @@ const ASSETS = [
   'js/ai.js',
   'js/grammar.js',
   'js/combine.js',
+  'js/longpress.js',
   'data/words.js',
   'data/patterns.js',
   'data/ranks.js',
