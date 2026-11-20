@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import vm from 'node:vm';
 
 // Runs sw.js against a minimal stand-in for the browser's service worker
@@ -32,5 +32,14 @@ test('install fetches every file fresh, never from the HTTP cache', async () => 
   for (const req of stored) {
     assert.equal(typeof req, 'object', `${req} should be a Request`);
     assert.equal(req.cache, 'reload', `${req.url} must bypass the HTTP cache`);
+  }
+});
+
+test('every app module is in the offline cache', async () => {
+  const urls = new Set((await runInstall()).map((req) => req.url));
+  for (const dir of ['js', 'data']) {
+    for (const file of readdirSync(new URL(`../${dir}/`, import.meta.url))) {
+      assert.ok(urls.has(`${dir}/${file}`), `${dir}/${file} is missing from the offline cache`);
+    }
   }
 });

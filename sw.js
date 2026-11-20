@@ -1,7 +1,7 @@
 // Offline support: serve from the cache instantly, refresh the cache in the
 // background so the next launch picks up any new version.
 
-const CACHE = 'turkish-v4';
+const CACHE = 'turkish-v5';
 const ASSETS = [
   './',
   'index.html',
@@ -11,6 +11,7 @@ const ASSETS = [
   'js/ai.js',
   'js/grammar.js',
   'js/combine.js',
+  'js/examples.js',
   'js/swipe.js',
   'data/words.js',
   'data/patterns.js',
