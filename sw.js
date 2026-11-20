@@ -21,8 +21,11 @@ const ASSETS = [
   'icons/icon-512.png',
 ];
 
+// cache: 'reload' skips the browser's HTTP cache, so a new version is never
+// stored next to files left over from the old one.
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  const fresh = ASSETS.map((url) => new Request(url, { cache: 'reload' }));
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(fresh)).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
