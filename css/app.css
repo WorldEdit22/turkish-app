@@ -110,6 +110,10 @@ h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; flex: 0 0 auto; }
   font-weight: 700;
 }
 .icon-btn[aria-pressed="false"] { opacity: 0.7; text-decoration: line-through; }
+.mark-btn[aria-pressed="false"] { opacity: 1; text-decoration: none; }
+.mark-btn { padding: 0 12px; }
+.mark-hint { margin: 8px 0 0; font-size: 14px; font-weight: 600; }
+.marking .block:not(.on) { border-style: dashed; }
 
 .controls { margin-top: 10px; display: grid; gap: 8px; }
 .controls[hidden] { display: none; }

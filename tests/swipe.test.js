@@ -1,4 +1,4 @@
-import { test } from 'node:test';
+import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
 import { swipe } from '../js/swipe.js';
 
@@ -57,6 +57,15 @@ test('onDrag follows the finger', () => {
   const { drags, move } = setup();
   move([[100, 100], [115, 100], [130, 101]]);
   assert.deepEqual(drags, [15, 30]);
+});
+
+test('a click that comes long after a swipe is not swallowed', (t) => {
+  mock.timers.enable({ apis: ['Date'], now: 1000 });
+  t.after(() => mock.timers.reset());
+  const { s, move } = setup();
+  move([[100, 100], [130, 100], [180, 100]]);
+  mock.timers.tick(2000);
+  assert.equal(s.consumeClick(), false);
 });
 
 test('consumeClick is true once after a swipe and false after a tap', () => {

@@ -163,6 +163,8 @@ function renderControls() {
   const listTab = tab !== 'settings';
   $('#controls').hidden = !listTab;
   $('#toggle-tr').hidden = !listTab;
+  $('#mark-btn').hidden = !listTab;
+  if (!listTab) setMarkMode(false);
   $('#toggle-tr').setAttribute('aria-pressed', String(ui.showTr));
   $('#title').textContent = tab === 'patterns' ? 'Patterns' : tab === 'words' ? 'Words' : 'Settings';
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
@@ -550,16 +552,35 @@ const swiper = swipe($('#list'), {
   onSwipe: (block, dir) => setLearned(block.dataset.key, dir === 'right'),
 });
 
+// Mark mode: taps mark/unmark instead of opening. Always off at start.
+let markMode = false;
+function setMarkMode(on) {
+  markMode = on;
+  const btn = $('#mark-btn');
+  btn.setAttribute('aria-pressed', String(on));
+  btn.textContent = on ? 'Done' : '✓ Mark';
+  $('#mark-hint').hidden = !on;
+  document.body.classList.toggle('marking', on);
+}
+
+$('#mark-btn').addEventListener('click', () => setMarkMode(!markMode));
+
+function activateBlock(block) {
+  const key = block.dataset.key;
+  if (markMode) setLearned(key, !store.isLearned(key));
+  else openSheet(key);
+}
+
 $('#list').addEventListener('click', (e) => {
   const block = e.target.closest('.block');
   if (!block || swiper.consumeClick()) return;
-  openSheet(block.dataset.key);
+  activateBlock(block);
 });
 
 $('#list').addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('block')) {
     e.preventDefault();
-    openSheet(e.target.dataset.key);
+    activateBlock(e.target);
   }
 });
 

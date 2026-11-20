@@ -11,7 +11,7 @@ export function swipe(target, { find, onSwipe, onDrag = () => {}, onEnd = () => 
   let el = null;
   let start = null;
   let mode = null; // null = undecided, 'h' = swiping, 'v' = scrolling
-  let swiped = false;
+  let swipedAt = 0; // a browser's click after a swipe arrives right away; later clicks are real
 
   const reset = () => {
     el = null;
@@ -21,7 +21,7 @@ export function swipe(target, { find, onSwipe, onDrag = () => {}, onEnd = () => 
 
   target.addEventListener('pointerdown', (e) => {
     reset();
-    swiped = false;
+    swipedAt = 0;
     el = find(e);
     if (el) start = { x: e.clientX, y: e.clientY };
   });
@@ -42,7 +42,7 @@ export function swipe(target, { find, onSwipe, onDrag = () => {}, onEnd = () => 
     if (mode === 'h') {
       const dx = e.clientX - start.x;
       if (Math.abs(dx) >= threshold) {
-        swiped = true;
+        swipedAt = Date.now();
         onSwipe(el, dx > 0 ? 'right' : 'left');
       }
       onEnd(el);
@@ -57,9 +57,9 @@ export function swipe(target, { find, onSwipe, onDrag = () => {}, onEnd = () => 
 
   return {
     consumeClick() {
-      const was = swiped;
-      swiped = false;
-      return was;
+      const recent = swipedAt > 0 && Date.now() - swipedAt < 500;
+      swipedAt = 0;
+      return recent;
     },
   };
 }
