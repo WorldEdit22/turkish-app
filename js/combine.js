@@ -101,10 +101,12 @@ export function fill(tpl, word) {
 }
 
 // slot: "type" or "type:kind|kind"; type "*" matches any word type.
+// A word may have several kinds ("room|event"); any one of them can match.
 export function fits(slot, word) {
   if (!slot || word.nc) return false;
   const [type, kinds] = slot.split(':');
   if (type !== '*' && word.type !== type) return false;
-  if (kinds && !kinds.split('|').includes(word.kind)) return false;
-  return true;
+  if (!kinds) return true;
+  const wanted = kinds.split('|');
+  return String(word.kind || '').split('|').some((k) => wanted.includes(k));
 }

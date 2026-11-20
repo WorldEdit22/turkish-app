@@ -125,6 +125,13 @@ function capFirst(s) {
   return s[0].toUpperCase() + s.slice(1);
 }
 
+test('fits accepts a word with several kinds', () => {
+  const work = n('iş', 'work', { kind: 'room|event' });
+  assert.equal(fits('noun:event', work), true);
+  assert.equal(fits('noun:room', work), true);
+  assert.equal(fits('noun:place', work), false);
+});
+
 test('fits matches word type and optional kinds', () => {
   assert.equal(fits('verb', v('gelmek', 'come')), true);
   assert.equal(fits('verb', n('ev', 'home')), false);
