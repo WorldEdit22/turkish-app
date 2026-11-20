@@ -48,6 +48,7 @@ const slotOf = (p, v) => v.slot || p.slot;
 const learned = (x) => store.isLearned(keyOf(x));
 
 const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.01"/></svg>';
 
 // ---------- speech ----------
 
@@ -115,14 +116,17 @@ function visibleItems(tab) {
   return sorted;
 }
 
+// Tapping a block selects it; the ⓘ button opens its card.
 function blockHtml(x, showIcon) {
   const on = learned(x);
+  const sel = store.isSelected(keyOf(x));
   const dot = isPattern(x) ? '' : `<span class="dot t-${x.type}"></span>`;
   return (
-    `<div class="block${on ? ' on' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
-    ` aria-label="${esc(`${x.label}, ${x.tr}${on ? ', learned' : ''}`)}">` +
+    `<div class="block${on ? ' on' : ''}${sel ? ' sel' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
+    ` aria-pressed="${sel}" aria-label="${esc(`${x.label}, ${x.tr}${on ? ', learned' : ''}`)}">` +
     `<div class="b-en">${dot}<span>${esc(x.label)}</span></div>` +
     (ui.showTr ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
+    `<button class="b-info" aria-label="Details">${INFO}</button>` +
     (showIcon ? `<span class="b-icon">${CAT[x.cat].icon}</span>` : '') +
     `</div>`
   );
@@ -162,8 +166,7 @@ function renderControls() {
   const listTab = tab !== 'settings';
   $('#controls').hidden = !listTab;
   $('#toggle-tr').hidden = !listTab;
-  $('#mark-btn').hidden = !listTab;
-  if (!listTab) setMarkMode(false);
+  renderClear();
   $('#toggle-tr').setAttribute('aria-pressed', String(ui.showTr));
   $('#title').textContent = tab === 'patterns' ? 'Patterns' : tab === 'words' ? 'Words' : 'Settings';
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
@@ -551,35 +554,40 @@ const swiper = swipe($('#list'), {
   onSwipe: (block, dir) => setLearned(block.dataset.key, dir === 'right'),
 });
 
-// Mark mode: taps mark/unmark instead of opening. Always off at start.
-let markMode = false;
-function setMarkMode(on) {
-  markMode = on;
-  const btn = $('#mark-btn');
-  btn.setAttribute('aria-pressed', String(on));
-  btn.textContent = on ? 'Done' : '✓ Mark';
-  $('#mark-hint').hidden = !on;
-  document.body.classList.toggle('marking', on);
+// Selection: shown in place, so the list keeps its scroll position and focus.
+function renderClear() {
+  const n = store.selectedCount();
+  const btn = $('#clear-sel');
+  btn.hidden = n === 0 || ui.tab === 'settings';
+  btn.textContent = `Clear (${n})`;
 }
 
-$('#mark-btn').addEventListener('click', () => setMarkMode(!markMode));
-
-function activateBlock(block) {
+function toggleSelect(block) {
   const key = block.dataset.key;
-  if (markMode) setLearned(key, !store.isLearned(key));
-  else openSheet(key);
+  store.toggleSelected(key);
+  const on = store.isSelected(key);
+  block.classList.toggle('sel', on);
+  block.setAttribute('aria-pressed', String(on));
+  renderClear();
 }
+
+$('#clear-sel').addEventListener('click', () => {
+  store.clearSelected();
+  renderClear();
+  renderList();
+});
 
 $('#list').addEventListener('click', (e) => {
   const block = e.target.closest('.block');
   if (!block || swiper.consumeClick()) return;
-  activateBlock(block);
+  if (e.target.closest('.b-info')) openSheet(block.dataset.key);
+  else toggleSelect(block);
 });
 
 $('#list').addEventListener('keydown', (e) => {
   if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('block')) {
     e.preventDefault();
-    activateBlock(e.target);
+    toggleSelect(e.target);
   }
 });
 

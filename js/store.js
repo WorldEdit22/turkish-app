@@ -1,7 +1,7 @@
 // Everything is saved on this device only (localStorage). Every access is
 // wrapped in try/catch so the app still works if storage is unavailable.
 
-const KEYS = { learned: 'tl.learned', ui: 'tl.ui', settings: 'tl.settings', ai: 'tl.ai' };
+const KEYS = { learned: 'tl.learned', selected: 'tl.selected', ui: 'tl.ui', settings: 'tl.settings', ai: 'tl.ai' };
 
 function load(key, fallback) {
   try {
@@ -22,6 +22,7 @@ function save(key, value) {
 
 export const store = {
   learned: load(KEYS.learned, {}),
+  selected: load(KEYS.selected, {}),
   ui: load(KEYS.ui, {
     tab: 'patterns',
     status: { patterns: 'all', words: 'all' },
@@ -44,6 +45,22 @@ export const store = {
   replaceLearned(obj) {
     this.learned = { ...obj };
     save(KEYS.learned, this.learned);
+  },
+  // Selected words and patterns (same keys as learned) feed the card's examples.
+  isSelected(key) {
+    return Boolean(this.selected[key]);
+  },
+  toggleSelected(key) {
+    if (this.selected[key]) delete this.selected[key];
+    else this.selected[key] = 1;
+    save(KEYS.selected, this.selected);
+  },
+  clearSelected() {
+    this.selected = {};
+    save(KEYS.selected, this.selected);
+  },
+  selectedCount() {
+    return Object.keys(this.selected).length;
   },
   saveUi() {
     save(KEYS.ui, this.ui);
