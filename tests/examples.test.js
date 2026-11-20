@@ -97,6 +97,12 @@ test('with no fitting word learned, the extras come from the 15 most common fitt
   }
 });
 
+test('when every learned word is selected, the extras come from common words', () => {
+  const rows = patternExamples(want, 0, { words: WORDS, isSelected: sel(cay), isLearned: sel(cay) });
+  assert.equal(generated(rows).length, 4, '1 selected + 3 common');
+  assert.equal(rows.filter((r) => r.tr === 'Çay istiyorum.').length, 1);
+});
+
 test('a variant without templates shows only its hand-written examples', () => {
   const rows = patternExamples(want, 1, { words: WORDS, isSelected: sel(cay), isLearned: sel(su) });
   assert.deepEqual(rows, [{ tr: 'Bir çay, lütfen.', en: 'A tea, please.' }]);
@@ -122,6 +128,14 @@ test("then the word's own example, then up to 4 with learned patterns, skipping 
     assert.equal(extras.length, 4);
     assert.ok(!extras.some((r) => r.from.endsWith('Pattern 2')), 'a selected pattern is not repeated');
   }
+});
+
+test('when every learned pattern is selected, the extras come from the most useful patterns', () => {
+  const six = Array.from({ length: 6 }, (_, i) => numbered(i));
+  const rows = wordExamples(cay, { patterns: six, isSelected: sel(six[0]), isLearned: sel(six[0]) });
+  assert.equal(rows[0].from, '___ 0 · Pattern 0');
+  assert.equal(rows.length, 5, '1 selected + 4 common');
+  assert.ok(!rows.slice(1).some((r) => r.from.endsWith('Pattern 0')));
 });
 
 test('with no learned pattern, the extras come from the 15 most useful patterns', () => {

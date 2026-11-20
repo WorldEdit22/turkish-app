@@ -42,8 +42,10 @@ export function patternExamples(p, vi, { words, isSelected, isLearned, rand = Ma
   if (!v.t.length) return hand;
   const make = (w) => fill(tpl(pick(v.t, rand)), w);
   const fitting = words.filter((w) => fits(slotOf(p, v), w));
-  const learned = fitting.filter(isLearned);
-  const pool = (learned.length ? learned : fitting.slice(0, 15)).filter((w) => !isSelected(w));
+  // Selected words are shown already; the extras come from the rest.
+  const free = fitting.filter((w) => !isSelected(w));
+  const learned = free.filter(isLearned);
+  const pool = learned.length ? learned : free.slice(0, 15);
   return merge(fitting.filter(isSelected).map(make), hand, shuffle(pool, rand).slice(0, 3).map(make));
 }
 
@@ -51,9 +53,11 @@ export function wordExamples(w, { patterns, isSelected, isLearned, rand = Math.r
   const make = ({ p, v }) => ({ ...fill(tpl(pick(v.t, rand)), w), from: `${v.tr} · ${p.en}` });
   const pairs = wordPatternPairs(w, patterns);
   const top = new Set(patterns.slice(0, 15));
-  const learned = pairs.filter(({ p }) => isLearned(p));
-  const common = pairs.filter(({ p }) => top.has(p));
-  const pool = (learned.length ? learned : common.length >= 4 ? common : pairs.slice(0, 10)).filter(({ p }) => !isSelected(p));
+  // Selected patterns are shown already; the extras come from the rest.
+  const free = pairs.filter(({ p }) => !isSelected(p));
+  const learned = free.filter(({ p }) => isLearned(p));
+  const common = free.filter(({ p }) => top.has(p));
+  const pool = learned.length ? learned : common.length >= 4 ? common : free.slice(0, 10);
   const hand = w.ex ? [{ tr: w.ex[0], en: w.ex[1] }] : [];
   return merge(pairs.filter(({ p }) => isSelected(p)).map(make), hand, shuffle(pool, rand).slice(0, 4).map(make));
 }
