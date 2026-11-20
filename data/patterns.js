@@ -487,7 +487,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'seeyou', en: 'See you ___', tr: '___ görüşürüz', slot: '*:time|day',
+    id: 'seeyou', en: 'See you ___', tr: '___ görüşürüz', slot: '*:time|day|today|soon',
     variants: [
       {
         tr: '___ görüşürüz', en: 'See you ___',
