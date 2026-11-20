@@ -1,7 +1,7 @@
 // Offline support: serve from the cache instantly, refresh the cache in the
 // background so the next launch picks up any new version.
 
-const CACHE = 'turkish-v5';
+const CACHE = 'turkish-v6';
 const ASSETS = [
   './',
   'index.html',
