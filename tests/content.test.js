@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
-import { PATTERNS } from '../data/patterns.js';
+import { PATTERNS, GROUPS } from '../data/patterns.js';
 import { fill, fits } from '../js/combine.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
@@ -17,6 +17,17 @@ test('word ids are unique', () => {
 test('pattern ids are unique', () => {
   const ids = PATTERNS.map((p) => p.id);
   assert.equal(new Set(ids).size, ids.length);
+});
+
+test('every pattern has a known group', () => {
+  for (const p of PATTERNS) assert.ok(GROUPS && GROUPS[p.group], `${p.id} has unknown group ${p.group}`);
+});
+
+test('existing ids are unchanged, so saved progress keeps working', () => {
+  const ids = new Set([...WORDS.map((w) => w.id), ...PATTERNS.map((p) => `p:${p.id}`)]);
+  for (const id of ['p:want', 'p:before', 'p:until', 'p:because', 'p:must', 'p:lets', 'food:ekmek', 'work:iş', 'time:bugün', 'numbers:dört']) {
+    assert.ok(ids.has(id), `missing ${id}`);
+  }
 });
 
 test('every word has a known type and category', () => {

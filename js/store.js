@@ -27,6 +27,7 @@ export const store = {
     status: { patterns: 'all', words: 'all' },
     sort: { patterns: 'common', words: 'topic' },
     type: 'all',
+    pgroup: 'all',
     showTr: true,
   }),
   settings: load(KEYS.settings, { provider: '', keys: {}, models: {} }),

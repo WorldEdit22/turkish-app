@@ -1,5 +1,5 @@
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
-import { PATTERNS } from '../data/patterns.js';
+import { PATTERNS, GROUPS } from '../data/patterns.js';
 import { RANKS } from '../data/ranks.js';
 import { fill, fits } from './combine.js';
 import { store } from './store.js';
@@ -98,6 +98,7 @@ function visibleItems(tab) {
     });
   }
   if (!isP && ui.type !== 'all') items = items.filter((w) => w.type === ui.type);
+  if (isP && ui.pgroup !== 'all') items = items.filter((p) => p.group === ui.pgroup);
   const st = ui.status[tab];
   if (st !== 'all') items = items.filter((x) => learned(x) === (st === 'learned'));
 
@@ -170,14 +171,17 @@ function renderControls() {
     .map(([v, label]) => `<option value="${v}"${ui.sort[tab] === v ? ' selected' : ''}>${label}</option>`)
     .join('');
 
-  const types = $('#types');
-  types.hidden = tab !== 'words';
-  if (tab === 'words') {
-    const chips = [['all', 'All', '']].concat(Object.entries(TYPES).map(([id, t]) => [id, t.label, `<span class="dot t-${id}"></span>`]));
-    types.innerHTML = chips
-      .map(([id, label, dot]) => `<button class="chip${ui.type === id ? ' on' : ''}" data-type="${id}">${dot}${label}</button>`)
-      .join('');
-  }
+  // Chip row: word types on the Words tab, pattern groups on the Patterns tab.
+  const chips =
+    tab === 'words'
+      ? [['all', 'All', '']].concat(Object.entries(TYPES).map(([id, t]) => [id, t.label, `<span class="dot t-${id}"></span>`]))
+      : [['all', 'All', '']].concat(Object.entries(GROUPS).map(([id, label]) => [id, label, '']));
+  const current = tab === 'words' ? ui.type : ui.pgroup;
+  const attr = tab === 'words' ? 'data-type' : 'data-group';
+  $('#types').setAttribute('aria-label', tab === 'words' ? 'Word type' : 'Pattern group');
+  $('#types').innerHTML = chips
+    .map(([id, label, dot]) => `<button class="chip${current === id ? ' on' : ''}" ${attr}="${id}">${dot}${label}</button>`)
+    .join('');
 }
 
 function render() {
@@ -562,9 +566,10 @@ $('#sort').addEventListener('change', (e) => {
 });
 
 $('#types').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-type]');
+  const b = e.target.closest('[data-type], [data-group]');
   if (!b) return;
-  ui.type = b.dataset.type;
+  if (b.dataset.group) ui.pgroup = b.dataset.group;
+  else ui.type = b.dataset.type;
   store.saveUi();
   renderControls();
   renderList();

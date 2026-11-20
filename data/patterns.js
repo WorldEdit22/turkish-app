@@ -8,6 +8,8 @@
 //   slot     which words fit the gap (type:kind|kind). Defaults to the pattern's slot.
 //   note     optional tip
 
+export const GROUPS = { everyday: 'Everyday', verbs: 'Verbs & tenses', connectors: 'Connectors' };
+
 const FOOD = 'food|ingr|drink';
 const NOUN_THINGS = `noun:${FOOD}|thing`;
 const PLACES = 'noun:place|room|area';
@@ -948,3 +950,15 @@ export const PATTERNS = [
     ],
   },
 ];
+
+// Groups for the patterns above that don't set `group` themselves.
+const GROUP_OF = {
+  everyday: ['want', 'var', 'where', 'price', 'iam', 'very', 'have', 'need', 'this', 'my', 'going', 'at', 'isit', 'thanks',
+    'seeyou', 'clock', 'howto', 'looking', 'from', 'hurts', 'by', 'withwithout', 'like', 'think', 'more', 'nextlast', 'howmany'],
+  verbs: ['wantto', 'can', 'now', 'past', 'must', 'lets', 'please', 'future', 'dont', 'habit', 'should', 'knowhow', 'likedoing',
+    'try', 'start', 'forgot', 'timeto', 'ever'],
+  connectors: ['when', 'if', 'because', 'before', 'after', 'while', 'until', 'assoon', 'inorder', 'instead'],
+};
+for (const [group, ids] of Object.entries(GROUP_OF)) {
+  for (const p of PATTERNS) if (ids.includes(p.id) && !p.group) p.group = group;
+}
