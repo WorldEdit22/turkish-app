@@ -12,6 +12,7 @@ const ASSETS = [
   'js/grammar.js',
   'js/combine.js',
   'js/examples.js',
+  'js/sound.js',
   'js/swipe.js',
   'data/words.js',
   'data/patterns.js',

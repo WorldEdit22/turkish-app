@@ -6,6 +6,7 @@ import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examp
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
 import { swipe } from './swipe.js';
+import { silentWav } from './sound.js';
 
 // ---------- data ----------
 
@@ -56,6 +57,11 @@ function turkishVoice() {
   return speechSynthesis.getVoices().find((v) => (v.lang || '').toLowerCase().startsWith('tr')) || null;
 }
 
+// iPhone and iPad (iPadOS reports itself as a Mac with touch).
+const isAppleTouch = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const SILENCE = `data:audio/wav;base64,${btoa(String.fromCharCode(...silentWav()))}`;
+let silence = null;
+
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
@@ -64,11 +70,21 @@ function speak(text) {
   const v = turkishVoice();
   if (v) u.voice = v;
   u.rate = 0.9;
-  // iPhone silent mode mutes web audio; 'playback' asks Safari (iOS 17+) to play it like media.
+  // iPhone silent mode mutes web speech. 'playback' (iOS 17+) plus a moment of silence played through
+  // <audio> inside the tap switch iOS to media playback, which the silent switch does not mute.
   try {
     if (navigator.audioSession) navigator.audioSession.type = 'playback';
   } catch {
-    /* not supported: silent mode keeps it muted */
+    /* not supported */
+  }
+  if (isAppleTouch) {
+    try {
+      silence ??= new Audio(SILENCE);
+      silence.currentTime = 0;
+      silence.play().catch(() => {});
+    } catch {
+      /* no audio element: speak anyway */
+    }
   }
   speechSynthesis.speak(u);
 }
