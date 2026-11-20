@@ -287,6 +287,11 @@ export const PATTERNS = [
         ex: [['Gitmeliyim.', 'I must go.'], ['Daha çok çalışmalıyım.', 'I should work more.']],
         t: [['{w:mAlIyIm}.', 'I must {base}.']],
       },
+      {
+        tr: '-mak zorundayım', en: 'I have to ___ (no choice)',
+        ex: [['Gitmek zorundayım.', 'I have to go.'], ['Erken kalkmak zorunda mısın?', 'Do you have to get up early?']],
+        t: [['{w:mAk} zorundayım.', 'I have to {base}.']],
+      },
     ],
   },
   {
@@ -306,6 +311,11 @@ export const PATTERNS = [
         tr: '-eyim mi?', en: 'Shall I ___?',
         ex: [['Yardım edeyim mi?', 'Shall I help?'], ['Kapıyı açayım mı?', 'Shall I open the door?']],
         t: [['{w:(y)AyIm_mI}?', 'Shall I {base}?'], ['{w:(y)AyIm}.', 'Let me {base}.']],
+      },
+      {
+        tr: '-sin / -sın', en: 'Let him / let it ___',
+        ex: [['Gelsin.', 'Let him come.'], ['Biraz beklesin.', 'Let him wait a bit.']],
+        t: [['{w:sIn}.', 'Let him {base}.']],
       },
     ],
   },
@@ -688,6 +698,11 @@ export const PATTERNS = [
         ex: [['Geç kaldığım için özür dilerim.', 'Sorry for being late.'], ['Hasta olduğum için gelmedim.', "I didn't come because I was sick."]],
         t: [['{w:DIğIm} için mutluyum.', "I'm happy because I {past}."]],
       },
+      {
+        tr: '-diği için', en: 'Because he / it ___',
+        ex: [['Hasta olduğu için gelmedi.', "He didn't come because he was sick."], ['Pahalı olduğu için almadım.', "I didn't buy it because it was expensive."]],
+        t: [['{w:DIğI} için mutlu.', "He's happy because he {past}."]],
+      },
     ],
   },
   {
@@ -702,6 +717,11 @@ export const PATTERNS = [
         tr: '-meden / -madan', en: 'Without ___ing',
         ex: [['Söylemeden gitti.', 'He left without saying anything.'], ['Düşünmeden konuşma.', "Don't speak without thinking."]],
         t: [['{w:mAdAn} gitme.', "Don't leave without {ing}."]],
+      },
+      {
+        tr: '___-den önce', en: 'Before ___ (a thing or day)', slot: 'noun:event|meal|day',
+        ex: [['Yemekten önce ellerini yıka.', 'Wash your hands before the meal.'], ['Toplantıdan önce kahve içelim.', "Let's have a coffee before the meeting."]],
+        t: [['{w:DAn} önce görüşelim.', "Let's meet before {the}."]],
       },
     ],
   },
@@ -718,6 +738,11 @@ export const PATTERNS = [
         note: 'Joins two actions: Eve gidip uyuyacağım = I\'ll go home and sleep.',
         ex: [['Eve gidip uyuyacağım.', "I'll go home and sleep."], ['Oturup konuşalım.', "Let's sit and talk."]],
         t: [['{w:(y)Ip} döneceğim.', "I'll {base} and come back."]],
+      },
+      {
+        tr: '___-den sonra', en: 'After ___ (a thing or day)', slot: 'noun:event|meal|day',
+        ex: [['İşten sonra ne yapıyorsun?', 'What are you doing after work?'], ['Yemekten sonra çay içeriz.', 'We drink tea after the meal.']],
+        t: [['{w:DAn} sonra görüşelim.', "Let's meet after {the}."]],
       },
     ],
   },
@@ -896,6 +921,16 @@ export const PATTERNS = [
         ex: [['Sen gelinceye kadar bekleyeceğim.', "I'll wait until you come."]],
         t: [['{w:(y)IncAyA} kadar bekleyeceğim.', "I'll wait until you {base}."]],
       },
+      {
+        tr: '___-e kadar', en: 'Until ___ (a time)', slot: '*:time|day|today',
+        ex: [['Akşama kadar buradayım.', "I'm here until the evening."], ['Yarına kadar bitiririm.', "I'll finish it by tomorrow."]],
+        t: [['{w:(y)A} kadar buradayım.', "I'm here until {the}."]],
+      },
+      {
+        tr: 'Saat ___-e kadar', en: "Until ___ o'clock", slot: '*:hour',
+        ex: [['Saat beşe kadar çalışıyorum.', "I work until five o'clock."]],
+        t: [['Saat {w:(y)A} kadar buradayım.', "I'm here until {en} o'clock."]],
+      },
     ],
   },
   {
@@ -949,6 +984,489 @@ export const PATTERNS = [
       },
     ],
   },
+
+  // ---------- connectors (added in v2) ----------
+
+  {
+    id: 'might', group: 'verbs', en: 'It might ___', tr: '-ebilir', slot: 'verb',
+    variants: [
+      {
+        tr: '-ebilir / -abilir', en: 'It might ___ / maybe ___',
+        note: 'Same ending as "can": Yağmur yağabilir = It might rain.',
+        ex: [['Yağmur yağabilir.', 'It might rain.'], ['Geç kalabilirim.', 'I might be late.']],
+        t: [['Yarın {w:(y)AbilIr}.', 'He might {base} tomorrow.'], ['Belki {w:(y)AbilirIm}.', 'I might {base}.']],
+      },
+      {
+        tr: '-meyebilir', en: 'It might not ___',
+        ex: [['Gelmeyebilir.', 'He might not come.'], ['Bugün açık olmayabilir.', 'It might not be open today.']],
+        t: [['{w:mAyAbilIr}.', 'He might not {base}.'], ['{w:mAyAbilirIm}.', 'I might not {base}.']],
+      },
+      {
+        tr: '-miş olmalı', en: 'He must have ___',
+        ex: [['Unutmuş olmalı.', 'He must have forgotten.'], ['Çıkmış olmalılar.', 'They must have left.']],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'apparently', group: 'verbs', en: 'Apparently ___', tr: '-miş', slot: 'verb',
+    variants: [
+      {
+        tr: '-miş / -mış / -muş', en: 'Apparently he ___ed',
+        note: "For things you didn't see yourself: you heard, read or just noticed them.",
+        ex: [['Ali gelmiş.', 'Apparently Ali has come.'], ['Çok güzelmiş!', "Oh, it's really nice!"]],
+        t: [['O {w:mIş}.', 'Apparently he {past}.'], ['Dün {w:mIş}.', 'Apparently he {past} yesterday.']],
+      },
+      {
+        tr: '-mişsin', en: 'Apparently you ___ed',
+        ex: [['Türkçe öğrenmişsin!', "You've learned Turkish, I see!"], ['Yorulmuşsun.', 'You look tired.']],
+        t: [['{w:mIşsIn}!', 'Apparently you {past}!']],
+      },
+      {
+        tr: '-memiş', en: "Apparently he didn't ___",
+        ex: [['Kimse gelmemiş.', 'Apparently nobody came.'], ['Haberim olmamış.', "I didn't know about it."]],
+        t: [['{w:mAmIş}.', "Apparently he didn't {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'whenever', group: 'connectors', en: 'Whenever / whatever you ___', tr: 'ne zaman -irsen', slot: 'verb',
+    variants: [
+      {
+        tr: 'Ne zaman -irsen', en: 'Whenever you ___',
+        ex: [['Ne zaman istersen gel.', 'Come whenever you want.'], ['Ne zaman gelirsen ara.', 'Call whenever you come.']],
+        t: [['Ne zaman {w:RsAn} haber ver.', 'Let me know whenever you {base}.']],
+      },
+      {
+        tr: 'Ne -irsen', en: 'Whatever you ___',
+        ex: [['Ne istersen.', 'Whatever you want.'], ['Ne dersen de, gidiyorum.', "Whatever you say, I'm going."]],
+        t: [],
+      },
+      {
+        tr: 'Nereye -irsen', en: 'Wherever you ___',
+        ex: [['Nereye istersen gidelim.', "Let's go wherever you want."], ['Nereye gidersen seninle gelirim.', "I'll come with you wherever you go."]],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'asyousaid', group: 'connectors', en: 'As you said / as you know', tr: '-diğin gibi', slot: 'verb:say',
+    variants: [
+      {
+        tr: '-diğin gibi', en: 'As you ___',
+        ex: [['Dediğin gibi, çok pahalı.', "Like you said, it's very expensive."], ['Bildiğin gibi, yarın tatil.', 'As you know, tomorrow is a holiday.']],
+        t: [['{w:DIğIn} gibi.', 'As you {past}.']],
+      },
+      {
+        tr: '-diğim gibi', en: 'As I ___',
+        ex: [['Dediğim gibi, yarın gelemem.', "As I said, I can't come tomorrow."], ['Düşündüğüm gibi.', 'Just as I thought.']],
+        t: [['{w:DIğIm} gibi.', 'As I {past}.']],
+      },
+    ],
+  },
+  {
+    id: 'since', group: 'connectors', en: 'Since ___ / for ___', tr: '-den beri', slot: '*:time|day|past',
+    variants: [
+      {
+        tr: '___-den beri', en: 'Since ___ (a time)',
+        ex: [['Sabahtan beri bekliyorum.', "I've been waiting since the morning."], ['Pazartesiden beri hastayım.', "I've been sick since Monday."]],
+        t: [['{w:DAn} beri bekliyorum.', "I've been waiting since {the}."], ['{w:DAn} beri burada.', "He's been here since {the}."]],
+      },
+      {
+        tr: '-diğimden beri', en: 'Since I ___', slot: 'verb',
+        ex: [["Türkiye'ye geldiğimden beri Türkçe öğreniyorum.", "I've been learning Turkish since I came to Turkey."], ['Seni gördüğümden beri mutluyum.', "I've been happy since I saw you."]],
+        t: [['{w:DIğImdAn} beri çok mutluyum.', "I've been very happy since I {past}."]],
+      },
+      {
+        tr: 'Bir ___-dir', en: 'For a ___ (until now)', slot: 'noun:unit|period',
+        note: '-dir after a time means "for … now": Bir saattir bekliyorum.',
+        ex: [['İki yıldır burada yaşıyorum.', "I've lived here for two years."], ['Bir saattir bekliyorum.', "I've been waiting for an hour."]],
+        t: [['Bir {w:DIr} bekliyorum.', "I've been waiting for {a}."]],
+      },
+    ],
+  },
+  {
+    id: 'becauseof', group: 'connectors', en: 'Because of ___ / thanks to ___', tr: '___ yüzünden', slot: 'noun:weather|issue|event|cause',
+    variants: [
+      {
+        tr: '___ yüzünden', en: 'Because of ___ (something bad)',
+        ex: [['Trafik yüzünden geç kaldım.', 'I was late because of the traffic.'], ['Yağmur yüzünden evde kaldık.', 'We stayed at home because of the rain.']],
+        t: [['{w} yüzünden geç kaldım.', 'I was late because of {the}.']],
+      },
+      {
+        tr: '___ sayesinde', en: 'Thanks to ___ (something good)', slot: 'noun:person',
+        ex: [['Senin sayende.', 'Thanks to you.'], ['Arkadaşım sayesinde bu işi buldum.', 'I found this job thanks to my friend.']],
+        t: [['{w:(I)m} sayesinde.', 'Thanks to my {en}.']],
+      },
+      {
+        tr: '___-den dolayı', en: 'Due to ___ (more formal)',
+        ex: [['Hastalıktan dolayı gelemedi.', "He couldn't come due to illness."]],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'evenif', group: 'connectors', en: 'Even if ___', tr: '-se bile', slot: 'verb',
+    variants: [
+      {
+        tr: '-sem bile / -sen bile', en: 'Even if I ___ / even if you ___',
+        ex: [['İstesem bile gelemem.', "Even if I wanted to, I couldn't come."], ['Yağmur yağsa bile gideceğiz.', "We'll go even if it rains."]],
+        t: [['{w:sAm} bile sorun değil.', "Even if I {base}, it's no problem."], ['{w:sAn} bile olur.', "Even if you {base}, that's fine."]],
+      },
+      {
+        tr: '-se de', en: 'Even if / whether …',
+        ex: [['Geç olsa da gel.', "Come, even if it's late."], ['İstesen de istemesen de.', 'Whether you want to or not.']],
+        t: [['{w:sAn_dA} olur.', "It's also fine if you {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'although', group: 'connectors', en: 'Although ___ / despite ___', tr: '-mama rağmen', slot: 'verb',
+    variants: [
+      {
+        tr: '-meme / -mama rağmen', en: 'Although I ___',
+        ex: [['Çok çalışmama rağmen yorgun değilim.', "Although I work a lot, I'm not tired."], ['Erken yatmama rağmen uyuyamadım.', "Although I went to bed early, I couldn't sleep."]],
+        t: [['{w:mAmA} rağmen yorgun değilim.', "Although I {past}, I'm not tired."]],
+      },
+      {
+        tr: '-diğim halde', en: 'Even though I ___',
+        ex: [['Söylediğim halde dinlemedi.', "Even though I told him, he didn't listen."], ['Yediğim halde hâlâ açım.', "Even though I ate, I'm still hungry."]],
+        t: [['{w:DIğIm} halde yorgun değilim.', "Even though I {past}, I'm not tired."]],
+      },
+      {
+        tr: '___-e rağmen', en: 'Despite ___', slot: 'noun:weather|issue|cause',
+        ex: [['Yağmura rağmen geldi.', 'He came despite the rain.'], ['Her şeye rağmen mutluyum.', "I'm happy despite everything."]],
+        t: [['{w:(y)A} rağmen geldim.', 'I came despite {the}.']],
+      },
+    ],
+  },
+  {
+    id: 'dikce', group: 'connectors', en: 'The more ___ / every time ___', tr: '-dikçe', slot: 'verb',
+    variants: [
+      {
+        tr: '-dikçe / -dıkça', en: 'The more ___',
+        ex: [['Okudukça öğreniyorum.', 'The more I read, the more I learn.'], ['Gördükçe daha çok seviyorum.', 'The more I see it, the more I like it.']],
+        t: [['{w:DIkçA} daha iyi oluyor.', 'The more you {base}, the better it gets.']],
+      },
+      {
+        tr: 'Her -diğimde', en: 'Every time I ___',
+        ex: [['Her geldiğimde yağmur yağıyor.', 'Every time I come, it rains.'], ['Her gördüğümde gülüyor.', 'Every time I see him, he smiles.']],
+        t: [['Her {w:DIğImdA} seni düşünüyorum.', 'Every time I {base}, I think of you.']],
+      },
+      {
+        tr: '-medikçe', en: 'Unless ___',
+        ex: [['Sormadıkça bilemezsin.', "Unless you ask, you can't know."], ['Acele etmedikçe yetişemeyiz.', "Unless we hurry, we won't make it."]],
+        t: [['{w:mAdIkçA} bilemezsin.', "You can't know unless you {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'aslongas', group: 'connectors', en: 'As long as ___', tr: '-diğim sürece', slot: 'verb',
+    variants: [
+      {
+        tr: '-diğim sürece', en: 'As long as I ___',
+        ex: [['Burada olduğum sürece sana yardım ederim.', "As long as I'm here, I'll help you."], ['Sağlıklı olduğumuz sürece sorun yok.', "As long as we're healthy, there's no problem."]],
+        t: [['{w:DIğIm} sürece mutluyum.', "As long as I {base}, I'm happy."]],
+      },
+      {
+        tr: '-diğin sürece', en: 'As long as you ___',
+        ex: [['İstediğin sürece kalabilirsin.', 'You can stay as long as you want.']],
+        t: [['{w:DIğIn} sürece sorun yok.', "As long as you {base}, there's no problem."]],
+      },
+    ],
+  },
+  {
+    id: 'seeing', group: 'connectors', en: 'Since (seeing that) ___', tr: 'madem / -diğine göre', slot: 'verb',
+    variants: [
+      {
+        tr: 'Madem ___', en: 'Since ___ (casual)',
+        ex: [['Madem geldin, biraz otur.', "Since you're here, sit down a bit."], ['Madem istemiyorsun, gitme.', "Since you don't want to, don't go."]],
+        t: [['Madem {w:DIn}, biraz dinlen.', 'Since you {past}, rest a bit.']],
+      },
+      {
+        tr: '-diğine göre', en: 'Since / given that ___',
+        ex: [['Geldiğine göre başlayalım.', "Since you've come, let's start."], ['Burada olduğuna göre her şey yolunda.', "Since you're here, everything's fine."]],
+        t: [['{w:DIğInA} göre başlayalım.', "Since you {past}, let's start."]],
+      },
+    ],
+  },
+  {
+    id: 'ken', group: 'connectors', en: 'While / when I was ___', tr: '-ken', slot: 'adj:feel|any',
+    variants: [
+      {
+        tr: '___-ken (describing)', en: "When you're ___",
+        ex: [['Yorgunken araba kullanma.', "Don't drive when you're tired."], ['Hastayken evde kal.', "Stay at home when you're sick."]],
+        t: [['{w:(y)ken} beni ara.', "Call me when you're {en}."]],
+      },
+      {
+        tr: '___-ken (life)', en: 'When I was a ___', slot: 'noun:life',
+        ex: [['Çocukken burada yaşıyordum.', 'When I was a child, I lived here.'], ['Öğrenciyken çok çalışırdım.', 'When I was a student, I used to study a lot.']],
+        t: [['{w:(y)ken} burada yaşıyordum.', 'When I was {a}, I lived here.']],
+      },
+      {
+        tr: '___-deyken', en: 'While at ___', slot: 'noun:place|room|area',
+        ex: [['Evdeyken beni ara.', "Call me while you're at home."], ['İşteyken telefona bakamam.', "I can't check my phone while I'm at work."]],
+        t: [['{w:DA(y)ken} beni ara.', "Call me while you're {at}."]],
+      },
+    ],
+  },
+  {
+    id: 'aboutto', group: 'verbs', en: "I'm about to ___", tr: '-mek üzereyim', slot: 'verb',
+    variants: [
+      {
+        tr: '-mek üzereyim', en: "I'm about to ___",
+        ex: [['Çıkmak üzereyim.', "I'm about to leave."], ['Film başlamak üzere.', 'The film is about to start.']],
+        t: [['{w:mAk} üzereyim.', "I'm about to {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'keepdoing', group: 'verbs', en: 'Keep ___ing', tr: '-meye devam', slot: 'verb',
+    variants: [
+      {
+        tr: '-meye devam ediyorum', en: 'I keep ___ing',
+        ex: [['Türkçe öğrenmeye devam ediyorum.', "I'm continuing to learn Turkish."], ['Yağmur yağmaya devam ediyor.', 'It keeps raining.']],
+        t: [['{w:mAyA} devam ediyorum.', 'I keep {ing}.']],
+      },
+      {
+        tr: '-meye devam et!', en: 'Keep ___ing!',
+        ex: [['Devam et!', 'Keep going!'], ['Konuşmaya devam et.', 'Keep talking.']],
+        t: [['{w:mAyA} devam et!', 'Keep {ing}!']],
+      },
+    ],
+  },
+  {
+    id: 'bydoing', group: 'connectors', en: 'By ___ing', tr: '-erek', slot: 'verb',
+    variants: [
+      {
+        tr: '-erek / -arak', en: 'By ___ing / while ___ing',
+        ex: [['Yürüyerek geldim.', 'I came on foot.'], ['Gülerek anlattı.', 'He told it laughing.']],
+        t: [['{w:(y)ArAk} öğrendim.', 'I learned by {ing}.']],
+      },
+    ],
+  },
+  {
+    id: 'asif', group: 'connectors', en: 'Like ___ / as if ___', tr: 'gibi / -miş gibi', slot: 'noun:person|animal',
+    variants: [
+      {
+        tr: '___ gibi', en: 'Like a ___',
+        ex: [['Çocuk gibi.', 'Like a child.'], ['Senin gibi.', 'Like you.']],
+        t: [['{w} gibi konuşuyor.', 'He talks like {a}.']],
+      },
+      {
+        tr: '-miş gibi', en: 'As if ___', slot: 'verb',
+        ex: [['Hiçbir şey olmamış gibi.', 'As if nothing happened.'], ['Duymamış gibi yaptı.', "He pretended he didn't hear."]],
+        t: [['{w:mIş} gibi yapıyor.', "He's pretending he {past}."]],
+      },
+      {
+        tr: '-ecek gibi', en: 'Looks like it will ___', slot: 'verb',
+        ex: [['Yağmur yağacak gibi.', "It looks like it's going to rain."], ['Ağlayacak gibi.', "He looks like he's about to cry."]],
+        t: [['{w:(y)AcAk} gibi.', "It looks like he'll {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'asmuchas', group: 'connectors', en: 'As much as ___', tr: '-diğin kadar', slot: 'verb',
+    variants: [
+      {
+        tr: '-diğin kadar', en: 'As much as you ___',
+        ex: [['İstediğin kadar al.', 'Take as much as you want.'], ['Yiyebildiğin kadar ye.', 'Eat as much as you can.']],
+        t: [],
+      },
+      {
+        tr: '-ebildiğim kadar', en: 'As much as I can',
+        ex: [['Elimden geldiği kadar yardım ederim.', "I'll help as much as I can."], ['Yapabildiğim kadar yaptım.', 'I did as much as I could.']],
+        t: [['{w:(y)AbildiğIm} kadar {w:(y)AcAğIm}.', "I'll {base} as much as I can."]],
+      },
+    ],
+  },
+  {
+    id: 'morethan', group: 'connectors', en: 'More / less than ___', tr: '___-den fazla', slot: 'noun:unit|period',
+    variants: [
+      {
+        tr: '___-den fazla', en: 'More than ___',
+        ex: [['Bir saatten fazla bekledim.', 'I waited more than an hour.'], ['Yüz liradan fazla.', 'More than a hundred lira.']],
+        t: [['Bir {w:DAn} fazla bekledim.', 'I waited more than {a}.']],
+      },
+      {
+        tr: '___-den az', en: 'Less than ___',
+        ex: [['Bir dakikadan az sürer.', 'It takes less than a minute.']],
+        t: [['Bir {w:DAn} az sürer.', 'It takes less than {a}.']],
+      },
+      {
+        tr: 'en az / en fazla', en: 'At least / at most',
+        ex: [['En az iki saat.', 'At least two hours.'], ['En fazla on dakika.', 'Ten minutes at most.']],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'sothat', group: 'connectors', en: 'So ___ that …', tr: 'o kadar … ki', slot: 'adj:feel',
+    variants: [
+      {
+        tr: 'O kadar ___-im ki …', en: "I'm so ___ that …",
+        ex: [['O kadar yorgunum ki uyuyamıyorum.', "I'm so tired that I can't sleep."], ['O kadar mutluyum ki!', "I'm so happy!"]],
+        t: [['O kadar {w:(y)Im} ki bir şey yapamıyorum.', "I'm so {en} that I can't do anything."]],
+      },
+      {
+        tr: 'O kadar ___ ki …', en: "It's so ___ that …", slot: 'adj:desc|any',
+        ex: [['O kadar pahalı ki alamıyorum.', "It's so expensive that I can't buy it."], ['O kadar güzel ki!', "It's so beautiful!"]],
+        t: [['O kadar {w} ki inanamıyorum.', "It's so {en} that I can't believe it."]],
+      },
+    ],
+  },
+  {
+    id: 'both', group: 'connectors', en: 'Both … and / either … or', tr: 'hem … hem de', slot: 'noun:food',
+    variants: [
+      {
+        tr: 'hem … hem de', en: 'Both … and …',
+        ex: [['Hem çay hem de kahve var.', 'There is both tea and coffee.'], ['Hem güzel hem de ucuz.', "It's both nice and cheap."]],
+        t: [['Hem {w} hem de su istiyorum.', 'I want both {gen} and water.']],
+      },
+      {
+        tr: 'ya … ya da', en: 'Either … or …', slot: 'noun:day',
+        ex: [['Ya bugün ya da yarın.', 'Either today or tomorrow.'], ['Ya çay ya da kahve.', 'Either tea or coffee.']],
+        t: [['Ya {w} ya da yarın gelirim.', "I'll come either on {en} or tomorrow."]],
+      },
+      {
+        tr: 'ne … ne de', en: 'Neither … nor …',
+        note: 'The verb stays positive: Ne çay ne kahve içerim.',
+        ex: [['Ne çay ne de kahve içerim.', 'I drink neither tea nor coffee.'], ['Ne sıcak ne soğuk.', 'Neither hot nor cold.']],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'that', group: 'connectors', en: 'I know that ___', tr: '-diğini biliyorum', slot: 'verb',
+    variants: [
+      {
+        tr: '-diğini biliyorum', en: 'I know that you ___',
+        ex: [['Geldiğini biliyorum.', 'I know that you came.'], ['Ne demek istediğini anlıyorum.', 'I understand what you mean.']],
+        t: [['{w:DIğInI} biliyorum.', 'I know that you {past}.'], ['{w:DIğInI} duydum.', 'I heard that you {past}.']],
+      },
+      {
+        tr: '-eceğini söyledi', en: 'He said he would ___',
+        ex: [['Geleceğini söyledi.', 'He said he would come.'], ['Arayacağını söyledi.', 'She said she would call.']],
+        t: [['{w:(y)AcAğInI} söyledi.', 'He said he would {base}.']],
+      },
+      {
+        tr: '-eceğini sanıyorum', en: 'I think he will ___',
+        ex: [['Geleceğini sanıyorum.', 'I think he will come.'], ['Yağmur yağacağını sanmıyorum.', "I don't think it will rain."]],
+        t: [['{w:(y)AcAğInI} sanıyorum.', 'I think he will {base}.']],
+      },
+      {
+        tr: '… ki …', en: '… that … (spoken)',
+        ex: [['Biliyorum ki haklısın.', "I know that you're right."], ['Dedi ki yarın gelecek.', "He said that he'll come tomorrow."]],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'wish', group: 'verbs', en: 'I wish ___', tr: 'Keşke …', slot: 'verb',
+    variants: [
+      {
+        tr: 'Keşke -sem', en: 'I wish I could ___',
+        ex: [['Keşke gelebilsem.', 'I wish I could come.'], ['Keşke zamanım olsa.', 'I wish I had time.']],
+        t: [['Keşke {w:sAm}.', 'I wish I could {base}.']],
+      },
+      {
+        tr: 'Keşke -seydim', en: 'I wish I had ___ (past)',
+        ex: [['Keşke gitseydim.', 'I wish I had gone.'], ['Keşke daha erken gelseydin.', 'I wish you had come earlier.']],
+        t: [],
+      },
+      {
+        tr: 'Keşke -mesem', en: "I wish I didn't have to ___",
+        ex: [['Keşke gitmesem.', "I wish I didn't have to go."]],
+        t: [['Keşke {w:mAsAm}.', "I wish I didn't have to {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'whydont', group: 'verbs', en: "Why don't you ___!", tr: '-sene!', slot: 'verb',
+    variants: [
+      {
+        tr: '-sene / -sana', en: "Why don't you ___! (casual)",
+        note: 'Very casual and friendly. Polite: -senize.',
+        ex: [['Otursana!', "Sit down, why don't you!"], ['Baksana!', 'Hey, look!']],
+        t: [['{w:sAnA}!', "Why don't you {base}!"], ['Hadi {w:sAnA}!', 'Come on, {base}!']],
+      },
+      {
+        tr: '-senize', en: "Why don't you ___ (polite)",
+        ex: [['Buyursanıza.', 'Please, come in.'], ['Otursanıza.', 'Please, have a seat.']],
+        t: [['{w:sAnIzA}.', "Why don't you {base}."]],
+      },
+    ],
+  },
+  {
+    id: 'according', group: 'connectors', en: 'According to ___', tr: '___-e göre', slot: 'noun:person',
+    variants: [
+      {
+        tr: '___-e göre', en: 'According to ___',
+        ex: [['Doktora göre bir şey yok.', "According to the doctor, it's nothing."], ['Haberlere göre yarın kar yağacak.', "According to the news, it'll snow tomorrow."]],
+        t: [['{w:(I)m(y)A} göre çok iyi.', "According to my {en}, it's very good."]],
+      },
+      {
+        tr: 'Bana / sana göre', en: 'In my / your opinion',
+        ex: [['Bana göre çok iyi.', "In my opinion it's very good."], ['Sana göre hangisi daha iyi?', 'Which one is better in your opinion?']],
+        t: [],
+      },
+    ],
+  },
+  {
+    id: 'withmy', group: 'connectors', en: 'With my ___', tr: '___-imle', slot: 'noun:person',
+    variants: [
+      {
+        tr: '___-imle (birlikte)', en: 'With my ___',
+        ex: [['Annemle konuşuyorum.', "I'm talking with my mother."], ['Arkadaşımla birlikte geldim.', 'I came with my friend.']],
+        t: [['{w:(I)m(y)lA} birlikte geldim.', 'I came with my {en}.'], ['{w:(I)m(y)lA} konuşuyorum.', "I'm talking with my {en}."]],
+      },
+      {
+        tr: '___-inle', en: 'With your ___',
+        ex: [['Ailenle mi yaşıyorsun?', 'Do you live with your family?']],
+        t: [['{w:(I)n(y)lA_mI} geldin?', 'Did you come with your {en}?']],
+      },
+    ],
+  },
+  {
+    id: 'tiredof', group: 'verbs', en: "I'm tired of ___ing", tr: '-mekten sıkıldım', slot: 'verb',
+    variants: [
+      {
+        tr: '-mekten sıkıldım', en: "I'm tired of ___ing",
+        ex: [['Beklemekten sıkıldım.', "I'm tired of waiting."], ['Evde oturmaktan sıkıldım.', "I'm bored of sitting at home."]],
+        t: [['{w:mAktAn} sıkıldım.', "I'm tired of {ing}."]],
+      },
+      {
+        tr: '-mekten korkuyorum', en: "I'm afraid of ___ing",
+        ex: [['Uçmaktan korkuyorum.', "I'm afraid of flying."], ['Hata yapmaktan korkma.', "Don't be afraid of making mistakes."]],
+        t: [['{w:mAktAn} korkuyorum.', "I'm afraid of {ing}."]],
+      },
+      {
+        tr: '-mekten hoşlanıyorum', en: 'I enjoy ___ing',
+        ex: [['Yemek yapmaktan hoşlanıyorum.', 'I enjoy cooking.'], ['Seninle konuşmaktan hoşlanıyorum.', 'I enjoy talking with you.']],
+        t: [['{w:mAktAn} hoşlanıyorum.', 'I enjoy {ing}.']],
+      },
+    ],
+  },
+  {
+    id: 'plan', group: 'verbs', en: "I'm thinking of ___ing", tr: '-meyi düşünüyorum', slot: 'verb',
+    variants: [
+      {
+        tr: '-meyi düşünüyorum', en: "I'm thinking of ___ing",
+        ex: [['Taşınmayı düşünüyorum.', "I'm thinking of moving."], ['Yarın gelmeyi düşünüyor musun?', 'Are you thinking of coming tomorrow?']],
+        t: [['{w:mAyI} düşünüyorum.', "I'm thinking of {ing}."]],
+      },
+      {
+        tr: '-meye karar verdim', en: 'I decided to ___',
+        ex: [['Türkçe öğrenmeye karar verdim.', 'I decided to learn Turkish.'], ['Kalmaya karar verdik.', 'We decided to stay.']],
+        t: [['{w:mAyA} karar verdim.', 'I decided to {base}.']],
+      },
+      {
+        tr: '-meyi planlıyorum', en: "I'm planning to ___",
+        ex: [["Yazın İstanbul'a gitmeyi planlıyorum.", "I'm planning to go to Istanbul in the summer."]],
+        t: [['{w:mAyI} planlıyorum.', "I'm planning to {base}."]],
+      },
+    ],
+  },
 ];
 
 // Groups for the patterns above that don't set `group` themselves.
@@ -962,3 +1480,17 @@ const GROUP_OF = {
 for (const [group, ids] of Object.entries(GROUP_OF)) {
   for (const p of PATTERNS) if (ids.includes(p.id) && !p.group) p.group = group;
 }
+
+// "Most useful" order: how often each pattern comes up in everyday speech.
+export const ORDER = [
+  'want', 'var', 'where', 'price', 'iam', 'very', 'wantto', 'can', 'now', 'past',
+  'have', 'need', 'must', 'lets', 'please', 'this', 'my', 'going', 'at', 'future',
+  'isit', 'dont', 'habit', 'might', 'thanks', 'seeyou', 'clock', 'howto', 'looking', 'from',
+  'hurts', 'by', 'withmy', 'withwithout', 'like', 'when', 'if', 'because', 'before', 'after',
+  'apparently', 'whenever', 'asyousaid', 'since', 'becauseof', 'should', 'think', 'more', 'morethan', 'nextlast',
+  'inorder', 'evenif', 'although', 'howmany', 'knowhow', 'likedoing', 'try', 'start', 'whydont', 'wish',
+  'that', 'while', 'ken', 'until', 'assoon', 'bydoing', 'asif', 'dikce', 'aboutto', 'keepdoing',
+  'plan', 'tiredof', 'aslongas', 'seeing', 'according', 'sothat', 'both', 'asmuchas', 'forgot', 'timeto',
+  'instead', 'ever',
+];
+PATTERNS.sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id));

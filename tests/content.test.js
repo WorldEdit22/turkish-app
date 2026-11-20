@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
-import { PATTERNS, GROUPS } from '../data/patterns.js';
+import { PATTERNS, GROUPS, ORDER } from '../data/patterns.js';
 import { fill, fits } from '../js/combine.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
@@ -17,6 +17,12 @@ test('word ids are unique', () => {
 test('pattern ids are unique', () => {
   const ids = PATTERNS.map((p) => p.id);
   assert.equal(new Set(ids).size, ids.length);
+});
+
+test('the usefulness order lists every pattern exactly once, and PATTERNS follows it', () => {
+  assert.ok(Array.isArray(ORDER), 'ORDER is exported');
+  assert.deepEqual([...ORDER].sort(), PATTERNS.map((p) => p.id).sort());
+  assert.deepEqual(PATTERNS.map((p) => p.id), ORDER);
 });
 
 test('every pattern has a known group', () => {

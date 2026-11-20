@@ -1,14 +1,14 @@
 // Prints generated example sentences for a quick read-through.
-// Usage: node tools/sample.mjs [wordsPerTemplate] [patternId]
+// Usage: node tools/sample.mjs [wordsPerTemplate] [patternId,patternId,...]
 import { WORDS } from '../data/words.js';
 import { PATTERNS } from '../data/patterns.js';
 import { fill, fits } from '../js/combine.js';
 
 const per = Number(process.argv[2] || 4);
-const only = process.argv[3];
+const only = process.argv[3]?.split(',');
 
 for (const p of PATTERNS) {
-  if (only && p.id !== only) continue;
+  if (only && !only.includes(p.id)) continue;
   for (const v of p.variants) {
     const slot = v.slot || p.slot;
     const words = WORDS.filter((w) => fits(slot, w));
