@@ -452,6 +452,7 @@ dialog#sheet::backdrop { background: rgba(4, 30, 34, 0.4); }
 .ex-tr { font-size: 16px; }
 .ex-en { color: var(--muted); font-size: 14px; }
 .ex-from { color: var(--faint); font-size: 12px; margin-top: 2px; }
+.not-used { color: var(--faint); font-size: 13px; margin: 6px 2px 0; }
 .ex b { color: var(--hl); font-weight: 800; }
 
 .say {

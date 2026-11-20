@@ -239,11 +239,17 @@ function exHtml(tr, en, opts = {}) {
   );
 }
 
-// One Examples list: rows from examples.js (selected first, then hand-written, then learned or common).
-function examplesHtml(rows) {
-  if (!rows.length) return '';
-  const html = rows.map((r) => exHtml(r.tr, r.en, { trParts: r.trParts, enParts: r.enParts, from: r.from }));
-  return `<div class="sub"><span>Examples</span></div>${html.join('')}`;
+// Sections from examples.js: "From your selection" (with a "Not used here" line), then "Examples".
+// `label` names a not-used item: a word's Turkish on a pattern card, a pattern's English on a word card.
+function examplesHtml({ selected, notUsed, examples }, label) {
+  const rows = (list) => list.map((r) => exHtml(r.tr, r.en, { trParts: r.trParts, enParts: r.enParts, from: r.from })).join('');
+  let h = '';
+  if (selected.length || notUsed.length) {
+    h += `<div class="sub"><span>From your selection</span></div>${rows(selected)}`;
+    if (notUsed.length) h += `<p class="not-used">Not used here: ${esc(notUsed.map(label).join(', '))}</p>`;
+  }
+  if (examples.length) h += `<div class="sub"><span>Examples</span></div>${rows(examples)}`;
+  return h;
 }
 
 function aiHtml(cacheKey, vi = '') {
@@ -280,7 +286,7 @@ function patternSheet(p) {
       `<section class="variant">` +
       `<div class="v-tr">${esc(v.tr)}</div><div class="v-en">${esc(v.en)}</div>` +
       (v.note ? `<p class="note">${esc(v.note)}</p>` : '') +
-      examplesHtml(patternExamples(p, vi, exampleOpts())) +
+      examplesHtml(patternExamples(p, vi, exampleOpts()), (w) => w.tr) +
       aiHtml(`${p.key}#${vi}`, vi) +
       `</section>`;
   });
@@ -292,7 +298,7 @@ function wordSheet(w) {
   const meta = `${TYPES[w.type].one} · ${c.icon} ${esc(c.label)}`;
   let h = headHtml(w.label, w.tr, learned(w), meta);
   if (w.note) h += `<p class="note">${esc(w.note)}</p>`;
-  h += examplesHtml(wordExamples(w, exampleOpts()));
+  h += examplesHtml(wordExamples(w, exampleOpts()), (p) => p.en);
   if (w.type !== 'phrase') h += aiHtml(w.id);
   return h;
 }
