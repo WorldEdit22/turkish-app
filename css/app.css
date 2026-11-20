@@ -214,8 +214,10 @@ main { padding: 14px 16px calc(84px + env(safe-area-inset-bottom)); max-width: 9
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
-  transition: transform 0.12s, box-shadow 0.12s, background-color 0.15s, border-color 0.15s;
+  touch-action: pan-y; /* vertical = scroll, sideways = swipe */
+  transition: transform 0.18s, box-shadow 0.12s, background-color 0.15s, border-color 0.15s;
 }
+.block.dragging { transition: none; z-index: 1; }
 .block:active { transform: scale(0.98); box-shadow: none; }
 @media (hover: hover) { .block:hover { box-shadow: var(--shadow-lift); } }
 .block.on { background: var(--green-bg); border-color: var(--green-line); }

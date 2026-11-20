@@ -4,7 +4,7 @@ import { RANKS } from '../data/ranks.js';
 import { fill, fits } from './combine.js';
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
-import { longPress } from './longpress.js';
+import { swipe } from './swipe.js';
 
 // ---------- data ----------
 
@@ -283,7 +283,7 @@ function headHtml(title, tr, on, meta) {
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
     `<div class="s-meta">${meta}</div>` +
     `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>` +
-    `<p class="tip">Tip: press and hold a block in the list to mark it quickly.</p>`
+    `<p class="tip">Tip: swipe a block right to mark it, left to unmark — or use ✓ Mark at the top.</p>`
   );
 }
 
@@ -527,19 +527,32 @@ function toast(message) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
 }
 
-// Press and hold a block to mark it; a normal tap opens it.
-const hold = longPress($('#list'), {
+function setLearned(key, on) {
+  if (store.isLearned(key) !== on) store.toggleLearned(key);
+  toast(on ? '✓ Learned' : 'Not learned');
+  renderList();
+}
+
+// Swipe a block right to mark it learned, left to unmark; the block follows the finger.
+const swiper = swipe($('#list'), {
   find: (e) => e.target.closest?.('.block') || null,
-  onLongPress: (block) => {
-    store.toggleLearned(block.dataset.key);
-    toast(store.isLearned(block.dataset.key) ? '✓ Marked as learned' : 'Not learned');
-    renderList();
+  onDrag: (block, dx) => {
+    const x = Math.max(-90, Math.min(90, dx * 0.6));
+    block.classList.add('dragging');
+    block.classList.toggle('to-on', dx >= 60);
+    block.classList.toggle('to-off', dx <= -60);
+    block.style.transform = `translateX(${x}px)`;
   },
+  onEnd: (block) => {
+    block.classList.remove('dragging', 'to-on', 'to-off');
+    block.style.transform = '';
+  },
+  onSwipe: (block, dir) => setLearned(block.dataset.key, dir === 'right'),
 });
 
 $('#list').addEventListener('click', (e) => {
   const block = e.target.closest('.block');
-  if (!block || hold.consumeClick()) return;
+  if (!block || swiper.consumeClick()) return;
   openSheet(block.dataset.key);
 });
 
