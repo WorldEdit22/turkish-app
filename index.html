@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Türkçe">
+  <meta name="description" content="Learn the most common Turkish patterns and words, fast.">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/app.css">
+  <title>Türkçe</title>
+</head>
+<body>
+  <header class="top">
+    <div class="title-row">
+      <h1 id="title">Patterns</h1>
+      <span id="progress" class="progress"></span>
+      <button id="toggle-tr" class="icon-btn" aria-pressed="true" title="Show or hide Turkish on blocks">TR</button>
+    </div>
+    <div id="controls" class="controls">
+      <input id="search" type="search" placeholder="Search in English or Turkish" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="row">
+        <div class="seg" id="status" role="group" aria-label="Show">
+          <button data-status="all">All</button>
+          <button data-status="todo">To learn</button>
+          <button data-status="learned">Learned</button>
+        </div>
+        <select id="sort" aria-label="Sort"></select>
+      </div>
+      <div id="types" class="chips" role="group" aria-label="Word type"></div>
+    </div>
+  </header>
+
+  <main id="list"></main>
+  <main id="settings" hidden></main>
+
+  <nav class="tabs" aria-label="Sections">
+    <button data-tab="patterns">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h13"/></svg>Patterns
+    </button>
+    <button data-tab="words">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>Words
+    </button>
+    <button data-tab="settings">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>Settings
+    </button>
+  </nav>
+
+  <dialog id="sheet" aria-label="Details" tabindex="-1">
+    <div id="sheet-body" class="sheet-body"></div>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
