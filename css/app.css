@@ -368,6 +368,15 @@ dialog#sheet::backdrop { background: rgba(4, 30, 34, 0.4); }
 @keyframes up { from { transform: translateY(40px); opacity: 0.4; } to { transform: none; opacity: 1; } }
 
 .sheet-body { padding: 8px 18px calc(24px + env(safe-area-inset-bottom)); }
+/* Grabber + title + ✕ stay at the top of the card while it scrolls. */
+.s-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: -8px -18px 0;
+  padding: 8px 18px 8px;
+  background: var(--card);
+}
 .grabber { width: 38px; height: 5px; border-radius: 3px; background: var(--line-strong); margin: 0 auto 10px; }
 
 .s-head { display: flex; gap: 12px; align-items: flex-start; }
@@ -401,7 +410,6 @@ dialog#sheet::backdrop { background: rgba(4, 30, 34, 0.4); }
 .learn-btn.on { background: var(--grad); border-color: transparent; color: var(--on-grad); box-shadow: var(--glow); }
 
 .note { color: var(--muted); font-size: 14px; margin: 6px 0; }
-.tip { color: var(--faint); font-size: 12px; margin: 2px 0 0; text-align: center; }
 
 .variant { border-top: 1px solid var(--line); padding-top: 14px; margin-top: 16px; }
 .v-tr { font-weight: 800; font-size: 17px; }
@@ -419,7 +427,6 @@ dialog#sheet::backdrop { background: rgba(4, 30, 34, 0.4); }
   color: var(--faint);
   margin: 14px 0 6px;
 }
-.link { border: 0; background: none; color: var(--accent); font-size: 14px; font-weight: 700; text-transform: none; letter-spacing: 0; padding: 6px 0 6px 8px; }
 
 .ex {
   display: flex;

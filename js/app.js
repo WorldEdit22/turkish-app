@@ -1,7 +1,8 @@
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS } from '../data/patterns.js';
 import { RANKS } from '../data/ranks.js';
-import { fill, fits } from './combine.js';
+import { fits } from './combine.js';
+import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
 import { swipe } from './swipe.js';
@@ -42,10 +43,8 @@ const shuffle = (arr) => {
   }
   return a;
 };
-const pick = (a) => a[Math.floor(Math.random() * a.length)];
-const tpl = ([tr, en]) => ({ tr, en });
-const slotOf = (p, v) => v.slot || p.slot;
 const learned = (x) => store.isLearned(keyOf(x));
+const selected = (x) => store.isSelected(keyOf(x));
 
 const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 const INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.01"/></svg>';
@@ -227,43 +226,11 @@ function exHtml(tr, en, opts = {}) {
   );
 }
 
-function combinedHtml(r, from) {
-  return exHtml(r.tr, r.en, { trParts: r.trParts, enParts: r.enParts, from });
-}
-
-// Pattern card: examples with your learned words (or common words until you have some).
-function patternCombos(p, vi) {
-  const v = p.variants[vi];
-  const fitting = BY_COMMON.filter((w) => fits(slotOf(p, v), w));
-  const mine = fitting.filter(learned);
-  const pool = mine.length ? mine : fitting.slice(0, 15);
-  const rows = shuffle(pool)
-    .slice(0, 3)
-    .map((w) => combinedHtml(fill(tpl(pick(v.t)), w)));
-  const label = mine.length ? 'With your words' : 'With common words';
-  const hint = mine.length ? '' : '<p class="note">Mark words green and they will show up here.</p>';
-  return `<div class="sub"><span>${label}</span><button class="link" data-act="shuffle" data-v="${vi}">Shuffle</button></div>${rows.join('')}${hint}`;
-}
-
-// Word card: the word inside your learned patterns (or the most useful ones).
-function wordPatternPairs(w) {
-  const pairs = [];
-  for (const p of PATTERNS) for (const v of p.variants) if (v.t.length && fits(slotOf(p, v), w)) pairs.push({ p, v });
-  return pairs;
-}
-
-function wordCombos(w) {
-  const pairs = wordPatternPairs(w);
-  if (!pairs.length) return '';
-  const mine = pairs.filter(({ p }) => learned(p));
-  const top = pairs.filter(({ p }) => p.rank <= 15);
-  const pool = mine.length ? mine : top.length >= 4 ? top : pairs.slice(0, 10);
-  const rows = shuffle(pool)
-    .slice(0, 4)
-    .map(({ p, v }) => combinedHtml(fill(tpl(pick(v.t)), w), `${v.tr} · ${p.en}`));
-  const label = mine.length ? 'With your patterns' : 'With common patterns';
-  const hint = mine.length ? '' : '<p class="note">Mark patterns green and they will show up here.</p>';
-  return `<div class="sub"><span>${label}</span><button class="link" data-act="shuffle">Shuffle</button></div>${rows.join('')}${hint}`;
+// One Examples list: rows from examples.js (selected first, then hand-written, then learned or common).
+function examplesHtml(rows) {
+  if (!rows.length) return '';
+  const html = rows.map((r) => exHtml(r.tr, r.en, { trParts: r.trParts, enParts: r.enParts, from: r.from }));
+  return `<div class="sub"><span>Examples</span></div>${html.join('')}`;
 }
 
 function aiHtml(cacheKey, vi = '') {
@@ -280,26 +247,27 @@ function aiHtml(cacheKey, vi = '') {
   );
 }
 
+// The title row with ✕ sits in .s-top, which stays at the top while the card scrolls.
 function headHtml(title, tr, on, meta) {
   return (
-    `<div class="grabber"></div>` +
-    `<div class="s-head"><h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div>` +
+    `<div class="s-top"><div class="grabber"></div>` +
+    `<div class="s-head"><h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div></div>` +
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
-    `<div class="s-meta">${meta}</div>` +
-    `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>` +
-    `<p class="tip">Tip: swipe a block right to mark it, left to unmark — or use ✓ Mark at the top.</p>`
+    (meta ? `<div class="s-meta">${meta}</div>` : '') +
+    `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>`
   );
 }
 
+const exampleOpts = () => ({ words: BY_COMMON, patterns: PATTERNS, isSelected: selected, isLearned: learned });
+
 function patternSheet(p) {
-  let h = headHtml(p.en, p.tr, learned(p), `Pattern · #${p.rank} most useful`);
+  let h = headHtml(p.en, p.tr, learned(p), '');
   p.variants.forEach((v, vi) => {
     h +=
       `<section class="variant">` +
       `<div class="v-tr">${esc(v.tr)}</div><div class="v-en">${esc(v.en)}</div>` +
       (v.note ? `<p class="note">${esc(v.note)}</p>` : '') +
-      `<div class="sub"><span>Examples</span></div>${v.ex.map(([tr, en]) => exHtml(tr, en)).join('')}` +
-      (v.t.length ? `<div class="combos" data-v="${vi}">${patternCombos(p, vi)}</div>` : '') +
+      examplesHtml(patternExamples(p, vi, exampleOpts())) +
       aiHtml(`${p.key}#${vi}`, vi) +
       `</section>`;
   });
@@ -308,11 +276,10 @@ function patternSheet(p) {
 
 function wordSheet(w) {
   const c = CAT[w.cat];
-  const meta = `${TYPES[w.type].one} · ${c.icon} ${esc(c.label)} · #${w.rank} most common`;
+  const meta = `${TYPES[w.type].one} · ${c.icon} ${esc(c.label)}`;
   let h = headHtml(w.label, w.tr, learned(w), meta);
   if (w.note) h += `<p class="note">${esc(w.note)}</p>`;
-  if (w.ex) h += `<div class="sub"><span>Example</span></div>${exHtml(w.ex[0], w.ex[1])}`;
-  h += `<div class="combos">${wordCombos(w)}</div>`;
+  h += examplesHtml(wordExamples(w, exampleOpts()));
   if (w.type !== 'phrase') h += aiHtml(w.id);
   return h;
 }
@@ -358,7 +325,7 @@ async function askAi(button) {
     const words = shuffle(mine.length ? mine : fitting.slice(0, 20)).slice(0, 6);
     prompt = patternPrompt({ variant: v, patternEn: x.en, words, existing });
   } else {
-    const pairs = wordPatternPairs(x).filter(({ p }) => learned(p));
+    const pairs = wordPatternPairs(x, PATTERNS).filter(({ p }) => learned(p));
     const patterns = shuffle(pairs.map(({ v }) => v)).slice(0, 4);
     prompt = wordPrompt({ word: x.tr, meaning: x.label, kind: TYPES[x.type].one, patterns, existing });
   }
@@ -387,16 +354,12 @@ $('#sheet-body').addEventListener('click', (e) => {
   const btn = e.target.closest('[data-act]');
   if (!btn) return;
   const act = btn.dataset.act;
-  const x = ITEM.get(openKey);
   if (act === 'close') sheet.close();
   else if (act === 'toggle') {
     store.toggleLearned(openKey);
     const on = store.isLearned(openKey);
     btn.classList.toggle('on', on);
     btn.textContent = on ? '✓ Learned' : 'Mark as learned';
-  } else if (act === 'shuffle') {
-    const box = btn.closest('.combos');
-    box.innerHTML = isPattern(x) ? patternCombos(x, Number(btn.dataset.v)) : wordCombos(x);
   } else if (act === 'ai') askAi(btn);
   else if (act === 'setup') {
     sheet.close();
