@@ -124,7 +124,6 @@ function blockHtml(x, showIcon) {
     `<div class="b-en">${dot}<span>${esc(x.label)}</span></div>` +
     (ui.showTr ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
     (showIcon ? `<span class="b-icon">${CAT[x.cat].icon}</span>` : '') +
-    `<span class="check" aria-hidden="true"></span>` +
     `</div>`
   );
 }
