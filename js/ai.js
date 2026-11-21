@@ -149,15 +149,23 @@ const explainPrompt = (sentence) =>
 const LIMIT_MSG = 'The free daily limit is used up. Try again later or pick another provider in Settings.';
 const SCAN_LIMIT_MSG = 'The free daily limit is used up. Try again tomorrow.';
 
+const MINUTE_LIMIT_MSG = 'Too many requests in a short time. Wait a minute and try again.';
+
 // An error for a failed reply, with the service's own explanation when it gives one.
+// A 429 names the quota that ran out: a per-minute one only needs a short wait.
 async function httpError(res, limitMsg = LIMIT_MSG) {
-  if (res.status === 429) return new AIError(limitMsg);
-  let detail = '';
+  let error = null;
   try {
-    detail = str((await res.json())?.error?.message);
+    error = (await res.json())?.error || null;
   } catch {
     /* no JSON body */
   }
+  if (res.status === 429) {
+    const quotas = (error?.details || []).flatMap((d) => d?.violations || []).map((v) => String(v?.quotaId || ''));
+    const perMinute = quotas.some((q) => /PerMinute/i.test(q)) && !quotas.some((q) => /PerDay/i.test(q));
+    return new AIError(perMinute ? MINUTE_LIMIT_MSG : limitMsg);
+  }
+  const detail = str(error?.message);
   const code = `error ${res.status}${detail ? `: ${detail}` : ''}`;
   if ([400, 401, 403, 404].includes(res.status)) return new AIError(`The AI service did not accept the key or model (${code}). Check Settings.`);
   return new AIError(`The AI service had a problem (${code}). Try again later.`);

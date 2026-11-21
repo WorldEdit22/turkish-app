@@ -79,13 +79,21 @@ export const store = {
   },
   addScan(paragraphs) {
     const scan = { id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`, date: new Date().toISOString(), paragraphs };
-    this.scans = [scan, ...this.scans].slice(0, MAX_SCANS);
-    save(KEYS.scans, { list: this.scans });
+    this.setScans([scan, ...this.scans].slice(0, MAX_SCANS));
     return scan;
   },
   deleteScan(id) {
-    this.scans = this.scans.filter((s) => s.id !== id);
-    save(KEYS.scans, { list: this.scans });
+    this.setScans(this.scans.filter((s) => s.id !== id));
+  },
+  // Saves the scans and drops explanations that no remaining scan contains, so storage stays bounded.
+  setScans(list) {
+    this.scans = list;
+    save(KEYS.scans, { list });
+    const kept = new Set(list.flatMap((s) => s.paragraphs.flat()));
+    const unused = Object.keys(this.explanations).filter((sentence) => !kept.has(sentence));
+    if (!unused.length) return;
+    for (const sentence of unused) delete this.explanations[sentence];
+    save(KEYS.explain, this.explanations);
   },
   explanation(sentence) {
     return this.explanations[sentence];

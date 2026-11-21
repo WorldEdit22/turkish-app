@@ -349,10 +349,14 @@ function refreshIf(matches) {
   if (sheet.open && scanView && matches(scanView)) renderSheet();
 }
 
+// Where the reader was on each scan page, so ‹ back from a sentence returns to the same place.
+const scanScroll = new Map();
+
 function openScanView(v) {
+  if (sheet.open && scanView?.kind === 'scan') scanScroll.set(scanView.id, sheet.scrollTop);
   openKey = null;
   scanView = v;
-  showSheet();
+  showSheet(v.kind === 'scan' ? scanScroll.get(v.id) || 0 : 0);
 }
 
 async function readPhoto(file) {
@@ -435,14 +439,14 @@ function renderSheet() {
   $('#sheet-body').innerHTML = isPattern(x) ? patternSheet(x) : wordSheet(x);
 }
 
-function showSheet() {
+function showSheet(scrollTop = 0) {
   renderSheet();
   if (!sheet.open) {
     document.body.classList.add('noscroll');
     sheet.showModal();
   }
-  sheet.focus(); // keep focus off the close button so no focus ring shows
-  sheet.scrollTop = 0;
+  sheet.focus({ preventScroll: true }); // keep focus off the close button so no focus ring shows
+  sheet.scrollTop = scrollTop;
 }
 
 function openSheet(key) {

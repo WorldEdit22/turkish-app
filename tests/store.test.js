@@ -72,13 +72,25 @@ test('explanations are saved by sentence text', () => {
   assert.equal(JSON.parse(saved.get('tl.explain'))['Gel.'].en, 'Come.');
 });
 
-test('deleting a scan keeps its explanations', () => {
-  const scan = store.addScan([['Otur.']]);
+test('deleting a scan keeps only the explanations another scan still uses', () => {
+  const a = store.addScan([['Otur.', 'Ortak cümle.']]);
+  store.addScan([['Ortak cümle.']]);
   store.saveExplanation('Otur.', { en: 'Sit.', structure: '', words: [] });
-  store.deleteScan(scan.id);
-  assert.ok(!store.scans.some((s) => s.id === scan.id));
-  assert.ok(!JSON.parse(saved.get('tl.scans')).list.some((s) => s.id === scan.id));
-  assert.equal(store.explanation('Otur.').en, 'Sit.');
+  store.saveExplanation('Ortak cümle.', { en: 'A shared sentence.', structure: '', words: [] });
+  store.deleteScan(a.id);
+  assert.ok(!store.scans.some((s) => s.id === a.id));
+  assert.ok(!JSON.parse(saved.get('tl.scans')).list.some((s) => s.id === a.id));
+  assert.equal(store.explanation('Otur.'), undefined);
+  assert.equal(store.explanation('Ortak cümle.').en, 'A shared sentence.');
+  assert.ok(!('Otur.' in JSON.parse(saved.get('tl.explain'))));
+});
+
+test('a scan dropped by the 50-scan limit takes its own explanations with it', () => {
+  const oldest = store.addScan([['En eski cümle.']]);
+  store.saveExplanation('En eski cümle.', { en: 'The oldest sentence.', structure: '', words: [] });
+  for (let i = 0; i < 50; i++) store.addScan([[`Yeni ${i}.`]]);
+  assert.ok(!store.scans.some((s) => s.id === oldest.id));
+  assert.equal(store.explanation('En eski cümle.'), undefined);
 });
 
 test('selecting does not mark learned', () => {

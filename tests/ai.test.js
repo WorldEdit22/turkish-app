@@ -88,9 +88,32 @@ test("a 400 is not retried and shows Google's message", async () => {
   assert.equal(calls.length, 1);
 });
 
+// Gemini's 429 body names the quota that ran out.
+const quota429 = (quotaId) => ({
+  status: 429,
+  body: {
+    error: {
+      code: 429,
+      message: 'You exceeded your current quota.',
+      details: [
+        { '@type': 'type.googleapis.com/google.rpc.QuotaFailure', violations: [{ quotaId }] },
+        { '@type': 'type.googleapis.com/google.rpc.RetryInfo', retryDelay: '39s' },
+      ],
+    },
+  },
+});
+
 test('a used-up daily limit says try again tomorrow', async () => {
-  const calls = stubFetch({ status: 429, body: { error: { message: 'Quota exceeded' } } });
+  let calls = stubFetch(quota429('GenerateRequestsPerDayPerProjectPerModel-FreeTier'));
   await assert.rejects(readPage(KEYS, IMAGE, { retryMs: 0 }), { message: 'The free daily limit is used up. Try again tomorrow.' });
+  assert.equal(calls.length, 1);
+  calls = stubFetch({ status: 429, body: { error: { message: 'Quota exceeded' } } });
+  await assert.rejects(readPage(KEYS, IMAGE, { retryMs: 0 }), { message: 'The free daily limit is used up. Try again tomorrow.' });
+});
+
+test('a per-minute limit says wait a minute, not tomorrow', async () => {
+  const calls = stubFetch(quota429('GenerateRequestsPerMinutePerProjectPerModel-FreeTier'));
+  await assert.rejects(explainSentence(KEYS, 'Gel.', { retryMs: 0 }), { message: 'Too many requests in a short time. Wait a minute and try again.' });
   assert.equal(calls.length, 1);
 });
 
