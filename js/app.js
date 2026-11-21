@@ -513,6 +513,9 @@ $('#settings').addEventListener('input', (e) => {
 let toastTimer = null;
 function toast(message, ms = 1500) {
   const el = $('#toast');
+  // An open card sits above the whole page, so the toast goes inside it while it is open.
+  const host = sheet.open ? sheet : document.body;
+  if (el.parentElement !== host) host.append(el);
   el.textContent = message;
   el.classList.add('show');
   clearTimeout(toastTimer);
