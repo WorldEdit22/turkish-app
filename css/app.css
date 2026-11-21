@@ -35,7 +35,7 @@
   --t-adv: #e0245e;
   --t-phrase: #4f46e5;
   --t-other: #8d6e4c;
-  --top-clear: 30px; /* extra room above the top row in a Safari tab, clear of iOS 26's top blur */
+  --top-clear: 40px; /* extra room above the top row, clear of iOS 26's top blur */
   color-scheme: light dark;
 }
 
@@ -105,8 +105,8 @@ button { cursor: pointer; }
   position: sticky;
   top: 0;
   z-index: 10;
-  /* In a Safari tab, iOS 26 blurs a strip at the very top of the page: start the first row below it.
-     The home-screen app (html.standalone) starts below the status bar already. */
+  /* iOS 26 blurs a strip at the top of the page: below the status bar in the home-screen app,
+     and at the very top of a Safari tab. Start the first row below it. */
   padding: calc(env(safe-area-inset-top) + 10px + var(--top-clear)) 16px 12px;
   /* A soft shade behind the iPhone status bar keeps its white clock readable. */
   background:
@@ -115,8 +115,6 @@ button { cursor: pointer; }
   color: var(--on-grad);
   box-shadow: var(--bar-shadow-top);
 }
-
-.standalone .top { padding-top: calc(env(safe-area-inset-top) + 10px); }
 
 .title-row { display: flex; align-items: center; gap: 8px; }
 .progress { color: var(--on-grad-soft); font-size: 15px; font-weight: 700; flex: 1; white-space: nowrap; }

@@ -627,8 +627,6 @@ if ('speechSynthesis' in window) {
   });
 }
 
-// The home-screen app gets the plain top padding; a Safari tab leaves room for iOS 26's top blur.
-document.documentElement.classList.toggle('standalone', navigator.standalone === true || matchMedia('(display-mode: standalone)').matches);
 ui.tab = 'words'; // the app always opens on Words
 render();
 
