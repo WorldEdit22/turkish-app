@@ -546,8 +546,11 @@ const swiper = swipe($('#list'), {
 });
 
 // Selection: shown in place, so the list keeps its scroll position and focus.
+// Clear (N) counts and clears only the tab you are on: pattern keys start with "p:".
+const inThisTab = (key) => key.startsWith('p:') === (ui.tab === 'patterns');
+
 function renderClear() {
-  const n = store.selectedCount();
+  const n = store.selectedCount(inThisTab);
   const btn = $('#clear-sel');
   btn.hidden = n === 0 || ui.tab === 'settings';
   btn.textContent = `Clear (${n})`;
@@ -563,7 +566,7 @@ function toggleSelect(block) {
 }
 
 $('#clear-sel').addEventListener('click', () => {
-  store.clearSelected();
+  store.clearSelected(inThisTab);
   renderClear();
   renderList();
 });

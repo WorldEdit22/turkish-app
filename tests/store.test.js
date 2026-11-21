@@ -35,6 +35,52 @@ test('clearSelected empties the selection and selectedCount follows', () => {
   assert.equal(store.isSelected('p:want'), false);
 });
 
+test("clearing one tab leaves the other tab's selection", () => {
+  const isPattern = (k) => k.startsWith('p:');
+  store.clearSelected();
+  store.toggleSelected('su');
+  store.toggleSelected('p:want');
+  store.clearSelected(isPattern);
+  assert.equal(store.isSelected('su'), true);
+  assert.equal(store.isSelected('p:want'), false);
+  assert.equal(store.selectedCount((k) => !isPattern(k)), 1);
+  assert.equal(store.selectedCount(isPattern), 0);
+  assert.deepEqual(JSON.parse(saved.get('tl.selected')), { su: 1 });
+});
+
+test('a new scan is saved first on the device', () => {
+  store.addScan([['Eski.']]);
+  const scan = store.addScan([['Bugün hava güzel.', 'Parka gidelim.']]);
+  assert.equal(store.scans[0], scan);
+  assert.deepEqual(JSON.parse(saved.get('tl.scans')).list[0].paragraphs, [['Bugün hava güzel.', 'Parka gidelim.']]);
+  assert.equal(typeof scan.id, 'string');
+  assert.ok(!Number.isNaN(Date.parse(scan.date)));
+});
+
+test('only the 50 newest scans are kept', () => {
+  for (let i = 0; i < 52; i++) store.addScan([[`Cümle ${i}.`]]);
+  assert.equal(store.scans.length, 50);
+  assert.deepEqual(store.scans[0].paragraphs, [['Cümle 51.']]);
+  assert.deepEqual(store.scans[49].paragraphs, [['Cümle 2.']]);
+  assert.equal(new Set(store.scans.map((s) => s.id)).size, 50, 'ids are unique');
+});
+
+test('explanations are saved by sentence text', () => {
+  store.saveExplanation('Gel.', { en: 'Come.', structure: '', words: [] });
+  assert.deepEqual(store.explanation('Gel.'), { en: 'Come.', structure: '', words: [] });
+  assert.equal(store.explanation('Git.'), undefined);
+  assert.equal(JSON.parse(saved.get('tl.explain'))['Gel.'].en, 'Come.');
+});
+
+test('deleting a scan keeps its explanations', () => {
+  const scan = store.addScan([['Otur.']]);
+  store.saveExplanation('Otur.', { en: 'Sit.', structure: '', words: [] });
+  store.deleteScan(scan.id);
+  assert.ok(!store.scans.some((s) => s.id === scan.id));
+  assert.ok(!JSON.parse(saved.get('tl.scans')).list.some((s) => s.id === scan.id));
+  assert.equal(store.explanation('Otur.').en, 'Sit.');
+});
+
 test('selecting does not mark learned', () => {
   store.toggleSelected('kahve');
   assert.equal(store.isLearned('kahve'), false);
