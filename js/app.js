@@ -7,6 +7,7 @@ import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
 import { swipe } from './swipe.js';
 import { silentWav } from './sound.js';
+import { reloadOnUpdate } from './update.js';
 
 // ---------- data ----------
 
@@ -644,5 +645,6 @@ ui.tab = 'words'; // the app always opens on Words
 render();
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  reloadOnUpdate(navigator.serviceWorker, () => location.reload());
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }

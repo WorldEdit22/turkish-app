@@ -14,6 +14,7 @@ const ASSETS = [
   'js/examples.js',
   'js/sound.js',
   'js/swipe.js',
+  'js/update.js',
   'data/words.js',
   'data/patterns.js',
   'data/ranks.js',
