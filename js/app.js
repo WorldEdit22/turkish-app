@@ -545,6 +545,7 @@ function renderSettings() {
     `<p>Turn it off to test yourself: read the English, say the Turkish, then tap ⓘ to check.</p></section>` +
     `<section class="card"><h2>More examples with a free AI</h2>` +
     `<p>The built-in examples always work, offline too. Add a free AI key to get extra sentences built from your learned words. The key is stored only on this phone.</p>` +
+    `<p>Photo scans (the camera button next to the search field) always use the Gemini key.</p>` +
     `<label class="field">Provider<select id="set-provider"><option value="">Off</option>` +
     Object.entries(PROVIDERS)
       .map(([id, x]) => `<option value="${id}"${s.provider === id ? ' selected' : ''}>${esc(x.label)}</option>`)

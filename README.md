@@ -9,6 +9,7 @@ A small, fast web app for learning the most common Turkish sentence patterns and
 - Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **Mark as learned** in the open block.
 - The gear at the top opens Settings.
 - Optional **More examples** button that asks a free AI (Gemini, Groq, Mistral or OpenRouter) for extra sentences. Answers are saved on the phone.
+- **Scan a page:** the camera button next to the search field takes or picks a photo of Turkish text. Gemini reads it into sentences shown like a book page. Tap a sentence for its translation, how it is built, and every word with its base form, meaning and suffixes. Scans (text only) and explanations are saved on the phone, so they also open offline. Needs a Gemini key.
 - A speaker button reads Turkish aloud using the phone's built-in Turkish voice.
 
 No frameworks, no build step and no server code: plain HTML, CSS and JavaScript modules.
@@ -36,9 +37,9 @@ node tools/serve.mjs
 
 Then open the "On your phone" address it prints in Safari (the phone must be on the same Wi-Fi). Over plain HTTP everything works except offline mode.
 
-## Free AI for more examples
+## Free AI for more examples and scans
 
-In the app: **Settings → More examples with a free AI**. Choose a provider, follow the "Get a key" link, then paste the key. Google Gemini is the recommended one: sign in at Google AI Studio and create an API key, no credit card needed. Free tiers have daily limits, and Google may use what you send to improve its products (here that is only requests for example sentences). The key is stored only on your phone.
+In the app: **Settings → More examples with a free AI**. Choose a provider, follow the "Get a key" link, then paste the key. Google Gemini is the recommended one, and photo scans need it: sign in at Google AI Studio and create an API key, no credit card needed. Leave the model empty to use the default, Gemini Flash-Lite. Its free tier allows about 500 requests a day; check your exact limits in AI Studio. Each scanned photo is one request, and so is each sentence you open for the first time. Google may use what you send on the free tier to improve its products (here: requests for example sentences, photos of pages, and the sentences you ask about). The key is stored only on your phone.
 
 ## Development
 
