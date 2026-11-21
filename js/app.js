@@ -6,7 +6,6 @@ import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examp
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
 import { swipe } from './swipe.js';
-import { silentWav } from './sound.js';
 import { reloadOnUpdate } from './update.js';
 
 // ---------- data ----------
@@ -60,8 +59,9 @@ function turkishVoice() {
 
 // iPhone and iPad (iPadOS reports itself as a Mac with touch).
 const isAppleTouch = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const SILENCE = `data:audio/wav;base64,${btoa(String.fromCharCode(...silentWav()))}`;
-let silence = null;
+// On iPhone the built-in voice follows the silent switch, and no web trick gets past it
+// (tried: the playback audio session and a silent clip). Say so on the first tap of each launch.
+let soundHintShown = false;
 
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
@@ -71,21 +71,9 @@ function speak(text) {
   const v = turkishVoice();
   if (v) u.voice = v;
   u.rate = 0.9;
-  // iPhone silent mode mutes web speech. 'playback' (iOS 17+) plus a moment of silence played through
-  // <audio> inside the tap switch iOS to media playback, which the silent switch does not mute.
-  try {
-    if (navigator.audioSession) navigator.audioSession.type = 'playback';
-  } catch {
-    /* not supported */
-  }
-  if (isAppleTouch) {
-    try {
-      silence ??= new Audio(SILENCE);
-      silence.currentTime = 0;
-      silence.play().catch(() => {});
-    } catch {
-      /* no audio element: speak anyway */
-    }
+  if (isAppleTouch && !soundHintShown) {
+    soundHintShown = true;
+    toast('No sound? Turn off silent mode', 3000);
   }
   speechSynthesis.speak(u);
 }
@@ -523,12 +511,12 @@ $('#settings').addEventListener('input', (e) => {
 // ---------- events ----------
 
 let toastTimer = null;
-function toast(message) {
+function toast(message, ms = 1500) {
   const el = $('#toast');
   el.textContent = message;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1500);
+  toastTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
 
 function setLearned(key, on) {
