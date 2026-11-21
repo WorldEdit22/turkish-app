@@ -140,6 +140,12 @@ button { cursor: pointer; }
 .gear-btn[aria-pressed="false"] { opacity: 1; text-decoration: none; }
 .gear-btn[aria-pressed="true"] { background: var(--sel-bg); color: var(--sel-fg); border-color: var(--sel-bg); }
 
+/* Search field with the camera button beside it. */
+.search-row { display: flex; gap: 8px; align-items: stretch; }
+.search-row input[type="search"] { flex: 1; min-width: 0; }
+.scan-btn { height: auto; min-height: 44px; min-width: 48px; display: inline-flex; align-items: center; justify-content: center; }
+.scan-btn svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+
 .controls { margin-top: 10px; display: grid; gap: 8px; }
 .controls[hidden] { display: none; }
 
@@ -455,6 +461,59 @@ dialog#sheet::backdrop { background: rgba(4, 30, 34, 0.4); }
 .ex-tr { font-size: 16px; }
 .ex-en { color: var(--muted); font-size: 14px; }
 .ex-from { color: var(--faint); font-size: 12px; margin-top: 2px; }
+
+/* ---------- photo scans ---------- */
+
+.s-head .back {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--muted);
+  flex: 0 0 auto;
+  box-shadow: var(--shadow-press);
+  padding: 0 0 3px;
+}
+.scan-take { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; margin: 10px 0 4px; cursor: pointer; }
+.scan-take.busy { opacity: 0.6; pointer-events: none; }
+.scan-status { color: var(--muted); font-size: 15px; margin: 10px 2px; }
+.scan-status.err { color: var(--danger); }
+.scan-list { display: grid; gap: 8px; margin-top: 14px; }
+.scan-row { display: flex; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: var(--shadow-press); }
+.scan-open { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; text-align: left; border: 0; background: none; padding: 10px 12px; min-height: 52px; }
+.scan-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scan-date { color: var(--faint); font-size: 13px; }
+.scan-del { flex: 0 0 48px; border: 0; background: none; color: var(--muted); display: flex; align-items: center; justify-content: center; }
+.scan-del svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* A scan reads like a book page; every sentence can be tapped. */
+.page { font-size: 18px; line-height: 1.75; margin-top: 6px; }
+.page p { margin: 0 0 14px; }
+.sent { border-radius: 6px; cursor: pointer; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.sent:active, .sent:focus-visible { background: var(--sel-fill); outline: none; }
+.sent.done { text-decoration: underline dotted var(--accent); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+
+.sent-text { font-size: 19px; align-items: flex-start; }
+.sent-en { font-size: 17px; margin: 10px 0 4px; }
+.sent-structure { font-size: 15px; line-height: 1.5; margin: 4px 0; }
+.words { display: grid; gap: 8px; }
+.word {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: var(--shadow-press);
+}
+.w-tr { font-weight: 800; color: var(--hl); }
+.w-base { color: var(--muted); font-size: 14px; text-align: right; }
+.w-en { grid-column: 1 / -1; }
+.w-parts { grid-column: 1 / -1; color: var(--muted); font-size: 14px; }
 .not-used { color: var(--faint); font-size: 13px; margin: 6px 2px 0; }
 .ex b { color: var(--hl); font-weight: 800; }
 

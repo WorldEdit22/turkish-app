@@ -4,9 +4,12 @@ import { RANKS } from '../data/ranks.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
-import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt } from './ai.js';
+import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { swipe } from './swipe.js';
 import { reloadOnUpdate } from './update.js';
+import { esc, SPEAKER } from './html.js';
+import { shrinkPhoto } from './photo.js';
+import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
 
 // ---------- data ----------
 
@@ -33,7 +36,6 @@ const isPattern = (x) => Boolean(x.variants);
 // ---------- helpers ----------
 
 const $ = (s) => document.querySelector(s);
-const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const FOLD = { ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u', â: 'a', î: 'i', û: 'u' };
 const fold = (s) => s.toLocaleLowerCase('tr').replace(/[çğıöşüâîû]/g, (c) => FOLD[c]);
 const shuffle = (arr) => {
@@ -47,7 +49,6 @@ const shuffle = (arr) => {
 const learned = (x) => store.isLearned(keyOf(x));
 const selected = (x) => store.isSelected(keyOf(x));
 
-const SPEAKER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 const INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.01"/></svg>';
 
 // ---------- speech ----------
@@ -308,25 +309,153 @@ function wordSheet(w) {
   return h;
 }
 
+// ---------- photo scans (shown in the same window) ----------
+//
+// scanView: null while the window shows a word or pattern (openKey), else
+//   { kind: 'scans' } | { kind: 'scan', id } | { kind: 'sentence', id, si }.
+// An answer that arrives after the user moved on is saved, but only drawn if
+// its view is still showing.
+
+let scanView = null;
+let readStatus = null; // the list's status: null | 'reading' | 'empty' | { error }
+let pendingPhoto = null; // the shrunk photo, kept for "Try again"
+const explainStatus = new Map(); // sentence → 'loading' | { error }
+
+const errorText = (e) => (e instanceof AIError ? e.message : 'Something went wrong. Try again.');
+const findScan = (id) => store.scans.find((s) => s.id === id);
+const sentenceOf = (v) => sentencesOf(findScan(v.id))[v.si];
+
+function scanTop(title, back) {
+  return (
+    `<div class="s-top"><div class="grabber"></div><div class="s-head">` +
+    (back ? `<button class="back" data-act="back" aria-label="Back">‹</button>` : '') +
+    `<h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div></div>`
+  );
+}
+
+function scanSheet(v) {
+  if (v.kind !== 'scans' && !findScan(v.id)) scanView = v = { kind: 'scans' }; // deleted meanwhile
+  if (v.kind === 'scans') {
+    return scanTop('Scans', false) + scansListHtml(store.scans, { hasKey: Boolean(store.settings.keys?.gemini), status: readStatus });
+  }
+  const scan = findScan(v.id);
+  if (v.kind === 'scan') return scanTop(scanDate(scan.date), true) + scanHtml(scan, (s) => Boolean(store.explanation(s)));
+  const sentence = sentenceOf(v);
+  return scanTop('Sentence', true) + sentenceHtml(sentence, store.explanation(sentence), explainStatus.get(sentence) || null);
+}
+
+// Redraw only if the window still shows a view that `matches`.
+function refreshIf(matches) {
+  if (sheet.open && scanView && matches(scanView)) renderSheet();
+}
+
+function openScanView(v) {
+  openKey = null;
+  scanView = v;
+  showSheet();
+}
+
+async function readPhoto(file) {
+  if (readStatus === 'reading') return;
+  if (!file && !pendingPhoto) {
+    readStatus = null; // nothing to retry (the photo could not be used): pick a new one
+    refreshIf((v) => v.kind === 'scans');
+    return;
+  }
+  readStatus = 'reading';
+  refreshIf((v) => v.kind === 'scans');
+  try {
+    if (file) {
+      try {
+        pendingPhoto = await shrinkPhoto(file);
+      } catch {
+        throw new AIError('Could not use this photo. Try another one.');
+      }
+    }
+    const paragraphs = await readPage(store.settings, pendingPhoto);
+    if (!paragraphs.length) readStatus = 'empty';
+    else {
+      const scan = store.addScan(paragraphs);
+      readStatus = null;
+      pendingPhoto = null;
+      if (sheet.open && scanView?.kind === 'scans') return openScanView({ kind: 'scan', id: scan.id });
+    }
+  } catch (e) {
+    readStatus = { error: errorText(e) };
+  }
+  refreshIf((v) => v.kind === 'scans');
+}
+
+async function explain(sentence) {
+  if (explainStatus.get(sentence) === 'loading') return;
+  const showing = (v) => v.kind === 'sentence' && sentenceOf(v) === sentence;
+  explainStatus.set(sentence, 'loading');
+  refreshIf(showing);
+  try {
+    store.saveExplanation(sentence, await explainSentence(store.settings, sentence));
+    explainStatus.delete(sentence);
+  } catch (e) {
+    explainStatus.set(sentence, { error: errorText(e) });
+  }
+  refreshIf(showing);
+}
+
+function openSentence(id, si) {
+  openScanView({ kind: 'sentence', id, si });
+  const sentence = sentenceOf(scanView);
+  if (!store.explanation(sentence)) explain(sentence);
+}
+
+$('#scan-btn').addEventListener('click', () => openScanView({ kind: 'scans' }));
+
+$('#sheet-body').addEventListener('change', (e) => {
+  if (!e.target.matches('input[type="file"]')) return;
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if (file) readPhoto(file);
+});
+
+$('#sheet-body').addEventListener('keydown', (e) => {
+  const s = e.target.closest?.('.sent');
+  if (s && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    openSentence(scanView.id, Number(s.dataset.si));
+  }
+});
+
+// ---------- the window ----------
+
 function renderSheet() {
+  if (scanView) {
+    $('#sheet-body').innerHTML = scanSheet(scanView);
+    return;
+  }
   const x = ITEM.get(openKey);
   if (!x) return;
   $('#sheet-body').innerHTML = isPattern(x) ? patternSheet(x) : wordSheet(x);
 }
 
-function openSheet(key) {
-  openKey = key;
+function showSheet() {
   renderSheet();
-  document.body.classList.add('noscroll');
-  sheet.showModal();
+  if (!sheet.open) {
+    document.body.classList.add('noscroll');
+    sheet.showModal();
+  }
   sheet.focus(); // keep focus off the close button so no focus ring shows
   sheet.scrollTop = 0;
+}
+
+function openSheet(key) {
+  scanView = null;
+  openKey = key;
+  showSheet();
 }
 
 sheet.addEventListener('close', () => {
   document.body.classList.remove('noscroll');
   window.speechSynthesis?.cancel();
   openKey = null;
+  scanView = null;
   renderList();
 });
 
@@ -375,10 +504,21 @@ async function askAi(button) {
 $('#sheet-body').addEventListener('click', (e) => {
   const say = e.target.closest('[data-say]');
   if (say) return speak(say.dataset.say);
+  const sent = e.target.closest('.sent');
+  if (sent && scanView?.kind === 'scan') return openSentence(scanView.id, Number(sent.dataset.si));
   const btn = e.target.closest('[data-act]');
   if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'close') sheet.close();
+  else if (act === 'back') openScanView(scanView.kind === 'sentence' ? { kind: 'scan', id: scanView.id } : { kind: 'scans' });
+  else if (act === 'open-scan') openScanView({ kind: 'scan', id: btn.dataset.id });
+  else if (act === 'delete-scan') {
+    if (confirm('Delete this scan?')) {
+      store.deleteScan(btn.dataset.id);
+      renderSheet();
+    }
+  } else if (act === 'retry-read') readPhoto(null);
+  else if (act === 'retry-explain') explain(sentenceOf(scanView));
   else if (act === 'toggle') {
     store.toggleLearned(openKey);
     const on = store.isLearned(openKey);
