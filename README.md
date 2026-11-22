@@ -3,7 +3,7 @@
 A small, fast web app for learning the most common Turkish sentence patterns and words, made to be installed on an iPhone home screen.
 
 - **Patterns** tab: 82 everyday patterns (*___ istiyorum*, *-meden önce*, *-dikçe*, *-se bile*…), most useful first, with chips for Everyday, Verbs & tenses, and Connectors. Each has a few common ways to say the same thing.
-- **Words** tab: about 710 words grouped by topic. They are sorted by how often they appear in spoken Turkish, and coloured dots show the word type.
+- **Words** tab: about 940 words grouped by topic, from everyday phrases to family, food, animals, and hobbies & sports. They are sorted by how often they appear in spoken Turkish, and coloured dots show the word type.
 - Tap blocks to select words and patterns, on both tabs; **Clear** unselects them. Tap **ⓘ** on a block to open it.
 - An open pattern shows examples with every selected word that fits, then its own examples, then a few with your learned words (or common words). An open word works the same way with selected and learned patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
 - Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **Mark as learned** in the open block.

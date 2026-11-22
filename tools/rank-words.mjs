@@ -41,6 +41,10 @@ const VERB_FORMS = [
 const DAMPEN = {
   'food:et': 0.05, 'body:yüz': 0.3, 'numbers:yüz': 0.5, 'numbers:bin': 0.3, 'numbers:on': 0.3,
   'nature:kar': 0.5, 'work:iş': 0.4,
+  // ada + -m = adam (man); hala is how subtitles spell hâlâ (still); gelin = come!; at = throw!;
+  // ay = month; ayı = the month; koca = huge; deri + -n = derin (deep); dizi = the knee; un is noise.
+  'nature:ada': 0.03, 'people:hala': 0.03, 'food:un': 0.02, 'people:gelin': 0.2, 'animals:at': 0.2,
+  'nature:ay': 0.2, 'animals:ayı': 0.5, 'people:koca': 0.5, 'body:deri': 0.3, 'hobbies:dizi': 0.5,
 };
 
 const clean = (s) => s.replace(/[?!.,…]/g, '').replace(/\.\.\./g, '').trim();

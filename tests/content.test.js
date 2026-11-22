@@ -4,6 +4,7 @@ import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS, ORDER } from '../data/patterns.js';
 import { fill, fits, enPl, enA, enPast, enIng } from '../js/combine.js';
 import { attach } from '../js/grammar.js';
+import { RANKS } from '../data/ranks.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
 const word = (id) => {
@@ -190,6 +191,20 @@ test('new verbs', () => {
   for (const id of ['actions:ölmek', 'actions:doğmak', 'actions:ısırmak']) {
     assert.ok(word(id).nc && word(id).ex, `${id} stays out of the verb patterns`);
   }
+});
+
+// Spoken-Turkish ranks come from tools/rank-words.mjs. A rank of 0 means the subtitle list
+// doesn't have the word; that is accepted only for these (Turkish dishes and everyday words subtitles rarely use).
+const UNRANKED_OK = new Set([
+  'food:lahmacun', 'food:baklava', 'food:mantı', 'food:menemen', 'food:pide', 'drinks:ayran', 'drinks:rakı',
+  'town:bankamatik', 'town:benzinlik', 'travel:vapur', 'travel:otogar',
+]);
+
+test('every word is ranked', () => {
+  const missing = WORDS.filter((w) => typeof RANKS[w.id] !== 'number').map((w) => w.id);
+  assert.deepEqual(missing, [], 'run tools/rank-words.mjs');
+  const zero = WORDS.filter((w) => RANKS[w.id] === 0 && !UNRANKED_OK.has(w.id)).map((w) => w.id);
+  assert.deepEqual(zero, []);
 });
 
 test('noun English', () => {
