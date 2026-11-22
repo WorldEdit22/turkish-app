@@ -342,7 +342,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'this', en: 'This ___', tr: 'Bu ___', slot: `noun:${FOOD}|thing|place|vehicle|room|area|fixture|animal|wild`,
+    id: 'this', en: 'This ___', tr: 'Bu ___', slot: `noun:${FOOD}|thing|place|vehicle|room|area|fixture|animal`,
     variants: [
       {
         tr: 'Bu ___', en: 'This ___',
@@ -1246,7 +1246,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'asif', group: 'connectors', en: 'Like ___ / as if ___', tr: 'gibi / -miş gibi', slot: 'noun:person|animal',
+    id: 'asif', group: 'connectors', en: 'Like ___ / as if ___', tr: 'gibi / -miş gibi', slot: 'noun:person',
     variants: [
       {
         tr: '___ gibi', en: 'Like a ___',

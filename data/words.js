@@ -302,11 +302,11 @@ export const WORDS = [
     ['fotoğraf çekmek', 'take a photo', { p: 'took a photo' }],
     ['uçmak', 'fly', { p: 'flew' }],
     ['atlamak', 'jump'],
-    ['düşmek', 'fall', { p: 'fell' }],
+    ['düşmek', 'fall', { p: 'fell', nc: 1, ex: ['Merdivenden düştüm.', 'I fell down the stairs.'] }],
     ['çekmek', 'pull'],
     ['itmek', 'push'],
     ['taşımak', 'carry'],
-    ['saklamak', 'hide', { p: 'hid', gloss: 'to hide / to keep' }],
+    ['saklamak', 'hide it', { p: 'hid it', gloss: 'to hide (something) / to keep', note: 'Hiding yourself is saklanmak.' }],
     ['atmak', 'throw', { p: 'threw', gloss: 'to throw / to throw away' }],
     ['yakalamak', 'catch', { p: 'caught' }],
     ['toplamak', 'tidy up', { p: 'tidied up', gloss: 'to tidy up / to collect' }],
@@ -730,8 +730,11 @@ export const WORDS = [
     ['omuz', 'shoulder', { soft: 'omz' }],
     ['göğüs', 'chest', { soft: 'göğs' }],
     ['bel', 'lower back', { gloss: 'lower back / waist' }],
-    ['dudak', 'lip'],
-    ['tırnak', 'nail', { gloss: 'nail (finger / toe)' }],
+  ]),
+  // Lips and nails acıyor (sting) rather than ağrıyor (ache), so they stay out of "My ___ hurts".
+  ...G('body', 'noun', null, [
+    ['dudak', 'lip', { ex: ['Dudağım çatladı.', 'My lip is chapped.'] }],
+    ['tırnak', 'nail', { gloss: 'nail (finger / toe)', ex: ['Tırnaklarımı kestim.', 'I cut my nails.'] }],
   ]),
   // Body words that fit no pattern well: each card shows its own example.
   ...G('body', 'noun', null, [
@@ -1114,7 +1117,7 @@ export const WORDS = [
     ['müzik', 'music', { m: 1 }],
     ['dizi', 'TV series', { pl: 'TV series' }],
     ['film', 'film', { kind: 'event|hobby', gloss: 'film / movie' }],
-    ['resim', 'painting', { m: 1, soft: 'resm', gloss: 'picture / painting' }],
+    ['resim', 'picture', { soft: 'resm', kind: 'thing', gloss: 'picture / painting', note: 'Painting as a hobby is resim yapmak.' }],
     ['kamp', 'camping', { m: 1 }],
     ['yürüyüş', 'walking', { m: 1, gloss: 'walk / hike' }],
   ]),

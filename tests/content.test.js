@@ -117,9 +117,22 @@ test('Turkish spellings are unique, except known pairs', () => {
 
 test('wild animals only go into patterns that make sense', () => {
   const lion = word('animals:aslan');
-  for (const id of ['var', 'this']) assert.ok(fits(pattern(id).slot, lion), `lion fits ${id}`);
-  for (const id of ['have', 'my', 'howmany', 'asif']) assert.ok(!fits(pattern(id).slot, lion), `lion stays out of ${id}`);
+  assert.ok(fits(pattern('var').slot, lion), 'Is there a lion?');
+  // No "Whose lion is this?" or "I have a giraffe".
+  for (const id of ['this', 'have', 'my', 'howmany', 'asif']) assert.ok(!fits(pattern(id).slot, lion), `lion stays out of ${id}`);
   assert.ok(fits(pattern('have').slot, word('nature:kedi')), 'a cat is still something you can have');
+  // No "He talks like a turtle".
+  assert.ok(!fits(pattern('asif').slot, word('animals:kaplumbağa')), 'animals stay out of "talks like"');
+});
+
+test('words that would teach the wrong meaning stay out of those patterns', () => {
+  // Resmi seviyorum = I love the picture, not painting (that is resim yapmak).
+  assert.ok(!fits(pattern('like').slot, word('hobbies:resim')));
+  // Lips and nails acıyor, they don't ağrıyor.
+  for (const id of ['body:dudak', 'body:tırnak']) {
+    assert.ok(!fits(pattern('hurts').slot, word(id)), `${id} stays out of "hurts"`);
+    assert.ok(word(id).ex, `${id} has its own example`);
+  }
 });
 
 test('animal grammar', () => {
@@ -184,11 +197,15 @@ test('new verbs', () => {
   assert.equal(enPast(word('actions:düşmek')), 'fell');
   assert.equal(enPast(word('actions:yakalamak')), 'caught');
   assert.equal(enIng(word('actions:kaçmak')), 'running away');
+  // saklamak hides something (hiding yourself is saklanmak).
+  assert.equal(enIng(word('actions:saklamak')), 'hiding it');
+  assert.equal(enPast(word('actions:saklamak')), 'hid it');
   assert.equal(attach(word('actions:toplamak'), 'Iyorum'), 'topluyorum');
   assert.equal(attach(word('actions:beslemek'), 'Iyorum'), 'besliyorum');
   assert.equal(attach(word('actions:ölmek'), 'R'), 'ölür');
   // Verbs join every verb pattern ("Let's ___", "Please ___"), so these only show their own example.
-  for (const id of ['actions:ölmek', 'actions:doğmak', 'actions:ısırmak']) {
+  // düşmek too: "Let's fall", and "Lütfen düşün" reads as "please think".
+  for (const id of ['actions:ölmek', 'actions:doğmak', 'actions:ısırmak', 'actions:düşmek']) {
     assert.ok(word(id).nc && word(id).ex, `${id} stays out of the verb patterns`);
   }
 });
