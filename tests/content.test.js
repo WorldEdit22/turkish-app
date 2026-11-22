@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS, ORDER } from '../data/patterns.js';
-import { fill, fits, enPl, enA } from '../js/combine.js';
+import { fill, fits, enPl, enA, enPast, enIng } from '../js/combine.js';
 import { attach } from '../js/grammar.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
@@ -166,6 +166,30 @@ test('body grammar', () => {
   assert.equal(attach(word('body:baş ağrısı'), '(I)m'), 'baş ağrım');
   assert.ok(fits(pattern('hurts').slot, word('body:omuz')));
   assert.ok(fits(pattern('have').slot, word('body:baş ağrısı')));
+});
+
+test('new adjectives', () => {
+  const [tr, en] = pattern('iam').variants[0].t[0];
+  const r = fill({ tr, en }, word('feelings:emekli'));
+  assert.deepEqual([r.tr, r.en], ['Emekliyim.', "I'm retired."]);
+  assert.equal(attach(word('feelings:kıskanç'), '(y)Im'), 'kıskancım');
+  assert.equal(attach(word('feelings:utangaç'), '(y)Im'), 'utangacım');
+  assert.ok(fits(pattern('very').slot, word('describe:ıslak')));
+  assert.ok(!fits(pattern('very').slot, word('feelings:emekli')), 'retired is said about yourself');
+});
+
+test('new verbs', () => {
+  assert.equal(enPast(word('actions:uçmak')), 'flew');
+  assert.equal(enPast(word('actions:düşmek')), 'fell');
+  assert.equal(enPast(word('actions:yakalamak')), 'caught');
+  assert.equal(enIng(word('actions:kaçmak')), 'running away');
+  assert.equal(attach(word('actions:toplamak'), 'Iyorum'), 'topluyorum');
+  assert.equal(attach(word('actions:beslemek'), 'Iyorum'), 'besliyorum');
+  assert.equal(attach(word('actions:ölmek'), 'R'), 'ölür');
+  // Verbs join every verb pattern ("Let's ___", "Please ___"), so these only show their own example.
+  for (const id of ['actions:ölmek', 'actions:doğmak', 'actions:ısırmak']) {
+    assert.ok(word(id).nc && word(id).ex, `${id} stays out of the verb patterns`);
+  }
 });
 
 test('noun English', () => {
