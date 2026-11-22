@@ -7,7 +7,13 @@ Object.defineProperty(globalThis, 'localStorage', {
   configurable: true,
   value: { getItem: (k) => saved.get(k) ?? null, setItem: (k, v) => saved.set(k, String(v)) },
 });
+// What a phone that used the old TR button has saved.
+saved.set('tl.ui', JSON.stringify({ tab: 'words', showTr: true }));
 const { store } = await import('../js/store.js');
+
+test('Turkish on blocks starts off, even where the old TR setting was saved on', () => {
+  assert.equal(store.ui.showTurkish, false);
+});
 
 test('the selection is saved on the device under tl.selected', () => {
   store.toggleSelected('ayran');

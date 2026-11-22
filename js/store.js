@@ -40,7 +40,8 @@ export const store = {
     sort: { patterns: 'common', words: 'topic' },
     type: 'all',
     pgroup: 'all',
-    showTr: true,
+    // Off by default. A new name, so a phone that saved the old TR button's "on" (showTr) starts off too.
+    showTurkish: false,
   }),
   settings: load(KEYS.settings, { provider: '', keys: {}, models: {} }),
   ai: load(KEYS.ai, {}),

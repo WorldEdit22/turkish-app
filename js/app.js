@@ -136,7 +136,7 @@ function blockHtml(x, showIcon) {
     `<div class="block${on ? ' on' : ''}${sel ? ' sel' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
     ` aria-pressed="${sel}" aria-label="${esc(`${x.label}, ${x.tr}${on ? ', learned' : ''}`)}">` +
     `<div class="b-en">${dot}<span>${esc(x.label)}</span></div>` +
-    (ui.showTr ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
+    (ui.showTurkish ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
     `<button class="b-info" aria-label="Details">${INFO}</button>` +
     (showIcon ? `<span class="b-icon">${CAT[x.cat].icon}</span>` : '') +
     `</div>`
@@ -176,9 +176,7 @@ function renderControls() {
   const tab = ui.tab;
   const listTab = tab !== 'settings';
   $('#controls').hidden = !listTab;
-  $('#toggle-tr').hidden = !listTab;
   renderClear();
-  $('#toggle-tr').setAttribute('aria-pressed', String(ui.showTr));
   $('#gear').setAttribute('aria-pressed', String(!listTab));
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
   if (!listTab) {
@@ -545,7 +543,7 @@ function renderSettings() {
   const nW = WORDS.filter(learned).length;
   $('#settings').innerHTML =
     `<section class="card"><h2>Blocks</h2>` +
-    `<label class="toggle-row"><span>Show Turkish on blocks</span><input type="checkbox" class="switch" id="set-showtr"${ui.showTr ? ' checked' : ''}></label>` +
+    `<label class="toggle-row"><span>Show Turkish on blocks</span><input type="checkbox" class="switch" id="set-showtr"${ui.showTurkish ? ' checked' : ''}></label>` +
     `<p>Turn it off to test yourself: read the English, say the Turkish, then tap ⓘ to check.</p></section>` +
     `<section class="card"><h2>More examples with a free AI</h2>` +
     `<p>The built-in examples always work, offline too. Add a free AI key to get extra sentences built from your learned words. The key is stored only on this phone.</p>` +
@@ -633,7 +631,7 @@ $('#settings').addEventListener('click', async (e) => {
 $('#settings').addEventListener('change', (e) => {
   const s = store.settings;
   if (e.target.id === 'set-showtr') {
-    ui.showTr = e.target.checked;
+    ui.showTurkish = e.target.checked;
     store.saveUi();
   } else if (e.target.id === 'set-provider') {
     s.provider = e.target.value;
@@ -763,13 +761,6 @@ $('#types').addEventListener('click', (e) => {
 });
 
 $('#search').addEventListener('input', () => renderList());
-
-$('#toggle-tr').addEventListener('click', () => {
-  ui.showTr = !ui.showTr;
-  store.saveUi();
-  renderControls();
-  renderList();
-});
 
 // Voices load asynchronously in some browsers.
 if ('speechSynthesis' in window) {
