@@ -26,6 +26,29 @@ async function runInstall() {
   return stored;
 }
 
+// Runs sw.js's activate step with these cache names present; returns the names it deleted.
+async function runActivate(names) {
+  const handlers = {};
+  const deleted = [];
+  const context = {
+    self: { addEventListener: (type, fn) => (handlers[type] = fn), skipWaiting: () => {}, clients: { claim: () => {} } },
+    caches: { keys: async () => names, delete: async (k) => deleted.push(k) },
+    Request: class {},
+    location: { origin: 'https://example.test' },
+  };
+  vm.runInNewContext(readFileSync(new URL('../sw.js', import.meta.url), 'utf8'), context);
+  let done;
+  handlers.activate({ waitUntil: (p) => (done = p) });
+  await done;
+  return deleted;
+}
+
+test("activate deletes only this app's old caches", async () => {
+  // Other apps on the same github.io origin (the Swedish app) keep their offline copies.
+  const deleted = await runActivate(['turkish-v10', 'swedish-v1', 'turkish-v11', 'other']);
+  assert.deepEqual(deleted.sort(), ['turkish-v10']);
+});
+
 test('install fetches every file fresh, never from the HTTP cache', async () => {
   const stored = await runInstall();
   assert.ok(stored.length > 10, 'caches the app files');
