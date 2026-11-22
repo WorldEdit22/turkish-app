@@ -7,9 +7,11 @@ import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { swipe } from './swipe.js';
 import { reloadOnUpdate } from './update.js';
-import { esc, SPEAKER } from './html.js';
+import { esc, SPEAKER, BUBBLE } from './html.js';
 import { shrinkPhoto } from './photo.js';
 import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
+import { translate, TranslateError, FAILED, other, googleLink } from './translate.js';
+import { translatorHtml, resultHtml } from './translateview.js';
 
 // ---------- data ----------
 
@@ -270,11 +272,16 @@ function aiHtml(cacheKey, vi = '') {
   );
 }
 
+// The translate bubble and ✕, at the right end of every window's title row.
+const headButtons = () =>
+  `<button class="head-tr" data-act="translate" aria-label="Translate">${BUBBLE}</button>` +
+  `<button class="close" data-act="close" aria-label="Close">✕</button>`;
+
 // The title row with ✕ sits in .s-top, which stays at the top while the card scrolls.
 function headHtml(title, tr, on, meta) {
   return (
     `<div class="s-top"><div class="grabber"></div>` +
-    `<div class="s-head"><h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div></div>` +
+    `<div class="s-head"><h2>${esc(title)}</h2>${headButtons()}</div></div>` +
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
     (meta ? `<div class="s-meta">${meta}</div>` : '') +
     `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>`
@@ -327,7 +334,7 @@ function scanTop(title, back) {
   return (
     `<div class="s-top"><div class="grabber"></div><div class="s-head">` +
     (back ? `<button class="back" data-act="back" aria-label="Back">‹</button>` : '') +
-    `<h2>${esc(title)}</h2><button class="close" data-act="close" aria-label="Close">✕</button></div></div>`
+    `<h2>${esc(title)}</h2>${headButtons()}</div></div>`
   );
 }
 
@@ -466,6 +473,96 @@ sheet.addEventListener('click', (e) => {
   if (e.target === sheet) sheet.close();
 });
 
+// ---------- translator (Google Translate, Turkish ⇄ English) ----------
+//
+// A second window that opens on top of anything, the sheet included; closing it
+// returns to what was below. Text and direction last while the app is open.
+
+const translator = $('#translator');
+const trState = { text: '', from: 'tr', result: '', error: null };
+let trSeq = 0; // bumped on every change, so a late answer to older text is dropped
+let trTimer = null;
+
+const renderTranslator = () => ($('#translator-body').innerHTML = translatorHtml(trState));
+const renderTrResult = () => ($('#tr-result').innerHTML = resultHtml(trState));
+
+function focusTrInput() {
+  const box = $('#tr-input');
+  box.focus({ preventScroll: true });
+  box.setSelectionRange(box.value.length, box.value.length);
+}
+
+function openTranslator() {
+  renderTranslator();
+  if (!translator.open) {
+    document.body.classList.add('noscroll');
+    translator.showModal();
+  }
+  translator.scrollTop = 0;
+  focusTrInput();
+}
+
+async function runTranslate(seq) {
+  try {
+    const result = await translate(trState.text, trState.from);
+    if (seq !== trSeq) return;
+    trState.result = result;
+    trState.error = null;
+  } catch (e) {
+    if (seq !== trSeq) return;
+    trState.error = e instanceof TranslateError ? e.message : FAILED;
+  }
+  renderTrResult();
+}
+
+// Something changed: forget pending answers; translate again now (or not at all when blank).
+function restartTranslation(now) {
+  const seq = ++trSeq;
+  clearTimeout(trTimer);
+  if (!trState.text.trim()) {
+    trState.result = '';
+    trState.error = null;
+    renderTrResult();
+  } else if (now) runTranslate(seq);
+  else trTimer = setTimeout(() => runTranslate(seq), 500);
+}
+
+translator.addEventListener('input', (e) => {
+  if (e.target.id !== 'tr-input') return;
+  trState.text = e.target.value;
+  $('#tr-link').href = googleLink(trState.text, trState.from);
+  restartTranslation(false);
+});
+
+translator.addEventListener('click', (e) => {
+  if (e.target === translator) return translator.close(); // the dimmed backdrop
+  const say = e.target.closest('[data-say]');
+  if (say) return speak(say.dataset.say);
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const act = btn.dataset.act;
+  if (act === 'close') translator.close();
+  else if (act === 'say-text') {
+    const text = $('#tr-input').value.trim();
+    if (text) speak(text);
+  } else if (act === 'swap' || act === 'clear') {
+    if (act === 'swap') {
+      trState.from = other(trState.from);
+      if (trState.result) trState.text = trState.result;
+    } else trState.text = '';
+    trState.result = '';
+    trState.error = null;
+    renderTranslator();
+    focusTrInput();
+    restartTranslation(true);
+  }
+});
+
+translator.addEventListener('close', () => {
+  window.speechSynthesis?.cancel();
+  if (!sheet.open) document.body.classList.remove('noscroll');
+});
+
 async function askAi(button) {
   const x = ITEM.get(openKey);
   const box = button.closest('.ai');
@@ -512,6 +609,7 @@ $('#sheet-body').addEventListener('click', (e) => {
   if (!btn) return;
   const act = btn.dataset.act;
   if (act === 'close') sheet.close();
+  else if (act === 'translate') openTranslator();
   else if (act === 'back') openScanView(scanView.kind === 'sentence' ? { kind: 'scan', id: scanView.id } : { kind: 'scans' });
   else if (act === 'open-scan') openScanView({ kind: 'scan', id: btn.dataset.id });
   else if (act === 'delete-scan') {
@@ -656,8 +754,8 @@ $('#settings').addEventListener('input', (e) => {
 let toastTimer = null;
 function toast(message, ms = 1500) {
   const el = $('#toast');
-  // An open card sits above the whole page, so the toast goes inside it while it is open.
-  const host = sheet.open ? sheet : document.body;
+  // An open window sits above the whole page, so the toast goes inside the top one while it is open.
+  const host = translator.open ? translator : sheet.open ? sheet : document.body;
   if (el.parentElement !== host) host.append(el);
   el.textContent = message;
   el.classList.add('show');
@@ -734,6 +832,9 @@ document.querySelector('.tabs').addEventListener('click', (e) => {
 });
 
 $('#gear').addEventListener('click', () => setTab(ui.tab === 'settings' ? lastListTab : 'settings'));
+
+$('#tr-btn').innerHTML = BUBBLE;
+$('#tr-btn').addEventListener('click', () => openTranslator());
 
 $('#status').addEventListener('click', (e) => {
   const b = e.target.closest('[data-status]');

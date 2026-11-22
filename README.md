@@ -7,7 +7,8 @@ A small, fast web app for learning the most common Turkish sentence patterns and
 - Tap blocks to select words and patterns, on both tabs; **Clear** unselects them. Tap **ⓘ** on a block to open it.
 - An open pattern shows examples with every selected word that fits, then its own examples, then a few with your learned words (or common words). An open word works the same way with selected and learned patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
 - Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **Mark as learned** in the open block.
-- The gear at the top opens Settings.
+- The gear at the top opens Settings. There you can also turn on **Show Turkish on blocks** (off by default).
+- **Translate:** the chat-bubble button, next to the gear and next to ✕ in every window, opens a Turkish ⇄ English translator. It translates as you type, ⇄ swaps the direction, and a link opens the same text in Google Translate. The text is sent to Google Translate (no key, no AI), so it needs the internet.
 - Optional **More examples** button that asks a free AI (Gemini, Groq, Mistral or OpenRouter) for extra sentences. Answers are saved on the phone.
 - **Scan a page:** the camera button next to the search field takes or picks a photo of Turkish text. Gemini reads it into sentences shown like a book page. Tap a sentence for its translation, how it is built, and every word with its base form, meaning and suffixes. Scans (text only) and explanations are saved on the phone, so they also open offline. Needs a Gemini key.
 - A speaker button reads Turkish aloud using the phone's built-in Turkish voice.

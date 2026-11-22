@@ -21,7 +21,8 @@
     <div class="title-row">
       <span id="progress" class="progress"></span>
       <button id="clear-sel" class="icon-btn clear-btn" hidden>Clear (0)</button>
-      <button id="gear" class="icon-btn gear-btn" aria-label="Settings" aria-pressed="false">
+      <button id="tr-btn" class="icon-btn svg-btn" aria-label="Translate"><!-- chat bubble, drawn by app.js --></button>
+      <button id="gear" class="icon-btn svg-btn gear-btn" aria-label="Settings" aria-pressed="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
     </div>
@@ -60,6 +61,11 @@
 
   <dialog id="sheet" aria-label="Details" tabindex="-1">
     <div id="sheet-body" class="sheet-body"></div>
+  </dialog>
+
+  <!-- Opens on top of anything, including #sheet; closing it returns to what was below. -->
+  <dialog id="translator" class="sheet" aria-label="Translate" tabindex="-1">
+    <div id="translator-body" class="sheet-body"></div>
   </dialog>
 
   <script type="module" src="js/app.js"></script>
