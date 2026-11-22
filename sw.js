@@ -16,6 +16,7 @@ const ASSETS = [
   'js/photo.js',
   'js/scanview.js',
   'js/swipe.js',
+  'js/translate.js',
   'js/update.js',
   'data/words.js',
   'data/patterns.js',
