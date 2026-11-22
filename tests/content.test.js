@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS, ORDER } from '../data/patterns.js';
-import { fill, fits, enPl } from '../js/combine.js';
+import { fill, fits, enPl, enA } from '../js/combine.js';
 import { attach } from '../js/grammar.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
@@ -129,4 +129,32 @@ test('animal grammar', () => {
   assert.equal(attach(word('animals:sincap'), '(y)I'), 'sincabı');
   const [tr, en] = pattern('var').variants[0].t[0];
   assert.deepEqual([fill({ tr, en }, word('animals:aslan')).tr, fill({ tr, en }, word('animals:aslan')).en], ['Aslan var mı?', 'Is there a lion?']);
+});
+
+// Phrases are their own example, and the tens (yirmi, otuz…) are plain numbers, so only content words are checked.
+test('every noun, verb and adjective left out of patterns has its own example or a note', () => {
+  const inSomePattern = (w) => PATTERNS.some((p) => p.variants.some((v) => v.t.length && fits(v.slot || p.slot, w)));
+  const content = WORDS.filter((w) => ['noun', 'verb', 'adj'].includes(w.type));
+  const empty = content.filter((w) => !inSomePattern(w) && !w.ex && !w.note).map((w) => w.id);
+  assert.deepEqual(empty, []);
+});
+
+test('noun grammar', () => {
+  assert.equal(attach(word('nature:nehir'), '(y)A'), 'nehre');
+  assert.equal(attach(word('nature:ada'), 'DA'), 'adada');
+  assert.equal(attach(word('town:hayvanat bahçesi'), '(y)A'), 'hayvanat bahçesine');
+  assert.equal(attach(word('food:sarımsak'), 'lI'), 'sarımsaklı');
+  assert.equal(attach(word('food:çilek'), '(y)I'), 'çileği');
+  assert.equal(attach(word('food:armut'), '(y)I'), 'armudu');
+  assert.equal(attach(word('food:havuç'), '(y)I'), 'havucu');
+  assert.equal(attach(word('people:damat'), '(I)m'), 'damadım');
+  assert.equal(attach(word('people:erkek kardeş'), '(I)m'), 'erkek kardeşim');
+});
+
+test('noun English', () => {
+  assert.equal(enA(word('clothes:eldiven')), 'gloves');
+  const [tr, en] = pattern('at').variants[0].t[0];
+  assert.match(fill({ tr, en }, word('nature:ada')).en, /on the island/);
+  assert.equal(word('nature:ay').note, 'Also means "month".');
+  assert.equal(word('time:ay').note, 'Also means "moon".');
 });
