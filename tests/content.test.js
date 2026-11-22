@@ -2,9 +2,16 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS, ORDER } from '../data/patterns.js';
-import { fill, fits } from '../js/combine.js';
+import { fill, fits, enPl } from '../js/combine.js';
+import { attach } from '../js/grammar.js';
 
 const catIds = new Set(CATEGORIES.map((c) => c.id));
+const word = (id) => {
+  const w = WORDS.find((x) => x.id === id);
+  assert.ok(w, `missing word ${id}`);
+  return w;
+};
+const pattern = (id) => PATTERNS.find((p) => p.id === id);
 
 test('word ids are unique', () => {
   const seen = new Set();
@@ -83,4 +90,43 @@ test('every template renders cleanly with every word that fits', () => {
     }
   }
   assert.deepEqual(problems, []);
+});
+
+// ---------- the 2026-11-22 additions ----------
+
+test('Animals and Hobbies & sports are topics, after nature and after clothes', () => {
+  const ids = CATEGORIES.map((c) => c.id);
+  assert.equal(ids[ids.indexOf('nature') + 1], 'animals');
+  assert.equal(ids[ids.indexOf('clothes') + 1], 'hobbies');
+});
+
+test('the four old animal words moved to Animals and kept their ids', () => {
+  for (const id of ['nature:hayvan', 'nature:kedi', 'nature:köpek', 'nature:kuş']) assert.equal(word(id).cat, 'animals', id);
+});
+
+// Same spelling, different words: each pair is shown as two blocks with their own meanings.
+const ALLOWED_DUPES = new Set(['yemek', 'tatlı', 'pazar', 'yüz', 'ay']);
+
+test('Turkish spellings are unique, except known pairs', () => {
+  const by = new Map();
+  for (const w of WORDS) by.set(w.tr, [...(by.get(w.tr) || []), w.id]);
+  const dupes = [...by].filter(([tr, ids]) => ids.length > 1 && !ALLOWED_DUPES.has(tr));
+  assert.deepEqual(dupes, []);
+});
+
+test('wild animals only go into patterns that make sense', () => {
+  const lion = word('animals:aslan');
+  for (const id of ['var', 'this']) assert.ok(fits(pattern(id).slot, lion), `lion fits ${id}`);
+  for (const id of ['have', 'my', 'howmany', 'asif']) assert.ok(!fits(pattern(id).slot, lion), `lion stays out of ${id}`);
+  assert.ok(fits(pattern('have').slot, word('nature:kedi')), 'a cat is still something you can have');
+});
+
+test('animal grammar', () => {
+  assert.equal(enPl(word('animals:koyun')), 'sheep');
+  assert.equal(enPl(word('animals:fare')), 'mice');
+  assert.equal(attach(word('animals:inek'), '(I)m'), 'ineğim');
+  assert.equal(attach(word('animals:kurt'), '(y)I'), 'kurdu');
+  assert.equal(attach(word('animals:sincap'), '(y)I'), 'sincabı');
+  const [tr, en] = pattern('var').variants[0].t[0];
+  assert.deepEqual([fill({ tr, en }, word('animals:aslan')).tr, fill({ tr, en }, word('animals:aslan')).en], ['Aslan var mı?', 'Is there a lion?']);
 });

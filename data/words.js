@@ -5,7 +5,9 @@
 //       place (public places), room (home rooms, home, work), area (city
 //       areas, nature), thing (things you can hold or buy), fixture (doors,
 //       lights, Wi-Fi), food, ingr (ingredients), drink, person, body, vehicle,
-//       event, info, measure, deal, ailment, weather, animal, abstract, help,
+//       event, info, measure, deal, ailment, weather, animal (pets and farm
+//       animals), wild (wild animals and insects: only "Is there…?" and
+//       "This…"), hobby (sports and pastimes: "I like…"), abstract, help,
 //       issue, name, lang, time, day, period, unit, hour, num, desc, feel, any
 // English options: m (no "a"), pe (plural in English: "shoes"), a, the, to,
 //       at, from, pl, when (overrides), p (irregular past), ing,
@@ -32,7 +34,9 @@ export const CATEGORIES = [
   { id: 'describe', label: 'Describing', icon: '🎨' },
   { id: 'feelings', label: 'Feelings', icon: '🙂' },
   { id: 'nature', label: 'Weather & nature', icon: '🌤️' },
+  { id: 'animals', label: 'Animals', icon: '🐾' },
   { id: 'clothes', label: 'Clothes', icon: '👕' },
+  { id: 'hobbies', label: 'Hobbies & sports', icon: '⚽' },
 ];
 
 export const TYPES = {
@@ -846,17 +850,62 @@ export const WORDS = [
     ['ağaç', 'tree', { soft: 'ağac' }],
     ['çiçek', 'flower'],
   ]),
-  ...G('nature', 'noun', 'animal', [
-    ['hayvan', 'animal', { a: 'an animal' }],
-    ['kedi', 'cat'],
-    ['köpek', 'dog'],
-    ['kuş', 'bird'],
-  ]),
   ...G('nature', 'noun', 'area', [
     ['deniz', 'sea', { at: 'in the sea' }],
     ['göl', 'lake', { at: 'at the lake' }],
     ['dağ', 'mountain', { to: 'to the mountains', at: 'in the mountains', from: 'from the mountains' }],
     ['orman', 'forest', { at: 'in the forest' }],
+  ]),
+
+  // Pets and farm animals. The first four were under nature: they keep those ids so saved progress stays.
+  ...G('animals', 'noun', 'animal', [
+    ['hayvan', 'animal', { id: 'nature:hayvan', a: 'an animal' }],
+    ['kedi', 'cat', { id: 'nature:kedi' }],
+    ['köpek', 'dog', { id: 'nature:köpek' }],
+    ['kuş', 'bird', { id: 'nature:kuş' }],
+    ['tavşan', 'rabbit'],
+    ['kaplumbağa', 'turtle'],
+    ['at', 'horse'],
+    ['inek', 'cow'],
+    ['koyun', 'sheep', { pl: 'sheep' }],
+    ['kuzu', 'lamb'],
+    ['keçi', 'goat'],
+    ['domuz', 'pig'],
+    ['ördek', 'duck'],
+    ['horoz', 'rooster'],
+    ['eşek', 'donkey'],
+  ]),
+  ...G('animals', 'noun', 'wild', [
+    ['aslan', 'lion'],
+    ['kaplan', 'tiger'],
+    ['fil', 'elephant', { a: 'an elephant' }],
+    ['maymun', 'monkey'],
+    ['ayı', 'bear'],
+    ['kurt', 'wolf', { pl: 'wolves', soft: 'kurd' }],
+    ['tilki', 'fox'],
+    ['yılan', 'snake'],
+    ['kurbağa', 'frog'],
+    ['fare', 'mouse', { pl: 'mice' }],
+    ['arı', 'bee'],
+    ['kelebek', 'butterfly'],
+    ['sinek', 'fly'],
+    ['böcek', 'bug', { gloss: 'bug / insect' }],
+    ['örümcek', 'spider'],
+    ['karınca', 'ant', { a: 'an ant' }],
+    ['yunus', 'dolphin'],
+    ['köpekbalığı', 'shark', { cmp: 1 }],
+    ['balina', 'whale'],
+    ['zürafa', 'giraffe'],
+    ['deve', 'camel'],
+    ['kartal', 'eagle', { a: 'an eagle' }],
+    ['güvercin', 'pigeon'],
+    ['martı', 'seagull'],
+    ['penguen', 'penguin'],
+    ['sincap', 'squirrel', { soft: 'sincab' }],
+    ['timsah', 'crocodile'],
+  ]),
+  ...G('animals', 'noun', null, [
+    ['yavru', 'young animal', { nc: 1, gloss: 'young animal (kitten, puppy…)', ex: ['Kedinin yavruları çok tatlı.', "The cat's kittens are very cute."] }],
   ]),
 
   ...G('clothes', 'noun', 'thing', [

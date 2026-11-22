@@ -38,7 +38,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'var', en: 'Is there ___?', tr: '___ var mı?', slot: `noun:${FOOD}|thing|place|issue|fixture|event|deal|weather|animal`,
+    id: 'var', en: 'Is there ___?', tr: '___ var mı?', slot: `noun:${FOOD}|thing|place|issue|fixture|event|deal|weather|animal|wild`,
     variants: [
       {
         tr: '___ var mı?', en: 'Is there ___? / Do you have ___?',
@@ -342,7 +342,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'this', en: 'This ___', tr: 'Bu ___', slot: `noun:${FOOD}|thing|place|vehicle|room|area|fixture|animal`,
+    id: 'this', en: 'This ___', tr: 'Bu ___', slot: `noun:${FOOD}|thing|place|vehicle|room|area|fixture|animal|wild`,
     variants: [
       {
         tr: 'Bu ___', en: 'This ___',
