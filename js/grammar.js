@@ -80,11 +80,13 @@ export function attach(word, suffix) {
   let harmonyOverride = word.h || null;
 
   // Compound nouns ending in a possessive take n before case endings.
-  // A third-person possessive is already there, so (s)I adds nothing.
+  // A third-person possessive is already there, so (s)I adds nothing,
+  // and my / your replace it: baş ağrısı → baş ağrım, kredi kartı → kredi kartın.
   if (word.cmp) {
     if (suffix.startsWith('(s)I')) tokens = tokens.slice(2);
     else if (suffix.startsWith('(y)A') || suffix.startsWith('(y)I')) tokens = ['n', ...tokens.slice(1)];
     else if (suffix.startsWith('DA')) tokens = ['n', ...tokens];
+    else if (suffix.startsWith('(I)')) out = /[aeıioöuü]s[ıiuü]$/.test(base) ? base.slice(0, -2) : base.slice(0, -1);
   }
 
   // Present continuous: a final stem vowel drops before -Iyor.

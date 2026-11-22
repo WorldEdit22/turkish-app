@@ -151,6 +151,23 @@ test('noun grammar', () => {
   assert.equal(attach(word('people:erkek kardeş'), '(I)m'), 'erkek kardeşim');
 });
 
+test('hobbies go into "I like ___"', () => {
+  const [tr, en] = pattern('like').variants[0].t[0];
+  const r = fill({ tr, en }, word('hobbies:futbol'));
+  assert.deepEqual([r.tr, r.en], ['Futbolu çok seviyorum.', 'I really love football.']);
+  assert.equal(enPl(word('hobbies:dizi')), 'TV series');
+  assert.equal(attach(word('hobbies:satranç'), '(y)I'), 'satrancı');
+  assert.equal(attach(word('hobbies:resim'), '(y)I'), 'resmi');
+});
+
+test('body grammar', () => {
+  assert.equal(attach(word('body:omuz'), '(I)m'), 'omzum');
+  assert.equal(attach(word('body:göğüs'), '(I)m'), 'göğsüm');
+  assert.equal(attach(word('body:baş ağrısı'), '(I)m'), 'baş ağrım');
+  assert.ok(fits(pattern('hurts').slot, word('body:omuz')));
+  assert.ok(fits(pattern('have').slot, word('body:baş ağrısı')));
+});
+
 test('noun English', () => {
   assert.equal(enA(word('clothes:eldiven')), 'gloves');
   const [tr, en] = pattern('at').variants[0].t[0];

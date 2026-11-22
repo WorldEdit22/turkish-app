@@ -634,7 +634,7 @@ export const PATTERNS = [
     ],
   },
   {
-    id: 'like', en: 'I like ___', tr: '___-i seviyorum', slot: `noun:${FOOD}`,
+    id: 'like', en: 'I like ___', tr: '___-i seviyorum', slot: `noun:${FOOD}|hobby`,
     variants: [
       {
         tr: '___-i seviyorum', en: 'I love ___',

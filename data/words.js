@@ -643,6 +643,14 @@ export const WORDS = [
     ['garson', 'waiter'],
     ['şoför', 'driver'],
     ['mühendis', 'engineer', { a: 'an engineer' }],
+    ['avukat', 'lawyer'],
+    ['hemşire', 'nurse'],
+    ['dişçi', 'dentist'],
+    ['aşçı', 'cook'],
+    ['işçi', 'worker'],
+    ['memur', 'civil servant', { gloss: 'civil servant / clerk' }],
+    ['asker', 'soldier'],
+    ['mimar', 'architect', { a: 'an architect' }],
   ]),
   ...G('work', 'noun', 'event', [
     ['toplantı', 'meeting'],
@@ -650,16 +658,22 @@ export const WORDS = [
     ['ders', 'lesson'],
     ['sınav', 'exam', { a: 'an exam' }],
     ['izin', 'day off', { soft: 'izn', gloss: 'leave / permission' }],
+    ['kurs', 'course'],
   ]),
   ...G('work', 'noun', 'info', [
     ['e-posta', 'email', { a: 'an email' }],
     ['mesaj', 'message'],
+    ['ödev', 'homework', { m: 1 }],
   ]),
   ...G('work', 'noun', 'thing', [
     ['dosya', 'file'],
     ['kalem', 'pen'],
     ['kağıt', 'paper', { m: 1, soft: 'kağıd' }],
     ['maaş', 'salary', { kind: 'measure' }],
+    ['defter', 'notebook'],
+  ]),
+  ...G('work', 'noun', 'room', [
+    ['sınıf', 'class', { gloss: 'class / classroom', to: 'to class', at: 'in class', from: 'from class' }],
   ]),
   ...G('work', 'verb', null, [
     ['çalışmak', 'work', { gloss: 'to work / to study' }],
@@ -687,6 +701,18 @@ export const WORDS = [
     ['kalp', 'heart', { soft: 'kalb' }],
     ['yüz', 'face'],
     ['saç', 'hair', { m: 1 }],
+    ['omuz', 'shoulder', { soft: 'omz' }],
+    ['göğüs', 'chest', { soft: 'göğs' }],
+    ['bel', 'lower back', { gloss: 'lower back / waist' }],
+    ['dudak', 'lip'],
+    ['tırnak', 'nail', { gloss: 'nail (finger / toe)' }],
+  ]),
+  // Body words that fit no pattern well: each card shows its own example.
+  ...G('body', 'noun', null, [
+    ['kaş', 'eyebrow', { a: 'an eyebrow', ex: ['Kaşlarını kaldırdı.', 'She raised her eyebrows.'] }],
+    ['deri', 'skin', { m: 1, ex: ['Derim çok kuru.', 'My skin is very dry.'] }],
+    ['kemik', 'bone', { ex: ['Köpek kemik yiyor.', 'The dog is eating a bone.'] }],
+    ['kan', 'blood', { m: 1, ex: ['Kan tahlili yaptırdım.', 'I had a blood test.'] }],
   ]),
   ...G('body', 'noun', 'thing', [
     ['ilaç', 'medicine', { m: 1, soft: 'ilac' }],
@@ -697,6 +723,10 @@ export const WORDS = [
     ['ağrı', 'pain', { kind: 'ailment', m: 1 }],
     ['randevu', 'appointment', { kind: 'event', a: 'an appointment' }],
     ['reçete', 'prescription', { kind: 'info' }],
+    ['baş ağrısı', 'headache', { kind: 'ailment', cmp: 1 }],
+    ['nezle', 'cold', { kind: 'ailment', gloss: 'cold (illness)' }],
+    ['yara', 'wound', { kind: 'ailment' }],
+    ['tansiyon', 'blood pressure', { kind: 'ailment', m: 1, a: 'high blood pressure', note: 'Tansiyonum var = I have high blood pressure.' }],
   ]),
   ...G('body', 'verb', null, [
     ['yorulmak', 'get tired', { p: 'got tired' }],
@@ -1015,5 +1045,40 @@ export const WORDS = [
     ['yüzük', 'ring'],
     ['kolye', 'necklace'],
     ['küpe', 'earrings', { m: 1, pe: 1, pl: 'earrings' }],
+  ]),
+
+  // Sports and pastimes go into "I like ___".
+  ...G('hobbies', 'noun', 'hobby', [
+    ['futbol', 'football', { m: 1, gloss: 'football / soccer' }],
+    ['basketbol', 'basketball', { m: 1 }],
+    ['voleybol', 'volleyball', { m: 1 }],
+    ['tenis', 'tennis', { m: 1 }],
+    ['satranç', 'chess', { m: 1, soft: 'satranc' }],
+    ['müzik', 'music', { m: 1 }],
+    ['dizi', 'TV series', { pl: 'TV series' }],
+    ['film', 'film', { kind: 'event|hobby', gloss: 'film / movie' }],
+    ['resim', 'painting', { m: 1, soft: 'resm', gloss: 'picture / painting' }],
+    ['kamp', 'camping', { m: 1 }],
+    ['yürüyüş', 'walking', { m: 1, gloss: 'walk / hike' }],
+  ]),
+  ...G('hobbies', 'noun', 'event', [
+    ['maç', 'match', { gloss: 'match (game)' }],
+    ['konser', 'concert'],
+  ]),
+  ...G('hobbies', 'noun', 'thing', [
+    ['top', 'ball'],
+    ['oyun', 'game'],
+    ['gitar', 'guitar'],
+    ['piyano', 'piano', { pl: 'pianos' }],
+  ]),
+  ...G('hobbies', 'noun', 'place', [['tiyatro', 'theater', { gloss: 'theater / theatre' }]]),
+  ...G('hobbies', 'noun', 'abstract', [['hobi', 'hobby']]),
+  ...G('hobbies', 'noun', null, [
+    ['takım', 'team', { ex: ['Hangi takımı tutuyorsun?', 'Which team do you support?'] }],
+    ['şarkı', 'song', { ex: ['Bu şarkıyı çok seviyorum.', 'I love this song.'] }],
+  ]),
+  ...G('hobbies', 'verb', null, [
+    ['çizmek', 'draw', { p: 'drew' }],
+    ['resim yapmak', 'paint', { gloss: 'to paint / to draw a picture' }],
   ]),
 ];

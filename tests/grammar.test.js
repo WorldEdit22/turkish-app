@@ -75,6 +75,19 @@ table('compound nouns ending in a possessive take n before case endings', [
   [noun('otobüs durağı', { cmp: true }), '(s)I_nerede', 'otobüs durağı nerede'],
 ]);
 
+// "My / your" replaces the compound's own -(s)I: baş ağrısı → baş ağrım, yatak odası → yatak odan.
+table('compound nouns swap their possessive for my / your', [
+  [noun('baş ağrısı', { cmp: true }), '(I)m', 'baş ağrım'],
+  [noun('yatak odası', { cmp: true }), '(I)m', 'yatak odam'],
+  [noun('Türk kahvesi', { cmp: true }), '(I)n', 'Türk kahven'],
+  [noun('diş fırçası', { cmp: true }), '(I)m', 'diş fırçam'],
+  [noun('kredi kartı', { cmp: true }), '(I)m', 'kredi kartım'],
+  [noun('otobüs durağı', { cmp: true }), '(I)m', 'otobüs durağım'],
+  [noun('hafta sonu', { cmp: true }), '(I)n', 'hafta sonun'],
+  [noun('meyve suyu', { cmp: true }), '(I)m', 'meyve suyum'],
+  [noun('yatak odası', { cmp: true }), '(I)mA', 'yatak odama'],
+]);
+
 table('underscore starts a separate word that keeps harmonising', [
   [adj('pahalı'), '_mI', 'pahalı mı'],
   [adj('iyi'), '_mI', 'iyi mi'],
