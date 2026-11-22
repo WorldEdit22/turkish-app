@@ -14,7 +14,7 @@ The goal is to fill those gaps so common words like these can be found and learn
 
 ## Goals
 
-- Add about 200 everyday words across the thin topics, including a new **Animals** topic and a new **Hobbies & sports** topic.
+- Add about 230 everyday words (709 → about 940) across the thin topics, including a new **Animals** topic and a new **Hobbies & sports** topic.
 - Every new word works like the existing ones:
   - it is searchable and sorted by topic;
   - it is ranked by how common it is in spoken Turkish;
@@ -91,7 +91,7 @@ Each word's `kind` decides which patterns it is combined with. Words that fit no
 
 **Release**
 - The offline cache goes to `turkish-v10`.
-- The README word count becomes about 900.
+- The README word count becomes about 940.
 
 ## Left to the builder
 
