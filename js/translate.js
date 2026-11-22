@@ -15,6 +15,14 @@ export const translateUrl = (text, from) =>
 export const googleLink = (text, from) =>
   `https://translate.google.com/?sl=${from}&tl=${other(from)}&text=${encodeURIComponent(text)}&op=translate`;
 
+// Swap the direction, like Google Translate: the translation becomes the new text, but only
+// when it is the translation of the text in the box and is on screen (no error showing).
+// Otherwise the typed text stays. state = { text, from, result, resultFor, error }.
+export function swapState({ text, from, result, resultFor, error }) {
+  const current = Boolean(result) && !error && resultFor.trim() === text.trim();
+  return { text: current ? result : text, from: other(from), result: '', resultFor: '', error: null };
+}
+
 // The reply's first item lists the translated segments; each segment starts with its text.
 export function parseTranslation(json) {
   const segments = Array.isArray(json) ? json[0] : null;

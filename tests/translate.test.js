@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MAX_CHARS, other, translateUrl, googleLink, parseTranslation, translate, OFFLINE, FAILED } from '../js/translate.js';
+import { MAX_CHARS, other, translateUrl, googleLink, parseTranslation, translate, swapState, OFFLINE, FAILED } from '../js/translate.js';
 
 // Replaces fetch with canned replies, one per call; returns the requested URLs.
 // A reply is { status, body } or an Error to reject with.
@@ -73,6 +73,19 @@ test('a failed request says so', async (t) => {
 
   Object.defineProperty(globalThis, 'navigator', { value: { onLine: true }, configurable: true });
   await assert.rejects(translate('Gel', 'tr'), { message: FAILED });
+});
+
+test('swap moves the translation into the box only when it belongs to the text', () => {
+  const done = { text: 'Gel', from: 'tr', result: 'Come', resultFor: 'Gel', error: null };
+  assert.deepEqual(swapState(done), { text: 'Come', from: 'en', result: '', resultFor: '', error: null });
+  assert.equal(swapState({ ...done, text: 'Gel ' }).text, 'Come', 'a trailing space is the same text');
+  // The newer request failed: the old translation is not on screen, so the typed text stays.
+  assert.equal(swapState({ ...done, text: 'Gel buraya', error: FAILED }).text, 'Gel buraya');
+  assert.equal(swapState({ ...done, error: OFFLINE }).text, 'Gel');
+  // Edited, and the new answer has not arrived yet.
+  assert.equal(swapState({ ...done, text: 'Gel buraya' }).text, 'Gel buraya');
+  // Nothing translated yet.
+  assert.deepEqual(swapState({ text: 'Su', from: 'en', result: '', resultFor: '', error: null }), { text: 'Su', from: 'tr', result: '', resultFor: '', error: null });
 });
 
 test('the two messages are the agreed copy', () => {

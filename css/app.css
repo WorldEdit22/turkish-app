@@ -453,8 +453,10 @@ dialog#translator { height: 92vh; height: 92dvh; }
 }
 #tr-input:focus { outline: none; }
 #tr-input::placeholder { color: var(--faint); }
-.tr-tools { position: absolute; top: 6px; right: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.tr-clear { border: 0; background: none; color: var(--muted); width: 34px; height: 34px; font-size: 16px; }
+/* Clear at the top, the speaker at the bottom of the box: far apart, so a near miss doesn't wipe the text. */
+.tr-tools { position: absolute; top: 4px; bottom: 4px; right: 4px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+.tr-clear { border: 0; background: none; color: var(--muted); width: 40px; height: 40px; font-size: 16px; }
+.tr-tools .say { width: 40px; height: 40px; }
 .tr-out { display: flex; align-items: flex-start; gap: 8px; min-height: 72px; margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--line); }
 .tr-text { flex: 1; margin: 0; font-size: 18px; line-height: 1.35; font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; }
 .tr-msg { flex: 1; margin: 0; color: var(--faint); font-size: 16px; }

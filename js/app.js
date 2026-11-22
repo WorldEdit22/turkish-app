@@ -10,7 +10,7 @@ import { reloadOnUpdate } from './update.js';
 import { esc, SPEAKER, BUBBLE } from './html.js';
 import { shrinkPhoto } from './photo.js';
 import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
-import { translate, TranslateError, FAILED, other, googleLink } from './translate.js';
+import { translate, TranslateError, FAILED, googleLink, swapState } from './translate.js';
 import { translatorHtml, resultHtml } from './translateview.js';
 
 // ---------- data ----------
@@ -479,7 +479,7 @@ sheet.addEventListener('click', (e) => {
 // returns to what was below. Text and direction last while the app is open.
 
 const translator = $('#translator');
-const trState = { text: '', from: 'tr', result: '', error: null };
+const trState = { text: '', from: 'tr', result: '', resultFor: '', error: null }; // resultFor: the text `result` translates
 let trSeq = 0; // bumped on every change, so a late answer to older text is dropped
 let trTimer = null;
 
@@ -500,13 +500,17 @@ function openTranslator() {
   }
   translator.scrollTop = 0;
   focusTrInput();
+  // The last try failed (say, while offline): opening again is trying again.
+  if (trState.error) restartTranslation(true);
 }
 
 async function runTranslate(seq) {
+  const text = trState.text;
   try {
-    const result = await translate(trState.text, trState.from);
+    const result = await translate(text, trState.from);
     if (seq !== trSeq) return;
     trState.result = result;
+    trState.resultFor = text;
     trState.error = null;
   } catch (e) {
     if (seq !== trSeq) return;
@@ -546,12 +550,7 @@ translator.addEventListener('click', (e) => {
     const text = $('#tr-input').value.trim();
     if (text) speak(text);
   } else if (act === 'swap' || act === 'clear') {
-    if (act === 'swap') {
-      trState.from = other(trState.from);
-      if (trState.result) trState.text = trState.result;
-    } else trState.text = '';
-    trState.result = '';
-    trState.error = null;
+    Object.assign(trState, act === 'swap' ? swapState(trState) : { text: '', result: '', resultFor: '', error: null });
     renderTranslator();
     focusTrInput();
     restartTranslation(true);
