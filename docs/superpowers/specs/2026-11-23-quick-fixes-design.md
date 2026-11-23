@@ -7,6 +7,10 @@ its alphabet voice (see its own spec of the same date).
 
 - On the iPhone the page's scroll line runs over the top and bottom bars. It should stay between them.
 - The Swedish app has an alphabet window and the user wants it here too.
+- The text cursor in the translator's box is drawn away from the text line (reported 2026-11-23,
+  both apps). This looks like iOS 26 bug WebKit 300690: a text box in a fixed window over a page that
+  has been scrolled down gets its caret drawn in the wrong place. Change 1 stops the page itself from
+  scrolling, which removes that trigger; the user confirms on the phone.
 
 ## Changes
 
