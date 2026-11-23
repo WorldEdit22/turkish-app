@@ -36,6 +36,11 @@ test('the page itself never rubber-bands, also when a drag starts on a bar', () 
   assert.ok(rule(css, 'html').includes('overscroll-behavior: none'));
 });
 
+test('practice hides the search row; the answer colours have light and dark values', () => {
+  assert.ok(rule(css, '.search-row[hidden]').includes('display: none'), '.search-row sets display, so hidden needs its own rule');
+  for (const token of ['--forgot', '--hard', '--easy', '--on-grade']) assert.equal(css.split(`${token}: #`).length - 1, 2, token);
+});
+
 test('the bars sit outside the scrolling area', () => {
   assert.ok(!rule(css, '.tabs').includes('position: fixed'));
   assert.ok(!rule(css, '.top').includes('position: sticky'));

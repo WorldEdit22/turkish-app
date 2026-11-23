@@ -5,8 +5,8 @@ import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
-import { correct, dayOf, DIRS, isKnown, isMastered, status } from './srs.js';
-import { recallHtml } from './practiceview.js';
+import { answer, buildQueue, correct, dayOf, DIRS, isKnown, isMastered, isNew, nextInterval, requeue, status, unqueue } from './srs.js';
+import { cardHtml, countsText, doneHtml, recallHtml } from './practiceview.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { reloadOnUpdate } from './update.js';
 import { esc, SPEAKER, BUBBLE, ABC } from './html.js';
@@ -141,6 +141,7 @@ function blockHtml(x, showIcon) {
 }
 
 function renderList() {
+  if (ui.mode === 'practice') return renderPractice();
   const tab = ui.tab;
   const items = visibleItems(tab);
   const list = $('#list');
@@ -166,12 +167,29 @@ function renderList() {
 
 function renderProgress() {
   const all = ui.tab === 'patterns' ? PATTERNS : ui.tab === 'words' ? WORDS : null;
-  $('#progress').textContent = all ? `${all.filter(mastered).length} / ${all.length} mastered` : 'Settings';
+  if (!all) $('#progress').textContent = 'Settings';
+  else if (ui.mode === 'practice') $('#progress').textContent = practiceCounts();
+  else $('#progress').textContent = `${all.filter(mastered).length} / ${all.length} mastered`;
+}
+
+// The chip row: pattern groups on Patterns; on Words, word types (Browse) or topics (Practice).
+function chipRow() {
+  const all = [['all', 'All', '']];
+  if (ui.tab === 'patterns') {
+    return { attr: 'data-group', current: ui.pgroup, label: 'Pattern group', chips: all.concat(Object.entries(GROUPS).map(([id, label]) => [id, label, ''])) };
+  }
+  if (ui.mode === 'practice') {
+    const topics = CATEGORIES.map((c) => [c.id, c.label, `<span aria-hidden="true">${esc(c.icon)}</span>`]);
+    return { attr: 'data-topic', current: ui.topic, label: 'Topic', chips: all.concat(topics) };
+  }
+  const types = Object.entries(TYPES).map(([id, t]) => [id, t.label, `<span class="dot t-${id}"></span>`]);
+  return { attr: 'data-type', current: ui.type, label: 'Word type', chips: all.concat(types) };
 }
 
 function renderControls() {
   const tab = ui.tab;
   const listTab = tab !== 'settings';
+  const practice = ui.mode === 'practice';
   $('#controls').hidden = !listTab;
   renderClear();
   $('#gear').setAttribute('aria-pressed', String(!listTab));
@@ -181,20 +199,24 @@ function renderControls() {
     return;
   }
 
+  document.querySelectorAll('#mode button').forEach((b) => {
+    b.classList.toggle('on', b.dataset.mode === ui.mode);
+    b.setAttribute('aria-pressed', String(b.dataset.mode === ui.mode));
+  });
+  // Practice has nothing to search or sort; the direction switch takes the sort menu's place.
+  $('.search-row').hidden = practice;
+  $('#sort').hidden = practice;
+  $('#dir').hidden = !practice;
+  $('#dir').textContent = DIR_LABELS[ui.dir];
+
   $('#sort').innerHTML = SORTS[tab]
     .map(([v, label]) => `<option value="${v}"${ui.sort[tab] === v ? ' selected' : ''}>${label}</option>`)
     .join('');
 
-  // Chip row: word types on the Words tab, pattern groups on the Patterns tab.
-  const chips =
-    tab === 'words'
-      ? [['all', 'All', '']].concat(Object.entries(TYPES).map(([id, t]) => [id, t.label, `<span class="dot t-${id}"></span>`]))
-      : [['all', 'All', '']].concat(Object.entries(GROUPS).map(([id, label]) => [id, label, '']));
-  const current = tab === 'words' ? ui.type : ui.pgroup;
-  const attr = tab === 'words' ? 'data-type' : 'data-group';
-  $('#types').setAttribute('aria-label', tab === 'words' ? 'Word type' : 'Pattern group');
+  const { attr, current, label, chips } = chipRow();
+  $('#types').setAttribute('aria-label', label);
   $('#types').innerHTML = chips
-    .map(([id, label, dot]) => `<button class="chip${current === id ? ' on' : ''}" ${attr}="${id}">${dot}${label}</button>`)
+    .map(([id, text, mark]) => `<button class="chip${current === id ? ' on' : ''}" ${attr}="${esc(id)}">${mark}${esc(text)}</button>`)
     .join('');
 }
 
@@ -215,11 +237,161 @@ function setTab(tab) {
   ui.tab = tab;
   store.saveUi();
   $('#search').value = '';
+  session = null; // a fresh practice queue, also after Settings (a restore or a reset changes the cards)
   render();
   // Only the list and Settings scroll; the page itself never does.
   $('#list').scrollTop = 0;
   $('#settings').scrollTop = 0;
 }
+
+// ---------- practice ----------
+//
+// One card at a time from the tab and chip the user is on, in the chosen direction.
+// session: { sig, queue, face, revealed, undo }
+//   sig       the tab, chip, direction and day the queue was built for; when any of them
+//             changes (a new day too), the next render builds a fresh queue
+//   face      what the front card shows, with its key; made once per card shown, so
+//             revealing keeps the same example
+//   undo      { key, dir, before, wasNew } for the last answer, until the queue is rebuilt
+
+const DIR_LABELS = { say: 'EN → TR', understand: 'TR → EN' };
+let session = null;
+
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+// Words of the chosen topic, most common first; patterns of the chosen group, most useful first.
+// Only items in the data, so cards for removed words never come up.
+function selectionKeys() {
+  if (ui.tab === 'patterns') return PATTERNS.filter((p) => ui.pgroup === 'all' || p.group === ui.pgroup).map(keyOf);
+  return BY_COMMON.filter((w) => ui.topic === 'all' || w.cat === ui.topic).map(keyOf);
+}
+
+const selectionCards = () => selectionKeys().map((key) => store.card(key, ui.dir));
+
+// See practiceview.js for the face's fields.
+function faceOf(x) {
+  const face = { native: x.label, target: x.tr, say: x.tr.replace(/_+|\.\.\./g, ' ') };
+  if (isPattern(x)) {
+    const v = pick(x.variants.filter((o) => o.ex.length));
+    const [tr, en] = pick(v.ex);
+    return { ...face, dot: null, icon: null, note: v.note || null, variant: { native: v.en, target: v.tr }, example: { native: en, target: tr } };
+  }
+  const row = x.ex ? { tr: x.ex[0], en: x.ex[1] } : wordExamples(x, exampleOpts()).examples[0];
+  return { ...face, dot: x.type, icon: CAT[x.cat].icon, note: x.note || null, variant: null, example: row ? { native: row.en, target: row.tr } : null };
+}
+
+function ensureSession() {
+  const today = dayOf(Date.now());
+  const sig = `${ui.tab}|${ui.tab === 'patterns' ? ui.pgroup : ui.topic}|${ui.dir}|${today}`;
+  if (session?.sig !== sig) {
+    const queue = buildQueue(selectionKeys(), (key) => store.card(key, ui.dir), today, store.doseLeft(ui.dir, today), Math.random);
+    session = { sig, queue, face: null, revealed: false, undo: null };
+  }
+  return session;
+}
+
+// "N due · M new" for the selection and direction; M is what today's dose still allows.
+function practiceCounts() {
+  const today = dayOf(Date.now());
+  const cards = selectionCards();
+  const due = cards.filter((c) => !isNew(c) && c.due <= today).length;
+  const fresh = Math.min(store.doseLeft(ui.dir, today), cards.filter(isNew).length);
+  return countsText(due, Math.max(0, fresh));
+}
+
+function doneState() {
+  const today = dayOf(Date.now());
+  const cards = selectionCards();
+  const ahead = cards.filter((c) => !isNew(c) && c.due > today).map((c) => c.due - today);
+  return { newToday: store.doseUsed(ui.dir, today), canMore: cards.some(isNew), nextIn: ahead.length ? Math.min(...ahead) : null };
+}
+
+function renderPractice() {
+  const s = ensureSession();
+  const key = s.queue[0];
+  let html;
+  if (!key) html = doneHtml(doneState());
+  else {
+    if (s.face?.key !== key) s.face = { key, ...faceOf(ITEM.get(key)) };
+    const card = store.card(key, ui.dir);
+    const previews = { forgot: 0, hard: nextInterval(card, 'hard'), easy: nextInterval(card, 'easy') };
+    html = cardHtml(s.face, { dir: ui.dir, revealed: s.revealed, previews, canUndo: Boolean(s.undo) });
+  }
+  $('#list').innerHTML = `<div class="pc-screen">${html}</div>`;
+  renderProgress();
+}
+
+function answerCard(grade) {
+  const s = session;
+  const key = s?.queue[0];
+  // Only a revealed card takes an answer: a quick second tap lands on the next card, still hidden.
+  if (!key || !s.revealed) return;
+  const today = dayOf(Date.now());
+  const dir = ui.dir;
+  const before = store.card(key, dir);
+  const wasNew = isNew(before);
+  store.setCard(key, dir, answer(before, grade, today, Math.random));
+  if (wasNew) store.useDose(dir, today);
+  s.queue = s.queue.slice(1);
+  if (grade === 'forgot') s.queue = requeue(s.queue, key);
+  s.undo = { key, dir, before, wasNew };
+  s.revealed = false;
+  renderList();
+}
+
+// Puts the last answered card back as it was, at the front, and gives back its new-card count.
+function undoAnswer() {
+  const u = session?.undo;
+  if (!u) return;
+  store.setCard(u.key, u.dir, u.before);
+  if (u.wasNew) store.giveBackDose(u.dir, dayOf(Date.now()));
+  session.queue = [u.key, ...unqueue(session.queue, u.key)];
+  session.undo = null;
+  session.revealed = false;
+  renderList();
+}
+
+function moreCards() {
+  store.addDose(ui.dir, dayOf(Date.now()));
+  session = null;
+  renderList();
+}
+
+// The speaker sits inside the tap-to-reveal area, so it is checked first.
+function practiceClick(e) {
+  const say = e.target.closest('[data-say]');
+  if (say) return speak(say.dataset.say);
+  const grade = e.target.closest('[data-grade]');
+  if (grade) return answerCard(grade.dataset.grade);
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  if (act === 'reveal' && session) {
+    session.revealed = true;
+    renderList();
+  } else if (act === 'undo') undoAnswer();
+  else if (act === 'more') moreCards();
+}
+
+$('#mode').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-mode]');
+  if (!b || b.dataset.mode === ui.mode) return;
+  ui.mode = b.dataset.mode;
+  store.saveUi();
+  session = null;
+  render();
+  $('#list').scrollTop = 0;
+});
+
+$('#dir').addEventListener('click', () => {
+  ui.dir = ui.dir === 'say' ? 'understand' : 'say';
+  store.saveUi();
+  renderControls();
+  renderList();
+});
+
+// Back on screen, maybe the next morning: draw again, so a new day starts a fresh queue and dose.
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && ui.mode === 'practice' && ui.tab !== 'settings') renderList();
+});
 
 // ---------- sheet (detail card) ----------
 
@@ -279,7 +451,7 @@ function headHtml(key, title, tr, meta) {
   const today = dayOf(Date.now());
   const rows = DIRS.map((dir) => ({
     dir,
-    label: dir === 'say' ? 'EN → TR' : 'TR → EN',
+    label: DIR_LABELS[dir],
     st: status(store.card(key, dir), today),
     last: store.card(key, dir)?.last,
   }));
@@ -803,7 +975,7 @@ const inThisTab = (key) => key.startsWith('p:') === (ui.tab === 'patterns');
 function renderClear() {
   const n = store.selectedCount(inThisTab);
   const btn = $('#clear-sel');
-  btn.hidden = n === 0 || ui.tab === 'settings';
+  btn.hidden = n === 0 || ui.tab === 'settings' || ui.mode === 'practice';
   btn.textContent = `Clear (${n})`;
 }
 
@@ -823,6 +995,7 @@ $('#clear-sel').addEventListener('click', () => {
 });
 
 $('#list').addEventListener('click', (e) => {
+  if (ui.mode === 'practice') return practiceClick(e);
   const block = e.target.closest('.block');
   if (!block) return;
   if (e.target.closest('.b-info')) openSheet(block.dataset.key);
@@ -855,9 +1028,10 @@ $('#sort').addEventListener('change', (e) => {
 });
 
 $('#types').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-type], [data-group]');
+  const b = e.target.closest('[data-type], [data-group], [data-topic]');
   if (!b) return;
   if (b.dataset.group) ui.pgroup = b.dataset.group;
+  else if (b.dataset.topic) ui.topic = b.dataset.topic;
   else ui.type = b.dataset.type;
   store.saveUi();
   renderControls();

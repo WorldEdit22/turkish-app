@@ -94,6 +94,11 @@ export const store = {
   doseLeft(dir, today) {
     return doseLeft(this.practice.daily, dir, today);
   },
+  // New cards answered today in this direction.
+  doseUsed(dir, today) {
+    const daily = this.practice.daily;
+    return daily && daily.day === today ? daily[dir].used : 0;
+  },
   useDose(dir, today) {
     this.practice.daily = useDose(this.practice.daily, dir, today);
     this.savePractice();

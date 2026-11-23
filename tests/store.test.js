@@ -137,6 +137,14 @@ test('the daily dose is saved and starts over on a new day', () => {
   assert.equal(store.doseLeft('say', 101), 15);
 });
 
+test("doseUsed counts today's new cards per direction; another day counts none", () => {
+  store.useDose('understand', 200);
+  store.useDose('understand', 200);
+  assert.equal(store.doseUsed('understand', 200), 2);
+  assert.equal(store.doseUsed('say', 200), 0);
+  assert.equal(store.doseUsed('understand', 201), 0);
+});
+
 test('a v2 backup round-trips; an old learned backup is migrated; another app\'s, broken or empty backups are refused', () => {
   const text = store.backupText();
   const parsed = JSON.parse(text);
