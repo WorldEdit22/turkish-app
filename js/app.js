@@ -5,6 +5,7 @@ import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
+import { dayOf } from './srs.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { swipe } from './swipe.js';
 import { reloadOnUpdate } from './update.js';
@@ -720,7 +721,7 @@ $('#settings').addEventListener('click', async (e) => {
       out.textContent = err.message;
     }
   } else if (id === 'set-backup') {
-    const text = JSON.stringify({ app: 'turkish', learned: store.learned });
+    const text = store.backupText();
     const msg = $('#set-progress-msg');
     try {
       await navigator.clipboard.writeText(text);
@@ -742,18 +743,17 @@ $('#settings').addEventListener('click', async (e) => {
       msg.textContent = 'Paste your backup above, then press Restore again.';
       return;
     }
-    try {
-      const data = JSON.parse(ta.value);
-      if (!data || typeof data.learned !== 'object') throw new Error();
-      store.replaceLearned(data.learned);
-      renderSettings();
-      $('#set-progress-msg').textContent = 'Progress restored.';
-    } catch {
+    const restored = store.parseBackup(ta.value, dayOf(Date.now()));
+    if (!restored) {
       msg.textContent = "That doesn't look like a backup from this app.";
+      return;
     }
+    store.replaceCards(restored);
+    renderSettings();
+    $('#set-progress-msg').textContent = 'Progress restored.';
   } else if (id === 'set-reset') {
     if (confirm('Mark everything as not learned? This cannot be undone.')) {
-      store.replaceLearned({});
+      store.resetProgress();
       renderSettings();
     }
   }
