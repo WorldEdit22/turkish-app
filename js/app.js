@@ -5,9 +5,8 @@ import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
-import { dayOf } from './srs.js';
+import { dayOf, DIRS, isKnown, isMastered } from './srs.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
-import { swipe } from './swipe.js';
 import { reloadOnUpdate } from './update.js';
 import { esc, SPEAKER, BUBBLE, ABC } from './html.js';
 import { shrinkPhoto } from './photo.js';
@@ -51,7 +50,8 @@ const shuffle = (arr) => {
   }
   return a;
 };
-const learned = (x) => store.isLearned(keyOf(x));
+const known = (x) => DIRS.some((d) => isKnown(store.card(keyOf(x), d)));
+const mastered = (x) => DIRS.every((d) => isMastered(store.card(keyOf(x), d)));
 const selected = (x) => store.isSelected(keyOf(x));
 
 const INFO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5"/><path d="M12 7.6v.01"/></svg>';
@@ -90,16 +90,12 @@ const SORTS = {
   patterns: [
     ['common', 'Most useful'],
     ['az', 'A–Z'],
-    ['todo', 'To learn first'],
-    ['learned', 'Learned first'],
   ],
   words: [
     ['topic', 'By topic'],
     ['common', 'Most common'],
     ['az', 'A–Z English'],
     ['tr', 'A–Z Turkish'],
-    ['todo', 'To learn first'],
-    ['learned', 'Learned first'],
   ],
 };
 
@@ -117,16 +113,12 @@ function visibleItems(tab) {
   }
   if (!isP && ui.type !== 'all') items = items.filter((w) => w.type === ui.type);
   if (isP && ui.pgroup !== 'all') items = items.filter((p) => p.group === ui.pgroup);
-  const st = ui.status[tab];
-  if (st !== 'all') items = items.filter((x) => learned(x) === (st === 'learned'));
 
   const byRank = (a, b) => a.rank - b.rank;
   const sort = ui.sort[tab];
   const sorted = [...items];
   if (sort === 'az') sorted.sort((a, b) => a.label.localeCompare(b.label, 'en'));
   else if (sort === 'tr') sorted.sort((a, b) => a.tr.localeCompare(b.tr, 'tr'));
-  else if (sort === 'todo') sorted.sort((a, b) => learned(a) - learned(b) || byRank(a, b));
-  else if (sort === 'learned') sorted.sort((a, b) => learned(b) - learned(a) || byRank(a, b));
   else if (sort === 'topic') sorted.sort((a, b) => CAT_ORDER[a.cat] - CAT_ORDER[b.cat] || byRank(a, b));
   else sorted.sort(byRank);
   return sorted;
@@ -134,12 +126,11 @@ function visibleItems(tab) {
 
 // Tapping a block selects it; the ⓘ button opens its card.
 function blockHtml(x, showIcon) {
-  const on = learned(x);
   const sel = store.isSelected(keyOf(x));
   const dot = isPattern(x) ? '' : `<span class="dot t-${x.type}"></span>`;
   return (
-    `<div class="block${on ? ' on' : ''}${sel ? ' sel' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
-    ` aria-pressed="${sel}" aria-label="${esc(`${x.label}, ${x.tr}${on ? ', learned' : ''}`)}">` +
+    `<div class="block${sel ? ' sel' : ''}" data-key="${esc(keyOf(x))}" role="button" tabindex="0"` +
+    ` aria-pressed="${sel}" aria-label="${esc(`${x.label}, ${x.tr}`)}">` +
     `<div class="b-en">${dot}<span>${esc(x.label)}</span></div>` +
     (ui.showTurkish ? `<div class="b-tr">${esc(x.tr)}</div>` : '') +
     `<button class="b-info" aria-label="Details">${INFO}</button>` +
@@ -160,7 +151,7 @@ function renderList() {
       const inCat = items.filter((w) => w.cat === c.id);
       if (!inCat.length) continue;
       const all = WORDS.filter((w) => w.cat === c.id);
-      const done = all.filter(learned).length;
+      const done = all.filter(mastered).length;
       html +=
         `<h2 class="sec">${c.icon} ${esc(c.label)} <span class="count">${done}/${all.length}</span></h2>` +
         `<div class="grid">${inCat.map((w) => blockHtml(w, false)).join('')}</div>`;
@@ -174,7 +165,7 @@ function renderList() {
 
 function renderProgress() {
   const all = ui.tab === 'patterns' ? PATTERNS : ui.tab === 'words' ? WORDS : null;
-  $('#progress').textContent = all ? `${all.filter(learned).length} / ${all.length} learned` : 'Settings';
+  $('#progress').textContent = all ? `${all.filter(mastered).length} / ${all.length} mastered` : 'Settings';
 }
 
 function renderControls() {
@@ -189,7 +180,6 @@ function renderControls() {
     return;
   }
 
-  document.querySelectorAll('#status button').forEach((b) => b.classList.toggle('on', b.dataset.status === ui.status[tab]));
   $('#sort').innerHTML = SORTS[tab]
     .map(([v, label]) => `<option value="${v}"${ui.sort[tab] === v ? ' selected' : ''}>${label}</option>`)
     .join('');
@@ -284,20 +274,19 @@ const headButtons = () =>
   `<button class="close" data-act="close" aria-label="Close">✕</button>`;
 
 // The title row with ✕ sits in .s-top, which stays at the top while the card scrolls.
-function headHtml(title, tr, on, meta) {
+function headHtml(title, tr, meta) {
   return (
     `<div class="s-top"><div class="grabber"></div>` +
     `<div class="s-head"><h2>${esc(title)}</h2>${headButtons()}</div></div>` +
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
-    (meta ? `<div class="s-meta">${meta}</div>` : '') +
-    `<button class="learn-btn${on ? ' on' : ''}" data-act="toggle">${on ? '✓ Learned' : 'Mark as learned'}</button>`
+    (meta ? `<div class="s-meta">${meta}</div>` : '')
   );
 }
 
-const exampleOpts = () => ({ words: BY_COMMON, patterns: PATTERNS, isSelected: selected, isLearned: learned });
+const exampleOpts = () => ({ words: BY_COMMON, patterns: PATTERNS, isSelected: selected, isKnown: known });
 
 function patternSheet(p) {
-  let h = headHtml(p.en, p.tr, learned(p), '');
+  let h = headHtml(p.en, p.tr, '');
   p.variants.forEach((v, vi) => {
     h +=
       `<section class="variant">` +
@@ -313,7 +302,7 @@ function patternSheet(p) {
 function wordSheet(w) {
   const c = CAT[w.cat];
   const meta = `${TYPES[w.type].one} · ${c.icon} ${esc(c.label)}`;
-  let h = headHtml(w.label, w.tr, learned(w), meta);
+  let h = headHtml(w.label, w.tr, meta);
   if (w.note) h += `<p class="note">${esc(w.note)}</p>`;
   h += examplesHtml(wordExamples(w, exampleOpts()), (p) => p.en);
   if (w.type !== 'phrase') h += aiHtml(w.id);
@@ -606,11 +595,11 @@ async function askAi(button) {
   if (isPattern(x)) {
     const v = x.variants[Number(button.dataset.v)];
     const fitting = BY_COMMON.filter((w) => fits(slotOf(x, v), w));
-    const mine = fitting.filter(learned);
+    const mine = fitting.filter(known);
     const words = shuffle(mine.length ? mine : fitting.slice(0, 20)).slice(0, 6);
     prompt = patternPrompt({ variant: v, patternEn: x.en, words, existing });
   } else {
-    const pairs = wordPatternPairs(x, PATTERNS).filter(({ p }) => learned(p));
+    const pairs = wordPatternPairs(x, PATTERNS).filter(({ p }) => known(p));
     const patterns = shuffle(pairs.map(({ v }) => v)).slice(0, 4);
     prompt = wordPrompt({ word: x.tr, meaning: x.label, kind: TYPES[x.type].one, patterns, existing });
   }
@@ -653,12 +642,7 @@ $('#sheet-body').addEventListener('click', (e) => {
     }
   } else if (act === 'retry-read') readPhoto(null);
   else if (act === 'retry-explain') explain(sentenceOf(scanView));
-  else if (act === 'toggle') {
-    store.toggleLearned(openKey);
-    const on = store.isLearned(openKey);
-    btn.classList.toggle('on', on);
-    btn.textContent = on ? '✓ Learned' : 'Mark as learned';
-  } else if (act === 'ai') askAi(btn);
+  else if (act === 'ai') askAi(btn);
   else if (act === 'setup') {
     sheet.close();
     setTab('settings');
@@ -671,8 +655,8 @@ function renderSettings() {
   const s = store.settings;
   const p = PROVIDERS[s.provider];
   const voice = turkishVoice();
-  const nP = PATTERNS.filter(learned).length;
-  const nW = WORDS.filter(learned).length;
+  const nP = PATTERNS.filter(mastered).length;
+  const nW = WORDS.filter(mastered).length;
   $('#settings').innerHTML =
     `<section class="card"><h2>Blocks</h2>` +
     `<label class="toggle-row"><span>Show Turkish on blocks</span><input type="checkbox" class="switch" id="set-showtr"${ui.showTurkish ? ' checked' : ''}></label>` +
@@ -796,29 +780,6 @@ function toast(message, ms = 1500) {
   toastTimer = setTimeout(() => el.classList.remove('show'), ms);
 }
 
-function setLearned(key, on) {
-  if (store.isLearned(key) !== on) store.toggleLearned(key);
-  toast(on ? '✓ Learned' : 'Not learned');
-  renderList();
-}
-
-// Swipe a block right to mark it learned, left to unmark; the block follows the finger.
-const swiper = swipe($('#list'), {
-  find: (e) => e.target.closest?.('.block') || null,
-  onDrag: (block, dx) => {
-    const x = Math.max(-90, Math.min(90, dx * 0.6));
-    block.classList.add('dragging');
-    block.classList.toggle('to-on', dx >= 60);
-    block.classList.toggle('to-off', dx <= -60);
-    block.style.transform = `translateX(${x}px)`;
-  },
-  onEnd: (block) => {
-    block.classList.remove('dragging', 'to-on', 'to-off');
-    block.style.transform = '';
-  },
-  onSwipe: (block, dir) => setLearned(block.dataset.key, dir === 'right'),
-});
-
 // Selection: shown in place, so the list keeps its scroll position and focus.
 // Clear (N) counts and clears only the tab you are on: pattern keys start with "p:".
 const inThisTab = (key) => key.startsWith('p:') === (ui.tab === 'patterns');
@@ -847,7 +808,7 @@ $('#clear-sel').addEventListener('click', () => {
 
 $('#list').addEventListener('click', (e) => {
   const block = e.target.closest('.block');
-  if (!block || swiper.consumeClick()) return;
+  if (!block) return;
   if (e.target.closest('.b-info')) openSheet(block.dataset.key);
   else toggleSelect(block);
 });
@@ -870,15 +831,6 @@ $('#tr-btn').innerHTML = BUBBLE;
 $('#tr-btn').addEventListener('click', () => openTranslator());
 $('#abc-btn').innerHTML = ABC;
 $('#abc-btn').addEventListener('click', () => openAlphabet());
-
-$('#status').addEventListener('click', (e) => {
-  const b = e.target.closest('[data-status]');
-  if (!b) return;
-  ui.status[ui.tab] = b.dataset.status;
-  store.saveUi();
-  renderControls();
-  renderList();
-});
 
 $('#sort').addEventListener('change', (e) => {
   ui.sort[ui.tab] = e.target.value;

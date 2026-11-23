@@ -18,7 +18,6 @@ const ASSETS = [
   'js/practiceview.js',
   'js/scanview.js',
   'js/srs.js',
-  'js/swipe.js',
   'js/translate.js',
   'js/translateview.js',
   'js/update.js',

@@ -58,6 +58,22 @@ Object.defineProperty(globalThis, 'localStorage', {
   value: { getItem: (k) => saved.get(k) ?? null, setItem: (k, v) => saved.set(k, String(v)) },
 });
 
+// Seed before app.js loads: one real word mastered both ways, and a card for a word that no longer exists.
+const { dayOf } = await import('../js/srs.js');
+const { WORDS } = await import('../data/words.js');
+const mastered = () => ({ ivl: 30, due: dayOf(Date.now()) + 30, last: 'easy', prev: null });
+saved.set(
+  'tl.practice',
+  JSON.stringify({
+    migrated: true,
+    cards: {
+      'food:ekmek': { say: mastered(), understand: mastered() },
+      'food:gone': { say: mastered(), understand: mastered() },
+    },
+    daily: null,
+  }),
+);
+
 await import('../js/app.js');
 
 // A click on a block's ⓘ, the way the list's click handler sees it.
@@ -72,6 +88,17 @@ test('the word list draws', () => {
   assert.ok((html.match(/class="block/g) || []).length > 900, 'every word has a block');
   assert.ok(html.includes('data-key="drinks:su"'));
   assert.ok(clean(html));
+});
+
+test('the word list has no learned look and counts mastered words; cards for words that no longer exist count nowhere', () => {
+  assert.ok(!$('#list').innerHTML.includes('class="block on'));
+  assert.equal($('#progress').textContent, `1 / ${WORDS.length} mastered`);
+});
+
+test('the status filter and the learned sorts are gone', () => {
+  const html = $('#sort').innerHTML;
+  assert.ok(html.includes('value="topic"'), 'the sort list is drawn');
+  assert.ok(!/value="(todo|learned)"/.test(html));
 });
 
 test('the Aa button opens the alphabet with every letter', () => {

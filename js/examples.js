@@ -1,7 +1,7 @@
 // Builds the example sentences shown in a card, in two sections:
 //   selected  sentences made with what the user selected, plus `notUsed`:
 //             the selected items that could not be used here
-//   examples  the hand-written ones, then a few with learned (or common)
+//   examples  the hand-written ones, then a few with known (or common)
 //             words or patterns
 // Pure functions, so they are tested in Node.
 //
@@ -39,7 +39,7 @@ export function wordPatternPairs(word, patterns) {
   return pairs;
 }
 
-export function patternExamples(p, vi, { words, isSelected, isLearned, rand = Math.random }) {
+export function patternExamples(p, vi, { words, isSelected, isKnown, rand = Math.random }) {
   const v = p.variants[vi];
   const hand = v.ex.map(([tr, en]) => ({ tr, en }));
   const chosen = words.filter(isSelected);
@@ -49,8 +49,8 @@ export function patternExamples(p, vi, { words, isSelected, isLearned, rand = Ma
   const fitting = words.filter(fitsHere);
   // Selected words are shown already; the extras come from the rest.
   const free = fitting.filter((w) => !isSelected(w));
-  const learned = free.filter(isLearned);
-  const pool = learned.length ? learned : free.slice(0, 15);
+  const known = free.filter(isKnown);
+  const pool = known.length ? known : free.slice(0, 15);
   return sections(
     chosen.filter(fitsHere).map(make),
     chosen.filter((w) => !fitsHere(w)),
@@ -59,16 +59,16 @@ export function patternExamples(p, vi, { words, isSelected, isLearned, rand = Ma
   );
 }
 
-export function wordExamples(w, { patterns, isSelected, isLearned, rand = Math.random }) {
+export function wordExamples(w, { patterns, isSelected, isKnown, rand = Math.random }) {
   const make = ({ p, v }) => ({ ...fill(tpl(pick(v.t, rand)), w), from: `${v.tr} · ${p.en}` });
   const pairs = wordPatternPairs(w, patterns);
   const used = new Set(pairs.map(({ p }) => p));
   const top = new Set(patterns.slice(0, 15));
   // Selected patterns are shown already; the extras come from the rest.
   const free = pairs.filter(({ p }) => !isSelected(p));
-  const learned = free.filter(({ p }) => isLearned(p));
+  const known = free.filter(({ p }) => isKnown(p));
   const common = free.filter(({ p }) => top.has(p));
-  const pool = learned.length ? learned : common.length >= 4 ? common : free.slice(0, 10);
+  const pool = known.length ? known : common.length >= 4 ? common : free.slice(0, 10);
   const hand = w.ex ? [{ tr: w.ex[0], en: w.ex[1] }] : [];
   return sections(
     pairs.filter(({ p }) => isSelected(p)).map(make),
