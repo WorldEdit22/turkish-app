@@ -30,7 +30,7 @@ export const LETTERS = [
   { ch: 'T', name: 'te', sound: 'As in English.', ex: ['tuz', 'salt'] },
   { ch: 'U', name: 'u', sound: 'Like the oo in "food", but short.', ex: ['uçak', 'plane'] },
   { ch: 'Ü', name: 'ü', sound: 'Close to Swedish y (by): say ee with rounded lips.', ex: ['üzüm', 'grapes'] },
-  { ch: 'V', name: 've', sound: 'Softer than English v, between v and w.', ex: ['valiz', 'suitcase'] },
+  { ch: 'V', name: 've', sound: 'Like English v; next to o or u it can sound close to w (tavuk).', ex: ['valiz', 'suitcase'] },
   { ch: 'Y', name: 'ye', sound: 'Always like the y in "yes".', ex: ['yol', 'road'] },
   { ch: 'Z', name: 'ze', sound: 'Like the z in "zoo".', ex: ['zaman', 'time'] },
 ];
@@ -39,7 +39,7 @@ export const TRICKY = [
   {
     ch: 'ğ',
     title: 'ğ, soft g',
-    sound: 'Never starts a word and is not said as a g. It lengthens the vowel before it (dağ ≈ daa); between e or i it can sound like a light y (değil ≈ deyil).',
+    sound: 'Never starts a word and is not said as a g. It lengthens the vowel before it (dağ ≈ daa); after e, i, ö or ü it can sound like a light y (değil ≈ deyil).',
     ex: [['dağ', 'mountain'], ['yağmur', 'rain'], ['değil', 'not']],
   },
   {

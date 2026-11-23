@@ -34,6 +34,15 @@ test('the window lists every letter, then the tricky letters', () => {
   assert.ok(html.includes('data-say="anne"'), 'the example has a speaker');
 });
 
+// Content the review corrected: v is a plain v, ğ's y-sound comes after front vowels,
+// and the intro does not claim ğ is said.
+test('the sound descriptions are accurate', () => {
+  const sound = (ch) => LETTERS.find((l) => l.ch === ch).sound;
+  assert.match(sound('V'), /^Like English v/);
+  assert.match(TRICKY.find((t) => t.ch === 'ğ').sound, /after e, i, ö or ü/);
+  assert.match(alphabetHtml(LETTERS, TRICKY), /class="note">[^<]*ğ/);
+});
+
 test('text is escaped', () => {
   const html = alphabetHtml(
     [{ ch: '<', name: '<n>', sound: '<s>', ex: ['<e>', '<t>'] }],

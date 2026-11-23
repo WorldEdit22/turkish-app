@@ -81,7 +81,8 @@
 
 * { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* Only the root's overscroll-behavior reaches the page: no rubber band, also when a drag starts on a bar. */
+html { -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
 
 /* The page itself never scrolls: a column of top bar, list and tab bar fills the screen and only
    the list (main) scrolls, so iOS draws the scroll line between the bars. It also keeps iOS 26 from
@@ -125,7 +126,8 @@ button { cursor: pointer; }
 }
 
 .title-row { display: flex; align-items: center; gap: 8px; }
-.progress { color: var(--on-grad-soft); font-size: 15px; font-weight: 700; flex: 1; white-space: nowrap; }
+/* Gives way (…) when the row is full, so the buttons, the gear last, always fit on screen. */
+.progress { color: var(--on-grad-soft); font-size: 15px; font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .icon-btn {
   border: 1px solid var(--glass-line);

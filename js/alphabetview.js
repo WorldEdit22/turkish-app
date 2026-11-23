@@ -36,7 +36,7 @@ export function alphabetHtml(letters, tricky) {
   return (
     `<div class="s-top"><div class="grabber"></div>` +
     `<div class="s-head"><h2>Turkish alphabet</h2><button class="close" data-act="close" aria-label="Close">✕</button></div></div>` +
-    `<p class="note">Every letter is always said the same way, and every letter is said.</p>` +
+    `<p class="note">Every letter is always said the same way, and every letter is said, except ğ.</p>` +
     `<div class="abc-list">${rows}</div>` +
     `<h3 class="abc-head">Tricky letters</h3>${hard}`
   );

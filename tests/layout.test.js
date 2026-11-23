@@ -27,6 +27,15 @@ test('the alphabet window has the same window styles as the others', () => {
   assert.ok(/dialog#alphabet::backdrop/.test(css), 'the backdrop rule names #alphabet');
 });
 
+test('the progress text gives way, so the top row never pushes the gear off screen', () => {
+  const p = rule(css, '.progress');
+  for (const d of ['min-width: 0', 'overflow: hidden', 'text-overflow: ellipsis']) assert.ok(p.includes(d), d);
+});
+
+test('the page itself never rubber-bands, also when a drag starts on a bar', () => {
+  assert.ok(rule(css, 'html').includes('overscroll-behavior: none'));
+});
+
 test('the bars sit outside the scrolling area', () => {
   assert.ok(!rule(css, '.tabs').includes('position: fixed'));
   assert.ok(!rule(css, '.top').includes('position: sticky'));
