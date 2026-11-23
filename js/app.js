@@ -222,7 +222,9 @@ function setTab(tab) {
   store.saveUi();
   $('#search').value = '';
   render();
-  window.scrollTo(0, 0);
+  // Only the list and Settings scroll; the page itself never does.
+  $('#list').scrollTop = 0;
+  $('#settings').scrollTop = 0;
 }
 
 // ---------- sheet (detail card) ----------
