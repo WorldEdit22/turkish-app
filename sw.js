@@ -15,6 +15,7 @@ const ASSETS = [
   'js/examples.js',
   'js/html.js',
   'js/photo.js',
+  'js/practiceview.js',
   'js/scanview.js',
   'js/srs.js',
   'js/swipe.js',

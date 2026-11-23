@@ -1,0 +1,129 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { cardHtml, doneHtml, recallHtml, intervalText, statusText, countsText } from '../js/practiceview.js';
+
+const face = (o = {}) => ({
+  native: 'water',
+  target: 'su',
+  say: 'su',
+  dot: 'noun',
+  icon: '💧',
+  hint: null,
+  forms: null,
+  note: null,
+  variant: null,
+  example: null,
+  ...o,
+});
+const previews = { forgot: 0, hard: 1, easy: 3 };
+const opts = (o = {}) => ({ dir: 'say', revealed: false, previews, canUndo: false, ...o });
+
+test('the say side shows the native text and hides the answer until revealed', () => {
+  const html = cardHtml(face(), opts());
+  assert.match(html, /data-act="reveal"/);
+  assert.ok(html.includes('water'));
+  assert.ok(!html.includes('data-grade'));
+  assert.ok(!html.includes('su'));
+  assert.ok(html.includes('Show answer'));
+});
+
+test('revealed: the other side, a speaker, the example and three answers with their intervals', () => {
+  const html = cardHtml(
+    face({ example: { native: 'I drink water', target: 'Su içerim', hint: null } }),
+    opts({ revealed: true }),
+  );
+  assert.ok(!html.includes('data-act="reveal"'));
+  assert.match(html, /class="pc-target"[^>]*>su</);
+  assert.match(html, /<button class="say" data-say="su" aria-label="Listen">/);
+  assert.match(html, /<button class="say" data-say="Su içerim" aria-label="Listen">/);
+  assert.ok(html.includes('I drink water'));
+  for (const g of ['forgot', 'hard', 'easy']) assert.match(html, new RegExp(`<button class="grade ${g}" data-grade="${g}">`));
+  assert.ok(html.includes('Forgot') && html.includes('Hard') && html.includes('Easy'));
+  assert.ok(html.includes('today') && html.includes('1 day') && html.includes('~3 days'));
+});
+
+test('the understand side starts from the target text with a speaker', () => {
+  const html = cardHtml(face({ say: 'su!' }), opts({ dir: 'understand' }));
+  assert.match(html, /data-act="reveal"/);
+  assert.match(html, /data-say="su!"/);
+  assert.ok(!html.includes('water'));
+  const back = cardHtml(face(), opts({ dir: 'understand', revealed: true }));
+  assert.ok(back.includes('water'));
+});
+
+test('hint and forms render only when present', () => {
+  assert.ok(!cardHtml(face(), opts({ revealed: true })).includes('pc-hint'));
+  const html = cardHtml(face({ hint: 'su', forms: 'suyu' }), opts({ revealed: true }));
+  assert.match(html, /class="pc-hint"/);
+  assert.match(html, /class="pc-forms"/);
+});
+
+test('a pattern card\'s back shows the chosen variant\'s form', () => {
+  const html = cardHtml(face({ variant: { native: 'to the water', target: 'suya' }, note: 'dative' }), opts({ revealed: true }));
+  assert.match(html, /class="pc-variant"/);
+  assert.ok(html.includes('to the water') && html.includes('suya'));
+  assert.match(html, /class="pc-note"[^>]*>dative</);
+  assert.ok(!cardHtml(face(), opts({ revealed: true })).includes('pc-variant'));
+});
+
+test('Undo shows only when there is something to undo', () => {
+  assert.ok(!cardHtml(face(), opts()).includes('data-act="undo"'));
+  const html = cardHtml(face(), opts({ canUndo: true }));
+  assert.match(html, /data-act="undo"/);
+  assert.ok(html.includes('↶ Undo'));
+});
+
+test('done: More while unseen cards remain; otherwise when the next review is', () => {
+  const more = doneHtml({ newToday: 15, canMore: true, nextIn: 2 });
+  assert.ok(more.includes('Done for today'));
+  assert.ok(more.includes('15 new cards today'));
+  assert.match(more, /data-act="more"/);
+  assert.ok(!more.includes('All caught up'));
+  const caught = doneHtml({ newToday: 0, canMore: false, nextIn: 4 });
+  assert.ok(!caught.includes('data-act="more"'));
+  assert.ok(caught.includes('All caught up here. Next review in 4 days'));
+  const none = doneHtml({ newToday: 0, canMore: false, nextIn: null });
+  assert.ok(!none.includes('All caught up'));
+});
+
+test('the window\'s Practice section highlights each direction\'s last answer', () => {
+  const html = recallHtml([
+    { dir: 'say', label: 'Say it', st: { kind: 'due', days: 0 }, last: 'hard' },
+    { dir: 'understand', label: 'Understand it', st: { kind: 'new', days: 0 }, last: undefined },
+  ]);
+  assert.ok(html.includes('Practice'));
+  assert.equal(html.match(/data-act="recall"/g).length, 8);
+  assert.equal(html.match(/class="[^"]*\bon\b[^"]*"/g).length, 2);
+  assert.match(html, /<button class="on" data-act="recall" data-dir="say" data-grade="hard">/);
+  assert.match(html, /<button class="on" data-act="recall" data-dir="understand" data-grade="new">/);
+  assert.ok(html.includes('Due today') && html.includes('Say it'));
+});
+
+test('long intervals read in months', () => {
+  assert.equal(intervalText(90), '~3 months');
+  assert.equal(intervalText(59), '~59 days');
+  assert.equal(intervalText(0), 'today');
+  assert.equal(intervalText(1), '1 day');
+});
+
+test('status and counts text', () => {
+  assert.equal(statusText({ kind: 'new', days: 0 }), 'New');
+  assert.equal(statusText({ kind: 'due', days: 0 }), 'Due today');
+  assert.equal(statusText({ kind: 'later', days: 5 }), 'Next in 5 days');
+  assert.equal(statusText({ kind: 'mastered', days: 30 }), 'Mastered · next in 30 days');
+  assert.equal(countsText(3, 12), '3 due · 12 new');
+});
+
+test('text is escaped', () => {
+  const E = '<img src=x onerror=alert(1)>';
+  const f = face({
+    native: E, target: E, say: E, icon: E, hint: E, forms: E, note: E,
+    variant: { native: E, target: E }, example: { native: E, target: E, hint: E },
+  });
+  const html =
+    cardHtml(f, opts({ revealed: true })) +
+    cardHtml(f, opts({ dir: 'understand' })) +
+    recallHtml([{ dir: 'say', label: E, st: { kind: 'new', days: 0 }, last: 'new' }]);
+  assert.ok(!html.includes('<img'));
+  assert.ok(html.includes('&lt;img src=x onerror=alert(1)&gt;'));
+});
