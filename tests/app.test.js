@@ -121,6 +121,98 @@ test("a word window's title row has the alphabet and translate buttons, and Aa o
   $('#sheet').close();
 });
 
+const { store } = await import('../js/store.js');
+const clickSheet = (dataset) => $('#sheet-body').fire('click', { target: { closest: (s) => (s === '[data-act]' ? { dataset } : null) } });
+const onButton = (html, dir, grade) => html.includes(`class="on" data-act="recall" data-dir="${dir}" data-grade="${grade}"`);
+const clickSettings = (id) => $('#settings').fire('click', { target: { id, closest: () => null } });
+const withSettings = async (fn) => {
+  $('#gear').fire('click');
+  try {
+    await fn();
+  } finally {
+    $('#gear').fire('click');
+  }
+};
+
+test("a word window shows both directions' recall state with New highlighted", () => {
+  openBlock('drinks:su');
+  try {
+    const html = $('#sheet-body').innerHTML;
+    assert.equal((html.match(/data-dir="/g) || []).length, 8, 'two rows of four buttons');
+    assert.ok(html.includes('EN → TR') && html.includes('TR → EN'));
+    assert.ok(onButton(html, 'say', 'new') && onButton(html, 'understand', 'new'));
+    assert.ok(!html.includes('learn-btn') && clean(html));
+  } finally {
+    $('#sheet').close();
+  }
+});
+
+test('tapping Easy in the window answers that direction now; tapping New puts it back, and Easy again restores it', () => {
+  const today = dayOf(Date.now());
+  const dose = store.doseLeft('say', today);
+  openBlock('drinks:su');
+  try {
+    $('#sheet').scrollTop = 120;
+    clickSheet({ act: 'recall', dir: 'say', grade: 'easy' });
+    assert.equal(store.card('drinks:su', 'say').last, 'easy');
+    assert.ok(onButton($('#sheet-body').innerHTML, 'say', 'easy'), 'the window is redrawn');
+    assert.ok(onButton($('#sheet-body').innerHTML, 'understand', 'new'), 'the other direction is untouched');
+    assert.equal($('#sheet').scrollTop, 120, 'the scroll position is kept');
+    assert.equal(store.doseLeft('say', today), dose, 'the daily dose is untouched');
+
+    clickSheet({ act: 'recall', dir: 'say', grade: 'new' });
+    assert.ok(onButton($('#sheet-body').innerHTML, 'say', 'new'));
+    assert.equal(store.card('drinks:su', 'say')?.last ?? 'new', 'new');
+
+    clickSheet({ act: 'recall', dir: 'say', grade: 'easy' });
+    assert.equal(store.card('drinks:su', 'say').last, 'easy');
+    assert.equal(store.doseLeft('say', today), dose);
+  } finally {
+    $('#sheet').close();
+    const cards = { ...store.cards };
+    delete cards['drinks:su'];
+    store.replaceCards(cards);
+  }
+});
+
+test('Settings shows mastered counts', () =>
+  withSettings(() => {
+    const html = $('#settings').innerHTML;
+    assert.ok(html.includes(`0 of `) && html.includes(`1 of ${WORDS.length} words mastered.`), html);
+    assert.ok(!/learned/.test(html));
+  }));
+
+test('Restore asks first: declined leaves the cards as they were', () =>
+  withSettings(() => {
+    const before = structuredClone(store.cards);
+    const backup = JSON.parse(store.backupText());
+    backup.cards = {};
+    const ask = globalThis.confirm;
+    let asked = 0;
+    globalThis.confirm = () => (asked++, false);
+    try {
+      clickSettings('set-restore'); // opens the paste box
+      $('#set-backup-text').value = JSON.stringify(backup);
+      clickSettings('set-restore');
+      assert.equal(asked, 1);
+      assert.deepEqual(store.cards, before);
+    } finally {
+      globalThis.confirm = ask;
+    }
+  }));
+
+test('Reset clears practice data', () =>
+  withSettings(() => {
+    const before = structuredClone(store.cards);
+    try {
+      clickSettings('set-reset');
+      assert.deepEqual(store.cards, {});
+      assert.ok($('#settings').innerHTML.includes(`0 of ${WORDS.length} words mastered.`));
+    } finally {
+      store.replaceCards(before);
+    }
+  }));
+
 test('switching tabs scrolls the list, not the window, back to the top', () => {
   $('#list').scrollTop = 500;
   const tabs = document.querySelector('.tabs');

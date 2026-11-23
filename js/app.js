@@ -5,7 +5,8 @@ import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
-import { dayOf, DIRS, isKnown, isMastered } from './srs.js';
+import { correct, dayOf, DIRS, isKnown, isMastered, status } from './srs.js';
+import { recallHtml } from './practiceview.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { reloadOnUpdate } from './update.js';
 import { esc, SPEAKER, BUBBLE, ABC } from './html.js';
@@ -274,19 +275,27 @@ const headButtons = () =>
   `<button class="close" data-act="close" aria-label="Close">✕</button>`;
 
 // The title row with ✕ sits in .s-top, which stays at the top while the card scrolls.
-function headHtml(title, tr, meta) {
+function headHtml(key, title, tr, meta) {
+  const today = dayOf(Date.now());
+  const rows = DIRS.map((dir) => ({
+    dir,
+    label: dir === 'say' ? 'EN → TR' : 'TR → EN',
+    st: status(store.card(key, dir), today),
+    last: store.card(key, dir)?.last,
+  }));
   return (
     `<div class="s-top"><div class="grabber"></div>` +
     `<div class="s-head"><h2>${esc(title)}</h2>${headButtons()}</div></div>` +
     `<div class="s-tr"><span>${esc(tr)}</span><button class="say" data-say="${esc(tr.replace(/_+|\.\.\./g, ' '))}" aria-label="Listen">${SPEAKER}</button></div>` +
-    (meta ? `<div class="s-meta">${meta}</div>` : '')
+    (meta ? `<div class="s-meta">${meta}</div>` : '') +
+    recallHtml(rows)
   );
 }
 
 const exampleOpts = () => ({ words: BY_COMMON, patterns: PATTERNS, isSelected: selected, isKnown: known });
 
 function patternSheet(p) {
-  let h = headHtml(p.en, p.tr, '');
+  let h = headHtml(p.key, p.en, p.tr, '');
   p.variants.forEach((v, vi) => {
     h +=
       `<section class="variant">` +
@@ -302,7 +311,7 @@ function patternSheet(p) {
 function wordSheet(w) {
   const c = CAT[w.cat];
   const meta = `${TYPES[w.type].one} · ${c.icon} ${esc(c.label)}`;
-  let h = headHtml(w.label, w.tr, meta);
+  let h = headHtml(w.id, w.label, w.tr, meta);
   if (w.note) h += `<p class="note">${esc(w.note)}</p>`;
   h += examplesHtml(wordExamples(w, exampleOpts()), (p) => p.en);
   if (w.type !== 'phrase') h += aiHtml(w.id);
@@ -633,7 +642,13 @@ $('#sheet-body').addEventListener('click', (e) => {
   if (act === 'close') sheet.close();
   else if (act === 'translate') openTranslator();
   else if (act === 'alphabet') openAlphabet();
-  else if (act === 'back') openScanView(scanView.kind === 'sentence' ? { kind: 'scan', id: scanView.id } : { kind: 'scans' });
+  else if (act === 'recall') {
+    const { dir, grade } = btn.dataset;
+    store.setCard(openKey, dir, correct(store.card(openKey, dir), grade, dayOf(Date.now()), Math.random));
+    const top = sheet.scrollTop;
+    renderSheet();
+    sheet.scrollTop = top;
+  } else if (act === 'back') openScanView(scanView.kind === 'sentence' ? { kind: 'scan', id: scanView.id } : { kind: 'scans' });
   else if (act === 'open-scan') openScanView({ kind: 'scan', id: btn.dataset.id });
   else if (act === 'delete-scan') {
     if (confirm('Delete this scan?')) {
@@ -662,7 +677,7 @@ function renderSettings() {
     `<label class="toggle-row"><span>Show Turkish on blocks</span><input type="checkbox" class="switch" id="set-showtr"${ui.showTurkish ? ' checked' : ''}></label>` +
     `<p>Turn it off to test yourself: read the English, say the Turkish, then tap ⓘ to check.</p></section>` +
     `<section class="card"><h2>More examples with a free AI</h2>` +
-    `<p>The built-in examples always work, offline too. Add a free AI key to get extra sentences built from your learned words. The key is stored only on this phone.</p>` +
+    `<p>The built-in examples always work, offline too. Add a free AI key to get extra sentences built from the words you know. The key is stored only on this phone.</p>` +
     `<p>Photo scans (the camera button next to the search field) always use the Gemini key.</p>` +
     `<label class="field">Provider<select id="set-provider"><option value="">Off</option>` +
     Object.entries(PROVIDERS)
@@ -683,7 +698,7 @@ function renderSettings() {
       : `<p>No Turkish voice found yet. On iPhone, add one in Settings → Accessibility → Spoken Content → Voices → Turkish.</p>`) +
     `<p>No sound? Silent mode mutes it on iPhone.</p>` +
     `<div class="btns"><button class="btn" data-say="Merhaba! Nasılsın?">Try it: Merhaba! Nasılsın?</button></div></section>` +
-    `<section class="card"><h2>Progress</h2><p>${nP} of ${PATTERNS.length} patterns and ${nW} of ${WORDS.length} words learned.</p>` +
+    `<section class="card"><h2>Progress</h2><p>${nP} of ${PATTERNS.length} patterns and ${nW} of ${WORDS.length} words mastered.</p>` +
     `<p>Progress is saved on this phone. Copy a backup now and then, for example into Notes.</p>` +
     `<div class="btns"><button class="btn" id="set-backup">Copy backup</button><button class="btn" id="set-restore">Restore…</button><button class="btn danger" id="set-reset">Reset progress</button></div>` +
     `<textarea id="set-backup-text" hidden placeholder="Paste a backup here, then press Restore again"></textarea><p class="status-msg" id="set-progress-msg"></p></section>` +
@@ -732,11 +747,12 @@ $('#settings').addEventListener('click', async (e) => {
       msg.textContent = "That doesn't look like a backup from this app.";
       return;
     }
+    if (!confirm('Restore this backup? It replaces your current practice progress.')) return;
     store.replaceCards(restored);
     renderSettings();
     $('#set-progress-msg').textContent = 'Progress restored.';
   } else if (id === 'set-reset') {
-    if (confirm('Mark everything as not learned? This cannot be undone.')) {
+    if (confirm('Clear all practice progress? This cannot be undone.')) {
       store.resetProgress();
       renderSettings();
     }
