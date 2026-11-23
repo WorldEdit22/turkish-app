@@ -22,6 +22,11 @@ test('the page is a column that does not scroll; only main scrolls', () => {
   for (const d of ['flex: 1', 'min-height: 0', 'overflow-y: auto']) assert.ok(main.includes(d), d);
 });
 
+test('the alphabet window has the same window styles as the others', () => {
+  assert.ok(/dialog#sheet, dialog#translator, dialog#alphabet \{/.test(css), 'the window rule names #alphabet');
+  assert.ok(/dialog#alphabet::backdrop/.test(css), 'the backdrop rule names #alphabet');
+});
+
 test('the bars sit outside the scrolling area', () => {
   assert.ok(!rule(css, '.tabs').includes('position: fixed'));
   assert.ok(!rule(css, '.top').includes('position: sticky'));

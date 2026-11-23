@@ -1,17 +1,19 @@
 import { WORDS, CATEGORIES, TYPES } from '../data/words.js';
 import { PATTERNS, GROUPS } from '../data/patterns.js';
 import { RANKS } from '../data/ranks.js';
+import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { swipe } from './swipe.js';
 import { reloadOnUpdate } from './update.js';
-import { esc, SPEAKER, BUBBLE } from './html.js';
+import { esc, SPEAKER, BUBBLE, ABC } from './html.js';
 import { shrinkPhoto } from './photo.js';
 import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
 import { translate, TranslateError, FAILED, googleLink, swapState } from './translate.js';
 import { translatorHtml, resultHtml } from './translateview.js';
+import { alphabetHtml } from './alphabetview.js';
 
 // ---------- data ----------
 
@@ -274,8 +276,9 @@ function aiHtml(cacheKey, vi = '') {
   );
 }
 
-// The translate bubble and ✕, at the right end of every window's title row.
+// The alphabet, the translate bubble and ✕, at the right end of every window's title row.
 const headButtons = () =>
+  `<button class="head-abc" data-act="alphabet" aria-label="Alphabet">${ABC}</button>` +
   `<button class="head-tr" data-act="translate" aria-label="Translate">${BUBBLE}</button>` +
   `<button class="close" data-act="close" aria-label="Close">✕</button>`;
 
@@ -561,7 +564,35 @@ translator.addEventListener('click', (e) => {
 
 translator.addEventListener('close', () => {
   window.speechSynthesis?.cancel();
-  if (!sheet.open) document.body.classList.remove('noscroll');
+  if (!sheet.open && !alphabet.open) document.body.classList.remove('noscroll');
+});
+
+// ---------- alphabet ----------
+//
+// Like the translator: opens on top of anything and returns to what was below.
+
+const alphabet = $('#alphabet');
+
+function openAlphabet() {
+  $('#alphabet-body').innerHTML = alphabetHtml(LETTERS, TRICKY);
+  if (!alphabet.open) {
+    document.body.classList.add('noscroll');
+    alphabet.showModal();
+  }
+  alphabet.scrollTop = 0;
+  alphabet.focus({ preventScroll: true });
+}
+
+alphabet.addEventListener('click', (e) => {
+  if (e.target === alphabet) return alphabet.close(); // the dimmed backdrop
+  const say = e.target.closest('[data-say]');
+  if (say) return speak(say.dataset.say);
+  if (e.target.closest('[data-act="close"]')) alphabet.close();
+});
+
+alphabet.addEventListener('close', () => {
+  window.speechSynthesis?.cancel();
+  if (!sheet.open && !translator.open) document.body.classList.remove('noscroll');
 });
 
 async function askAi(button) {
@@ -611,6 +642,7 @@ $('#sheet-body').addEventListener('click', (e) => {
   const act = btn.dataset.act;
   if (act === 'close') sheet.close();
   else if (act === 'translate') openTranslator();
+  else if (act === 'alphabet') openAlphabet();
   else if (act === 'back') openScanView(scanView.kind === 'sentence' ? { kind: 'scan', id: scanView.id } : { kind: 'scans' });
   else if (act === 'open-scan') openScanView({ kind: 'scan', id: btn.dataset.id });
   else if (act === 'delete-scan') {
@@ -756,7 +788,7 @@ let toastTimer = null;
 function toast(message, ms = 1500) {
   const el = $('#toast');
   // An open window sits above the whole page, so the toast goes inside the top one while it is open.
-  const host = translator.open ? translator : sheet.open ? sheet : document.body;
+  const host = translator.open ? translator : alphabet.open ? alphabet : sheet.open ? sheet : document.body;
   if (el.parentElement !== host) host.append(el);
   el.textContent = message;
   el.classList.add('show');
@@ -836,6 +868,8 @@ $('#gear').addEventListener('click', () => setTab(ui.tab === 'settings' ? lastLi
 
 $('#tr-btn').innerHTML = BUBBLE;
 $('#tr-btn').addEventListener('click', () => openTranslator());
+$('#abc-btn').innerHTML = ABC;
+$('#abc-btn').addEventListener('click', () => openAlphabet());
 
 $('#status').addEventListener('click', (e) => {
   const b = e.target.closest('[data-status]');
