@@ -47,19 +47,20 @@ export const BOOK = [
     sub: 'Why kitap becomes kitabı, and -de becomes -te',
     blocks: [
       { p: 'Consonants change too, where a word meets its ending. Two rules cover almost everything.' },
-      { p: '1. Softening. When an ending that starts with a vowel is added, a final p, ç, t or k usually turns soft:' },
+      { p: "1. Softening. When an ending that starts with a vowel is added, a noun's final p, ç, t or k usually turns soft:" },
       {
         table: {
           head: ['Ends in', 'Becomes', 'Example'],
           rows: [
             ['p', 'b', 'kitap → kita*b*ı'],
             ['ç', 'c', 'ağaç → ağa*c*ı'],
-            ['t', 'd', 'git- → gi*d*iyorum'],
+            ['t', 'd', 'kağıt → kağı*d*ı'],
             ['k', 'ğ', 'çocuk → çocu*ğ*u'],
           ],
         },
       },
-      { p: 'Most one-syllable words keep their letter (top → topu, saç → saçı), and so do many words ending in t (bilet → bileti). The verbs gitmek and etmek do soften: gidiyorum, yardım ediyorum.' },
+      { p: 'Most one-syllable words keep their letter (top → topu, saç → saçı), but a few common ones soften (dört → dörde). Many words ending in t keep it too (bilet → bileti). After n, k becomes g, not ğ: renk → ren*g*i.' },
+      { p: 'Verbs keep their letter: anlatıyorum, öğretiyorum, bırakıyorum. Only git- and et- (and tat-) soften: gi*d*iyorum, yardım e*d*iyorum.' },
       { p: '2. Hardening. An ending that starts with d or c changes it to t or ç after f, s, t, k, ç, ş, h or p (Turks remember them as FıSTıKÇı ŞaHaP, "Şahap the peanut seller"): ev*de* but mutfak*ta*, gel*di* but git*ti*.' },
       {
         ex: [
@@ -179,7 +180,7 @@ export const BOOK = [
           ],
         },
       },
-      { p: 'After a vowel, -i and -e take a y and -in takes an n. After f, s, t, k, ç, ş, h or p, the d turns into t: mutfak*ta*, sokak*tan*.' },
+      { p: '-i and -in are 4-way (okul*u*, okul*un*, göz*ü*, göz*ün*); -e, -de and -den are 2-way. After a vowel, -i and -e take a y and -in takes an n. After f, s, t, k, ç, ş, h or p, the d turns into t: mutfak*ta*, sokak*tan*.' },
       { p: 'The object ending is only for a definite object, like English "the": Kitap okuyorum. = I am reading (a book). Kitab*ı* okuyorum. = I am reading the book. Names and pronouns always take it.' },
       { p: 'Add -ki to -de to describe a thing by where it is: masada*ki* kitap = the book on the table.' },
       {
@@ -258,7 +259,7 @@ export const BOOK = [
           ['*O* da geliyor.', "He's coming too. / She's coming too."],
         ],
       },
-      { tip: 'Leave the pronoun out when the verb ending already says who: Geliyorum, not Ben geliyorum. Use ben only to stress "I", as in Ben de! (Me too!)' },
+      { tip: "The verb ending already says who, so Geliyorum is enough. Add ben only to stress \"I\": Ben geliyorum = I'm the one coming. Ben de! (Me too!) works the same way." },
     ],
   },
   {
@@ -268,7 +269,7 @@ export const BOOK = [
     sub: 'The particle mi, and question words',
     blocks: [
       { p: 'For a yes/no question, put *mi* after the word you ask about. It is written as a separate word but follows 4-way harmony: mi, mı, mu, mü.' },
-      { p: 'Personal endings move onto mi: Yorgun *musun*? (Are you tired?), Hazır *mıyız*? (Are we ready?). Put mi after another word to ask about just that: Dün *mü* geldin? (Was it yesterday you came?)' },
+      { p: 'Personal endings move onto mi: Yorgun *musun*? (Are you tired?), Hazır *mıyız*? (Are we ready?). Only -ler (they) stays on the word: Geliyorlar *mı*? (Are they coming?) Put mi after another word to ask about just that: Dün *mü* geldin? (Was it yesterday you came?)' },
       { p: 'Question words take no mi. They stand where the answer would go, usually right before the verb:' },
       {
         table: {
@@ -492,7 +493,7 @@ export const BOOK = [
       },
       { p: 'Can: -ebil goes right after the stem, then any tense: yardım ed*ebil*ir misin? (can you help?). After a vowel it takes a y: bekle*yebil*irim.' },
       { p: "Can't: use -eme / -ama instead, without bil: gel*eme*m (I can't come), yap*ama*dım (I couldn't do it)." },
-      { p: 'Have to: the everyday way is the -mek form with "my" and lazım (needed): git*mem lazım* = I have to go (literally "my going is needed"). -meli is a firmer "must", and with sen it gives advice.' },
+      { p: 'Have to: the everyday way is the -me form (gitme, "going") with "my" and lazım (needed): gitme*m* lazım = I have to go (literally "my going is needed"). For others: gitme*n* lazım (you), gitme*si* lazım (he, she). -meli is a firmer "must", and with sen it gives advice.' },
       { p: 'Want to: the -mek form with istemek, as in the last example.' },
       {
         ex: [
