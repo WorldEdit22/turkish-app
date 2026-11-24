@@ -56,7 +56,7 @@ export const HELP = {
       sub: 'The chat bubble at the top',
       blocks: [
         { p: 'The chat bubble opens a translator. Type or paste text and it is translated between English and Turkish as you type.' },
-        { p: 'Use the swap button to turn the direction around. The bubble is in the title of every window too, so you can translate while you read.' },
+        { p: 'Use the swap button to turn the direction around. The bubble is also in the title row of every word, pattern and scan window, so you can translate while you read.' },
       ],
     },
     {
@@ -66,7 +66,7 @@ export const HELP = {
       sub: 'The open book at the top',
       blocks: [
         { p: 'The open book at the top opens a short grammar book. It starts with the letters and their sounds, then covers one idea at a time.' },
-        { p: 'Every Turkish sentence has a speaker button. The book is also in the title of every window.' },
+        { p: 'Every Turkish sentence has a speaker button. The book is there too.' },
         { tip: 'Open it when you are curious about why a word looks the way it does. You never have to read it in order.' },
       ],
     },

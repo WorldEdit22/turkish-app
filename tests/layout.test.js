@@ -13,6 +13,13 @@ function rule(text, selector) {
   return m[1];
 }
 
+// A closing quote must be followed by a space, ">" or "/", never straight by the next attribute.
+test('index.html has a space between every two attributes', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8').replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<svg[\s\S]*?<\/svg>/g, ' ');
+  const bad = [...html.matchAll(/="[^"]*"[^\s>/]/g)].map((m) => m[0]);
+  assert.deepEqual(bad, []);
+});
+
 // iOS draws the page's scroll line over the whole screen. With only main scrolling,
 // it stays between the bars (and a window's text box keeps its caret: WebKit 300690).
 test('the page is a column that does not scroll; only main scrolls', () => {
