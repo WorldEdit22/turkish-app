@@ -66,6 +66,22 @@ test('a pattern card\'s back shows the chosen variant\'s form', () => {
   assert.ok(!cardHtml(face(), opts({ revealed: true })).includes('pc-variant'));
 });
 
+test("a pattern card's front adds an example sentence in the front's language; a word card's front does not", () => {
+  const example = { native: 'I want water.', target: 'Su istiyorum.', hint: null };
+  const pattern = face({ native: 'I want ___', target: '___ istiyorum', say: ' istiyorum', dot: null, icon: null, variant: { native: 'I want ___', target: '___ istiyorum' }, example });
+  const say = cardHtml(pattern, opts());
+  assert.match(say, /class="pc-front-ex"><div class="pc-native">I want water\.<\/div>/);
+  assert.ok(!say.includes('Su istiyorum') && !say.includes('data-grade'), 'the Turkish waits for the answer');
+
+  const understand = cardHtml(pattern, opts({ dir: 'understand' }));
+  assert.match(understand, /class="pc-front-ex"><div class="pc-line"><span class="pc-target">Su istiyorum\.<\/span><button class="say" data-say="Su istiyorum\."/);
+  assert.ok(!understand.includes('I want'), 'the English waits for the answer');
+
+  const back = cardHtml(pattern, opts({ revealed: true }));
+  assert.match(back, /class="pc-ex"><div class="pc-line"><span class="pc-target">Su istiyorum\.<\/span><button class="say" data-say="Su istiyorum\."/, 'the back keeps the example in Turkish');
+  assert.ok(!cardHtml(face({ example }), opts()).includes('pc-front-ex'), "a word card's front has no example");
+});
+
 test('Undo shows only when there is something to undo', () => {
   assert.ok(!cardHtml(face(), opts()).includes('data-act="undo"'));
   const html = cardHtml(face(), opts({ canUndo: true }));
@@ -84,6 +100,12 @@ test('done: More while unseen cards remain; otherwise when the next review is', 
   assert.ok(caught.includes('All caught up here. Next review in 4 days'));
   const none = doneHtml({ newToday: 0, canMore: false, nextIn: null });
   assert.ok(!none.includes('All caught up'));
+});
+
+test('done: Undo shows while the last answer can be undone', () => {
+  assert.ok(!doneHtml({ newToday: 1, canMore: true, nextIn: null }).includes('data-act="undo"'));
+  const html = doneHtml({ newToday: 1, canMore: true, nextIn: null, canUndo: true });
+  assert.ok(html.includes('<button class="pc-undo" data-act="undo">↶ Undo</button>'));
 });
 
 test('the window\'s Practice section highlights each direction\'s last answer', () => {

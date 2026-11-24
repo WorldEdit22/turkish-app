@@ -310,7 +310,7 @@ function renderPractice() {
   const s = ensureSession();
   const key = s.queue[0];
   let html;
-  if (!key) html = doneHtml(doneState());
+  if (!key) html = doneHtml({ ...doneState(), canUndo: Boolean(s.undo) });
   else {
     if (s.face?.key !== key) s.face = { key, ...faceOf(ITEM.get(key)) };
     const card = store.card(key, ui.dir);

@@ -29,37 +29,38 @@ export const PRACTICE_TITLE = 'Practice';
 
 const speaker = (text) => `<button class="say" data-say="${esc(text)}" aria-label="Listen">${SPEAKER}</button>`;
 const optional = (cls, text) => (text ? `<div class="${cls}">${esc(text)}</div>` : '');
+// Target-language text with its speaker (`say` is what the speaker reads).
+const targetLine = (text, say) => `<div class="pc-line"><span class="pc-target">${esc(text)}</span>${speaker(say)}</div>`;
+const UNDO = '<button class="pc-undo" data-act="undo">↶ Undo</button>';
 
 // face: { native, target, say, dot, icon, hint, forms, note, variant, example }
+//   variant is set only for a pattern; its front also shows the example, in the front's language.
 // state: { dir: 'say'|'understand', revealed, previews: { forgot, hard, easy }, canUndo }
 export function cardHtml(face, { dir, revealed, previews, canUndo }) {
   const meta =
     face.dot || face.icon
       ? `<div class="pc-meta">${face.dot ? `<span class="dot t-${esc(face.dot)}"></span>` : ''}${face.icon ? `<span class="pc-icon">${esc(face.icon)}</span>` : ''}</div>`
       : '';
-  const targetLine = (text) => `<div class="pc-line"><span class="pc-target">${esc(text)}</span>${speaker(face.say)}</div>`;
+  const ex = face.example;
+  const nativeLine = (text) => `<div class="pc-native">${esc(text)}</div>`;
 
-  const front =
-    dir === 'say'
-      ? `<div class="pc-native">${esc(face.native)}</div>`
-      : targetLine(face.target) + optional('pc-hint', face.hint);
+  const frontEx =
+    face.variant && ex
+      ? `<div class="pc-front-ex">${dir === 'say' ? nativeLine(ex.native) : targetLine(ex.target, ex.target) + optional('pc-hint', ex.hint)}</div>`
+      : '';
+  const front = (dir === 'say' ? nativeLine(face.native) : targetLine(face.target, face.say) + optional('pc-hint', face.hint)) + frontEx;
 
   let back = '';
   if (revealed) {
     back =
       '<div class="pc-back">' +
-      (dir === 'say'
-        ? targetLine(face.target) + optional('pc-hint', face.hint)
-        : `<div class="pc-native">${esc(face.native)}</div>`) +
+      (dir === 'say' ? targetLine(face.target, face.say) + optional('pc-hint', face.hint) : nativeLine(face.native)) +
       optional('pc-forms', face.forms) +
       optional('pc-note', face.note) +
       (face.variant
         ? `<div class="pc-variant"><span class="pc-native">${esc(face.variant.native)}</span> <span class="pc-target">${esc(face.variant.target)}</span></div>`
         : '') +
-      (face.example
-        ? `<div class="pc-ex"><div class="pc-line"><span class="pc-target">${esc(face.example.target)}</span>${speaker(face.example.target)}</div>` +
-          `<div class="pc-native">${esc(face.example.native)}</div>${optional('pc-hint', face.example.hint)}</div>`
-        : '') +
+      (ex ? `<div class="pc-ex">${targetLine(ex.target, ex.target)}${nativeLine(ex.native)}${optional('pc-hint', ex.hint)}</div>` : '') +
       '</div>';
   }
 
@@ -76,11 +77,11 @@ export function cardHtml(face, { dir, revealed, previews, canUndo }) {
       '</div>'
     : '';
 
-  const undo = canUndo ? '<button class="pc-undo" data-act="undo">↶ Undo</button>' : '';
-  return `<div class="pc">${top}${back}</div>${grades}${undo}`;
+  return `<div class="pc">${top}${back}</div>${grades}${canUndo ? UNDO : ''}`;
 }
 
-export function doneHtml({ newToday, canMore, nextIn }) {
+// canUndo: the last answer can still be undone, also after the last card of the queue.
+export function doneHtml({ newToday, canMore, nextIn, canUndo = false }) {
   return (
     '<div class="pc-done"><h2>Done for today 🎉</h2>' +
     `<p>${newToday} new ${newToday === 1 ? 'card' : 'cards'} today</p>` +
@@ -89,7 +90,8 @@ export function doneHtml({ newToday, canMore, nextIn }) {
       : nextIn != null
         ? `<p>All caught up here. Next review in ${daysText(nextIn)}.</p>`
         : '') +
-    '</div>'
+    '</div>' +
+    (canUndo ? UNDO : '')
   );
 }
 

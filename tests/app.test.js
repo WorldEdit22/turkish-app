@@ -355,6 +355,28 @@ test('Undo after Forgot restores the card and leaves it in the queue once', () =
     assert.deepEqual(shown, [a, b, c, d, e, f].map(label));
   }));
 
+test('Undo after the last card of a session brings that card back', () => {
+  const t = today();
+  inPractice(
+    () => {
+      const [a] = newWords('say');
+      assert.equal(store.doseLeft('say', t), 1, 'one card in this session');
+      reveal();
+      answerWith('easy');
+      const html = $('#list').innerHTML;
+      assert.ok(html.includes('Done for today') && html.includes('data-act="undo"'), 'Undo on the done screen');
+      act('undo');
+      assert.equal(store.card(a.id, 'say'), undefined, 'as it was: never answered');
+      assert.equal(store.doseLeft('say', t), 1, 'its new-card count is given back');
+      assert.equal(front(), label(a), 'the card is back');
+      assert.ok(!$('#list').innerHTML.includes('data-act="undo"'));
+    },
+    () => {
+      for (let i = 0; i < 14; i++) store.useDose('say', t);
+    },
+  );
+});
+
 test('after 15 new cards: Done for today with More; More gives 15 more', () =>
   inPractice(() => {
     const t = today();
@@ -439,10 +461,15 @@ test('on Patterns, practice starts with the most useful pattern; the back shows 
       const p = PATTERNS.find((x) => isNew(store.card(x.key, 'say')));
       assert.equal(front(), esc(p.en));
       assert.ok($('#types').innerHTML.includes('data-group="everyday"'), 'group chips');
+      // The front also shows one of its own example sentences, in English.
+      const pairs = p.variants.flatMap((v) => v.ex);
+      const shown = pairs.find(([, en]) => $('#list').innerHTML.includes(`<div class="pc-front-ex"><div class="pc-native">${esc(en)}</div>`));
+      assert.ok(shown, 'an example sentence on the front');
       reveal();
       const html = $('#list').innerHTML;
       assert.ok(html.includes('class="pc-variant"') && html.includes('class="pc-ex"'));
       assert.ok(p.variants.some((v) => html.includes(`<span class="pc-target">${esc(v.tr)}</span>`)), "one of the pattern's own variants");
+      assert.ok(html.includes(`<span class="pc-target">${esc(shown[0])}</span>`), 'the same example in Turkish on the back');
       assert.ok(clean(html));
     } finally {
       tabTo('words');
