@@ -66,16 +66,16 @@ export function cardHtml(face, { dir, revealed, previews, canUndo }) {
 
   const top = `<div class="pc-front"${revealed ? '' : ' data-act="reveal"'}>${meta}${front}${revealed ? '' : '<div class="pc-show">Show answer</div>'}</div>`;
 
-  const grades = revealed
-    ? '<div class="grades">' +
-      Object.entries(GRADES)
-        .map(
-          ([g, label]) =>
-            `<button class="grade ${g}" data-grade="${g}"><span class="grade-label">${label}</span><span class="grade-ivl">${esc(intervalText(previews[g]))}</span></button>`,
-        )
-        .join('') +
-      '</div>'
-    : '';
+  // Unrevealed, the row stays in the layout (hidden, inert) so Undo below doesn't move between cards.
+  const grades =
+    `<div class="grades${revealed ? '' : ' grades-hold'}"${revealed ? '' : ' aria-hidden="true"'}>` +
+    Object.entries(GRADES)
+      .map(
+        ([g, label]) =>
+          `<button class="grade ${g}"${revealed ? ` data-grade="${g}"` : ' disabled tabindex="-1"'}><span class="grade-label">${label}</span><span class="grade-ivl">${esc(intervalText(previews[g]))}</span></button>`,
+      )
+      .join('') +
+    '</div>';
 
   return `<div class="pc">${top}${back}</div>${grades}${canUndo ? UNDO : ''}`;
 }

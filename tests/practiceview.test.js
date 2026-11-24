@@ -82,6 +82,15 @@ test("a pattern card's front adds an example sentence in the front's language; a
   assert.ok(!cardHtml(face({ example }), opts()).includes('pc-front-ex'), "a word card's front has no example");
 });
 
+test('the unrevealed card keeps the answer row\'s place: hidden, inert, no data-grade', () => {
+  const html = cardHtml(face(), opts({ canUndo: true }));
+  assert.match(html, /<div class="grades grades-hold" aria-hidden="true">/);
+  assert.equal((html.match(/<button class="grade [a-z]+" disabled tabindex="-1">/g) || []).length, 3);
+  assert.ok(!html.includes('data-grade'));
+  assert.ok(html.indexOf('grades-hold') < html.indexOf('data-act="undo"'), 'the row sits above Undo');
+  assert.ok(!cardHtml(face(), opts({ revealed: true })).includes('grades-hold'));
+});
+
 test('Undo shows only when there is something to undo', () => {
   assert.ok(!cardHtml(face(), opts()).includes('data-act="undo"'));
   const html = cardHtml(face(), opts({ canUndo: true }));

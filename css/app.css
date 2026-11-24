@@ -383,6 +383,7 @@ main {
   color: var(--on-grade);
   box-shadow: var(--shadow);
 }
+.grades-hold { visibility: hidden; pointer-events: none; }
 .grade:active { transform: translateY(1px); box-shadow: var(--shadow-press); }
 .grade.forgot { background: var(--forgot); }
 .grade.hard { background: var(--hard); }
