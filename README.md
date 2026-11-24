@@ -5,8 +5,12 @@ A small, fast web app for learning the most common Turkish sentence patterns and
 - **Patterns** tab: 82 everyday patterns (*___ istiyorum*, *-meden önce*, *-dikçe*, *-se bile*…), most useful first, with chips for Everyday, Verbs & tenses, and Connectors. Each has a few common ways to say the same thing.
 - **Words** tab: about 940 words grouped by topic, from everyday phrases to family, food, animals, and hobbies & sports. They are sorted by how often they appear in spoken Turkish, and coloured dots show the word type.
 - Tap blocks to select words and patterns, on both tabs; **Clear** unselects them. Tap **ⓘ** on a block to open it.
-- An open pattern shows examples with every selected word that fits, then its own examples, then a few with your learned words (or common words). An open word works the same way with selected and learned patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
-- Swipe a block right to mark it learned (it turns turquoise), left to unmark it, or use **Mark as learned** in the open block.
+- An open pattern shows examples with every selected word that fits, then its own examples, then a few with words you know (words you have practised, or common words). An open word works the same way with selected and practised patterns. The suffixes and vowel harmony are worked out on the phone, so this works offline.
+- **Browse and Practice:** the switch in the top bar changes between the two modes.
+  - **Browse** is the list of patterns and words described above. A word's or pattern's window has a recall section, where you can also correct the answer for that card.
+  - **Practice** is spaced repetition, like Anki. Each direction (EN → TR and TR → EN) has its own schedule. Tap the card to show the answer, then choose **Forgot** (it comes back a few cards later), **Hard** (soon) or **Easy** (after a longer wait).
+  - Each day brings 15 new cards per direction. **More new cards** adds 15 more, and **Undo** takes back the last answer.
+  - Items you had marked as learned in the old version are carried over once, as cards you already know.
 - The gear at the top opens Settings. There you can also turn on **Show Turkish on blocks** (off by default).
 - **Translate:** the chat-bubble button, next to the gear and next to ✕ in every window, opens a Turkish ⇄ English translator. It translates as you type, ⇄ swaps the direction, and a link opens the same text in Google Translate. The text is sent to Google Translate (no key, no AI), so it needs the internet.
 - Optional **More examples** button that asks a free AI (Gemini, Groq, Mistral or OpenRouter) for extra sentences. Answers are saved on the phone.
