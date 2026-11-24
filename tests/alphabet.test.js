@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LETTERS, TRICKY } from '../data/alphabet.js';
-import { alphabetHtml } from '../js/alphabetview.js';
+import { alphabetBodyHtml } from '../js/alphabetview.js';
 
 test('all 29 letters in Turkish order', () => {
   assert.equal(LETTERS.map((l) => l.ch).join(''), 'ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ');
@@ -24,11 +24,12 @@ test('the tricky letters are ğ, ı, c, ç and ş, each with examples', () => {
   }
 });
 
-test('the window lists every letter, then the tricky letters', () => {
-  const html = alphabetHtml(LETTERS, TRICKY);
+test('the body lists every letter, then the tricky letters, without a title bar', () => {
+  const html = alphabetBodyHtml(LETTERS, TRICKY);
   assert.equal((html.match(/class="abc-row"/g) || []).length, 29);
   assert.equal((html.match(/class="abc-combo"/g) || []).length, 5);
-  for (const text of ['Turkish alphabet', 'Tricky letters', 'data-act="close"']) assert.ok(html.includes(text), text);
+  assert.ok(html.includes('Tricky letters'));
+  assert.ok(!html.includes('s-top') && !html.includes('data-act="close"'), 'the book supplies the title bar');
   assert.ok(html.includes('data-say="yumuşak ge"'), 'a letter says its name');
   for (const shown of ['Ç ç', 'I ı', 'İ i']) assert.ok(html.includes(`>${shown}<`), shown);
   assert.ok(html.includes('data-say="anne"'), 'the example has a speaker');
@@ -40,11 +41,11 @@ test('the sound descriptions are accurate', () => {
   const sound = (ch) => LETTERS.find((l) => l.ch === ch).sound;
   assert.match(sound('V'), /^Like English v/);
   assert.match(TRICKY.find((t) => t.ch === 'ğ').sound, /after e, i, ö or ü/);
-  assert.match(alphabetHtml(LETTERS, TRICKY), /class="note">[^<]*ğ/);
+  assert.match(alphabetBodyHtml(LETTERS, TRICKY), /class="note">[^<]*ğ/);
 });
 
 test('text is escaped', () => {
-  const html = alphabetHtml(
+  const html = alphabetBodyHtml(
     [{ ch: '<', name: '<n>', sound: '<s>', ex: ['<e>', '<t>'] }],
     [{ ch: 'x', title: '<c>', sound: '<d>', ex: [['<x>', '<y>']] }],
   );

@@ -23,6 +23,7 @@ const ASSETS = [
   'js/translateview.js',
   'js/update.js',
   'data/alphabet.js',
+  'data/book.js',
   'data/words.js',
   'data/patterns.js',
   'data/ranks.js',

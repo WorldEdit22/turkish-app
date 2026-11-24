@@ -9,12 +9,14 @@ import { answer, buildQueue, correct, dayOf, DIRS, isKnown, isMastered, isNew, n
 import { cardHtml, countsText, doneHtml, recallHtml } from './practiceview.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { reloadOnUpdate } from './update.js';
-import { esc, SPEAKER, BUBBLE, ABC } from './html.js';
+import { esc, SPEAKER, BUBBLE, BOOK as BOOK_ICON } from './html.js';
 import { shrinkPhoto } from './photo.js';
 import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
 import { translate, TranslateError, FAILED, googleLink, swapState } from './translate.js';
 import { translatorHtml, resultHtml } from './translateview.js';
-import { alphabetHtml } from './alphabetview.js';
+import { alphabetBodyHtml } from './alphabetview.js';
+import { guideListHtml, guideSectionHtml } from './guideview.js';
+import { BOOK } from '../data/book.js';
 
 // ---------- data ----------
 
@@ -440,9 +442,9 @@ function aiHtml(cacheKey, vi = '') {
   );
 }
 
-// The alphabet, the translate bubble and ✕, at the right end of every window's title row.
+// The book, the translate bubble and ✕, at the right end of every window's title row.
 const headButtons = () =>
-  `<button class="head-abc" data-act="alphabet" aria-label="Alphabet">${ABC}</button>` +
+  `<button class="head-book" data-act="book" aria-label="Grammar">${BOOK_ICON}</button>` +
   `<button class="head-tr" data-act="translate" aria-label="Translate">${BUBBLE}</button>` +
   `<button class="close" data-act="close" aria-label="Close">✕</button>`;
 
@@ -735,36 +737,83 @@ translator.addEventListener('click', (e) => {
 
 translator.addEventListener('close', () => {
   window.speechSynthesis?.cancel();
-  if (!sheet.open && !alphabet.open) document.body.classList.remove('noscroll');
+  if (!anyWindowOpen()) document.body.classList.remove('noscroll');
 });
 
-// ---------- alphabet ----------
+// ---------- guide windows: the grammar book ----------
 //
 // Like the translator: opens on top of anything and returns to what was below.
+// A guide window shows a list of sections, or one section with ‹ back to the list.
+// It remembers where it was: reopening shows the same page at the same scroll.
 
-const alphabet = $('#alphabet');
+const book = $('#book');
+const anyWindowOpen = () => sheet.open || translator.open || book.open;
 
-function openAlphabet() {
-  $('#alphabet-body').innerHTML = alphabetHtml(LETTERS, TRICKY);
-  if (!alphabet.open) {
-    document.body.classList.add('noscroll');
-    alphabet.showModal();
+// content() → { title, intro, sections, hint, alphabet() }, called each time the window opens.
+function guideWindow(dialog, body, content) {
+  const state = { id: null, listScroll: 0, sectionScroll: 0 };
+
+  function render() {
+    const c = content();
+    const section = c.sections.find((s) => s.id === state.id);
+    state.id = section ? section.id : null;
+    body.innerHTML = section
+      ? guideSectionHtml(section, { hint: c.hint, alphabet: section.blocks.some((b) => b.alphabet) ? c.alphabet() : '' })
+      : guideListHtml(c);
+    dialog.scrollTop = section ? state.sectionScroll : state.listScroll;
   }
-  alphabet.scrollTop = 0;
-  alphabet.focus({ preventScroll: true });
+
+  // A closed dialog reads scrollTop 0, so the scroll is saved before it closes.
+  const saveScroll = () => (state[state.id ? 'sectionScroll' : 'listScroll'] = dialog.scrollTop);
+  const shut = () => {
+    saveScroll();
+    dialog.close();
+  };
+
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) return shut(); // the dimmed backdrop
+    const say = e.target.closest('[data-say]');
+    if (say) return speak(say.dataset.say);
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    const { act, id } = btn.dataset;
+    if (act === 'close') shut();
+    else if (act === 'open-section') {
+      saveScroll();
+      state.id = id;
+      state.sectionScroll = 0;
+      render();
+    } else if (act === 'back') {
+      state.id = null;
+      render();
+    }
+  });
+  dialog.addEventListener('cancel', saveScroll); // Esc
+  dialog.addEventListener('close', () => {
+    window.speechSynthesis?.cancel();
+    if (!anyWindowOpen()) document.body.classList.remove('noscroll');
+  });
+
+  return {
+    open() {
+      if (!dialog.open) {
+        document.body.classList.add('noscroll');
+        dialog.showModal();
+      }
+      render();
+      dialog.focus({ preventScroll: true });
+    },
+  };
 }
 
-alphabet.addEventListener('click', (e) => {
-  if (e.target === alphabet) return alphabet.close(); // the dimmed backdrop
-  const say = e.target.closest('[data-say]');
-  if (say) return speak(say.dataset.say);
-  if (e.target.closest('[data-act="close"]')) alphabet.close();
-});
-
-alphabet.addEventListener('close', () => {
-  window.speechSynthesis?.cancel();
-  if (!sheet.open && !translator.open) document.body.classList.remove('noscroll');
-});
+const bookWindow = guideWindow(book, $('#book-body'), () => ({
+  title: 'Grammar',
+  intro: '',
+  sections: BOOK,
+  hint: null,
+  alphabet: () => alphabetBodyHtml(LETTERS, TRICKY),
+}));
+const openBook = () => bookWindow.open();
 
 async function askAi(button) {
   const x = ITEM.get(openKey);
@@ -813,7 +862,7 @@ $('#sheet-body').addEventListener('click', (e) => {
   const act = btn.dataset.act;
   if (act === 'close') sheet.close();
   else if (act === 'translate') openTranslator();
-  else if (act === 'alphabet') openAlphabet();
+  else if (act === 'book') openBook();
   else if (act === 'recall') {
     const { dir, grade } = btn.dataset;
     store.setCard(openKey, dir, correct(store.card(openKey, dir), grade, dayOf(Date.now()), Math.random));
@@ -960,7 +1009,7 @@ let toastTimer = null;
 function toast(message, ms = 1500) {
   const el = $('#toast');
   // An open window sits above the whole page, so the toast goes inside the top one while it is open.
-  const host = translator.open ? translator : alphabet.open ? alphabet : sheet.open ? sheet : document.body;
+  const host = translator.open ? translator : book.open ? book : sheet.open ? sheet : document.body;
   if (el.parentElement !== host) host.append(el);
   el.textContent = message;
   el.classList.add('show');
@@ -1018,8 +1067,8 @@ $('#gear').addEventListener('click', () => setTab(ui.tab === 'settings' ? lastLi
 
 $('#tr-btn').innerHTML = BUBBLE;
 $('#tr-btn').addEventListener('click', () => openTranslator());
-$('#abc-btn').innerHTML = ABC;
-$('#abc-btn').addEventListener('click', () => openAlphabet());
+$('#book-btn').innerHTML = BOOK_ICON;
+$('#book-btn').addEventListener('click', () => openBook());
 
 $('#sort').addEventListener('change', (e) => {
   ui.sort[ui.tab] = e.target.value;

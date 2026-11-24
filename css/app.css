@@ -476,7 +476,7 @@ main {
 
 /* ---------- sheet ---------- */
 
-dialog#sheet, dialog#translator, dialog#alphabet {
+dialog#sheet, dialog#translator, dialog#book {
   border: 0;
   padding: 0;
   margin: auto auto 0;
@@ -489,9 +489,9 @@ dialog#sheet, dialog#translator, dialog#alphabet {
   color: var(--text);
   box-shadow: var(--sheet-shadow);
 }
-dialog#sheet[open], dialog#translator[open], dialog#alphabet[open] { animation: up 0.22s ease-out; }
-dialog#sheet:focus, dialog#translator:focus, dialog#alphabet:focus { outline: none; }
-dialog#sheet::backdrop, dialog#translator::backdrop, dialog#alphabet::backdrop { background: rgba(4, 30, 34, 0.4); }
+dialog#sheet[open], dialog#translator[open], dialog#book[open] { animation: up 0.22s ease-out; }
+dialog#sheet:focus, dialog#translator:focus, dialog#book:focus { outline: none; }
+dialog#sheet::backdrop, dialog#translator::backdrop, dialog#book::backdrop { background: rgba(4, 30, 34, 0.4); }
 /* Full height, so the text box sits high on the screen, above the iPhone keyboard. */
 dialog#translator { height: 92vh; height: 92dvh; }
 /* The body fills the window, so only a tap on the dimmed area outside counts as a backdrop tap. */
@@ -512,7 +512,7 @@ dialog#translator { height: 92vh; height: 92dvh; }
 
 .s-head { display: flex; gap: 12px; align-items: flex-start; }
 .s-head h2 { margin: 0; font-size: 24px; line-height: 1.2; flex: 1; }
-.close, .head-tr, .head-abc {
+.close, .head-tr, .head-book {
   border: 1px solid var(--line);
   background: var(--card);
   border-radius: 50%;
@@ -524,9 +524,9 @@ dialog#translator { height: 92vh; height: 92dvh; }
   flex: 0 0 auto;
   box-shadow: var(--shadow-press);
 }
-/* The alphabet and the translate bubble, just left of ✕ in every window. */
-.head-tr, .head-abc { display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--accent); }
-.head-tr svg, .head-abc svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* The book and the translate bubble, just left of ✕ in every window. */
+.head-tr, .head-book { display: inline-flex; align-items: center; justify-content: center; padding: 0; color: var(--accent); }
+.head-tr svg, .head-book svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* ---------- translator ---------- */
 
@@ -624,6 +624,39 @@ dialog#translator { height: 92vh; height: 92dvh; }
 .ex-tr { font-size: 16px; }
 .ex-en { color: var(--muted); font-size: 14px; }
 .ex-from { color: var(--faint); font-size: 12px; margin-top: 2px; }
+
+/* ---------- the grammar book ---------- */
+
+.gd-intro { color: var(--muted); margin: 8px 0 4px; }
+.gd-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  margin: 8px 0;
+  padding: 10px 12px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-press);
+}
+.gd-row:active { transform: translateY(1px); }
+.gd-icon { flex: 0 0 auto; font-size: 24px; width: 32px; text-align: center; }
+.gd-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.gd-title { font-weight: 700; }
+.gd-sub { color: var(--muted); font-size: 13px; }
+.gd-go { flex: 0 0 auto; color: var(--faint); font-size: 22px; }
+.gd-p { margin: 12px 0; line-height: 1.5; }
+.gd-p b, .gd-list b, .gd-table b, .gd-tip b { color: var(--hl); font-weight: 800; }
+.gd-list { margin: 12px 0; padding-left: 22px; line-height: 1.5; }
+.gd-list li { margin: 4px 0; }
+.gd-table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+.gd-table th, .gd-table td { border: 1px solid var(--line-strong); padding: 6px 10px; text-align: left; vertical-align: top; }
+.gd-table th { background: var(--bg); color: var(--muted); font-weight: 700; }
+.gd-tip { margin: 14px 0; padding: 10px 12px; border-radius: 12px; background: var(--sel-fill); line-height: 1.5; }
 
 /* ---------- photo scans ---------- */
 

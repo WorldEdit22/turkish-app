@@ -109,24 +109,122 @@ test('the status filter and the learned sorts are gone', () => {
   assert.ok(!/value="(todo|learned)"/.test(html));
 });
 
-test('the Aa button opens the alphabet with every letter', () => {
-  $('#abc-btn').fire('click');
-  assert.ok($('#alphabet').open);
-  assert.equal(($('#alphabet-body').innerHTML.match(/class="abc-row"/g) || []).length, 29);
-  $('#alphabet').close();
+const { BOOK } = await import('../data/book.js');
+// A click inside the book: on a [data-act] button, and optionally also inside a [data-say] speaker.
+const clickBook = (dataset, say = null) =>
+  $('#book').fire('click', { target: { closest: (s) => (s === '[data-act]' ? { dataset } : s === '[data-say]' ? say : null) } });
+const bookRows = () => ($('#book-body').innerHTML.match(/data-act="open-section"/g) || []).length;
+// Leave the book closed and back at its list, so the next test starts clean.
+const resetBook = () => {
+  if ($('#book').open) $('#book').close();
+  $('#book-btn').fire('click');
+  if (!bookRows()) clickBook({ act: 'back' });
+  $('#book').close();
+};
+
+test('the book button opens the book on its section list', () => {
+  try {
+    $('#book-btn').fire('click');
+    assert.ok($('#book').open);
+    assert.equal(bookRows(), BOOK.length);
+    assert.ok($('#book-body').innerHTML.includes(`data-id="${BOOK[0].id}"`) && BOOK[0].id === 'letters', 'the alphabet is first');
+    assert.ok(clean($('#book-body').innerHTML));
+  } finally {
+    resetBook();
+  }
 });
 
-test("a word window's title row has the alphabet and translate buttons, and Aa opens the alphabet", () => {
+test('opening the alphabet section shows the letters', () => {
+  try {
+    $('#book-btn').fire('click');
+    clickBook({ act: 'open-section', id: 'letters' });
+    const html = $('#book-body').innerHTML;
+    assert.equal((html.match(/class="abc-row"/g) || []).length, 29);
+    assert.ok(html.includes('data-act="back"'));
+  } finally {
+    resetBook();
+  }
+});
+
+test('a grammar section draws its blocks', () => {
+  try {
+    $('#book-btn').fire('click');
+    clickBook({ act: 'open-section', id: 'harmony' });
+    const html = $('#book-body').innerHTML;
+    assert.ok(html.includes('class="gd-p"') && html.includes('class="ex"') && html.includes('class="gd-tip"'));
+    assert.ok(clean(html));
+  } finally {
+    resetBook();
+  }
+});
+
+test('back returns to the list; the book reopens where you left it', () => {
+  try {
+    $('#book-btn').fire('click');
+    clickBook({ act: 'open-section', id: 'harmony' });
+    $('#book').close();
+    $('#book-btn').fire('click');
+    assert.ok($('#book-body').innerHTML.includes('data-act="back"'), 'reopens on the same section');
+    assert.ok(!bookRows());
+    clickBook({ act: 'back' });
+    assert.equal(bookRows(), BOOK.length, 'back shows the list');
+    clickBook({ act: 'close' });
+    assert.ok(!$('#book').open, 'close closes');
+  } finally {
+    resetBook();
+  }
+});
+
+test('the list and the section keep their own scroll positions', () => {
+  try {
+    $('#book-btn').fire('click');
+    $('#book').scrollTop = 70;
+    clickBook({ act: 'open-section', id: 'harmony' });
+    assert.equal($('#book').scrollTop, 0, 'a section starts at the top');
+    $('#book').scrollTop = 40;
+    clickBook({ act: 'back' });
+    assert.equal($('#book').scrollTop, 70, 'the list is where it was');
+    clickBook({ act: 'open-section', id: 'harmony' });
+    assert.equal($('#book').scrollTop, 0);
+    $('#book').scrollTop = 33;
+    clickBook({ act: 'close' });
+    $('#book').scrollTop = 0; // a closed dialog reads 0
+    $('#book-btn').fire('click');
+    assert.equal($('#book').scrollTop, 33, 'closing saved the scroll of the section');
+  } finally {
+    resetBook();
+  }
+});
+
+test("a word window's title row has the book and translate buttons, and the book opens on top of it and closes back to it", () => {
   openBlock('drinks:su');
-  const html = $('#sheet-body').innerHTML;
-  assert.ok(html.includes('data-act="alphabet"') && html.includes('data-act="translate"'));
-  assert.ok(clean(html));
-  const btn = { dataset: { act: 'alphabet' } };
-  $('#sheet-body').fire('click', { target: { closest: (s) => (s === '[data-act]' ? btn : null) } });
-  assert.ok($('#alphabet').open, 'opens on top of the word window');
-  $('#alphabet').close();
-  assert.ok($('#sheet').open, 'the word window is still there');
-  $('#sheet').close();
+  try {
+    const html = $('#sheet-body').innerHTML;
+    assert.ok(html.includes('data-act="book"') && html.includes('data-act="translate"'));
+    assert.ok(clean(html));
+    const btn = { dataset: { act: 'book' } };
+    $('#sheet-body').fire('click', { target: { closest: (s) => (s === '[data-act]' ? btn : null) } });
+    assert.ok($('#book').open, 'opens on top of the word window');
+    $('#book').close();
+    assert.ok($('#sheet').open, 'the word window is still there');
+    assert.equal($('#sheet-body').innerHTML, html, 'with the same word');
+  } finally {
+    resetBook();
+    $('#sheet').close();
+  }
+});
+
+test('a speaker in a section speaks and stays', () => {
+  try {
+    $('#book-btn').fire('click');
+    clickBook({ act: 'open-section', id: 'harmony' });
+    const before = $('#book-body').innerHTML;
+    clickBook({ act: 'back' }, { dataset: { say: 'evler' } });
+    assert.equal($('#book-body').innerHTML, before, 'a [data-say] hit wins over a [data-act]');
+    assert.ok($('#book').open);
+  } finally {
+    resetBook();
+  }
 });
 
 const { store } = await import('../js/store.js');
