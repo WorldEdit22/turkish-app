@@ -71,7 +71,7 @@ export const store = {
     sort: { patterns: 'common', words: 'topic' },
     type: 'all',
     pgroup: 'all',
-    mode: 'browse',
+    mode: 'practice',
     dir: 'say',
     topic: 'all',
     // Off by default. A new name, so a phone that saved the old TR button's "on" (showTr) starts off too.

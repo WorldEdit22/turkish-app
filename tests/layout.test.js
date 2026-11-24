@@ -41,6 +41,21 @@ test('practice hides the search row; the answer colours have light and dark valu
   for (const token of ['--forgot', '--hard', '--easy', '--on-grade']) assert.equal(css.split(`${token}: #`).length - 1, 2, token);
 });
 
+// The Browse/Practice switch must not move when toggling: it comes first (the search row,
+// shown only in Browse, sits below it), and the sort menu and the direction button beside it
+// take the same width, so the switch keeps its size.
+test('the mode switch stays put when toggling', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.ok(html.indexOf('id="mode"') < html.indexOf('class="search-row"'), 'the switch comes before the search row');
+  for (const sel of ['select#sort', '.dir-btn']) assert.ok(rule(css, sel).includes('flex: 0 0 42%'), sel);
+});
+
+test('the Show answer button is large; the topic icon sits in the card corner', () => {
+  const show = rule(css, '.pc-show');
+  for (const d of ['min-height: 52px', 'font-size: 18px']) assert.ok(show.includes(d), d);
+  assert.ok(rule(css, '.pc-icon').includes('position: absolute'));
+});
+
 test('the bars sit outside the scrolling area', () => {
   assert.ok(!rule(css, '.tabs').includes('position: fixed'));
   assert.ok(!rule(css, '.top').includes('position: sticky'));

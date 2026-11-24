@@ -28,16 +28,17 @@
       </button>
     </div>
     <div id="controls" class="controls">
+      <!-- The mode switch comes first, so it stays put when the search row (Browse only) comes and goes. -->
+      <div class="row">
+        <div class="seg" id="mode" role="group" aria-label="Mode"><button data-mode="browse">Browse</button><button data-mode="practice">Practice</button></div>
+        <select id="sort" aria-label="Sort"></select>
+        <button id="dir" class="dir-btn" hidden><!-- the practice direction, drawn by app.js --></button>
+      </div>
       <div class="search-row">
         <input id="search" type="search" placeholder="Search in English or Turkish" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <button id="scan-btn" class="icon-btn scan-btn" aria-label="Scan a photo">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8.5h4l2-3h6l2 3h4V19H3z"/><circle cx="12" cy="13.2" r="3.6"/></svg>
         </button>
-      </div>
-      <div class="row">
-        <div class="seg" id="mode" role="group" aria-label="Mode"><button data-mode="browse">Browse</button><button data-mode="practice">Practice</button></div>
-        <select id="sort" aria-label="Sort"></select>
-        <button id="dir" class="dir-btn" hidden><!-- the practice direction, drawn by app.js --></button>
       </div>
       <div id="types" class="chips" role="group" aria-label="Filter"></div>
     </div>

@@ -188,10 +188,12 @@ input[type="search"]::placeholder { color: var(--faint); }
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
 
 .row { display: flex; gap: 8px; align-items: center; }
-select#sort { width: auto; flex: 0 0 auto; max-width: 46%; font-size: 15px; }
+/* The sort menu (Browse) and the direction button (Practice) take the same width,
+   so the Browse/Practice switch beside them keeps its size when toggling. */
+select#sort { width: auto; flex: 0 0 42%; max-width: 42%; font-size: 15px; }
 /* The practice direction, in the sort menu's place and with its look. */
 .dir-btn {
-  flex: 0 0 auto;
+  flex: 0 0 42%;
   border: 1px solid var(--line-strong);
   border-radius: 11px;
   background: var(--card);
@@ -348,8 +350,11 @@ main {
   text-align: center;
   overflow-wrap: anywhere;
 }
-.pc-front[data-act] { cursor: pointer; }
-.pc-meta { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 15px; }
+.pc { position: relative; }
+/* The word's topic icon, out of the way in the card's corner. */
+.pc-icon { position: absolute; top: 12px; left: 14px; font-size: 18px; line-height: 1; }
+/* A long phrase that wraps keeps clear of the corner icon, and stays centred. */
+.pc-front .pc-native, .pc-front .pc-line { padding-inline: 22px; }
 .pc-native { font-size: 24px; font-weight: 700; line-height: 1.3; }
 .pc-line { display: flex; justify-content: center; align-items: center; gap: 4px; }
 .pc-target { font-size: 24px; font-weight: 800; line-height: 1.3; color: var(--hl); }
@@ -358,7 +363,21 @@ main {
 /* A pattern's example sentence under the pattern on the front. */
 .pc-front-ex { margin-top: 12px; font-size: 17px; }
 .pc-front-ex .pc-native, .pc-front-ex .pc-target { font-size: inherit; font-weight: 500; color: var(--text); }
-.pc-show { margin-top: 20px; padding-top: 12px; border-top: 1px dashed var(--line-strong); color: var(--faint); font-size: 14px; font-weight: 700; }
+/* The one way to reveal the answer: a large button, well away from the speaker. */
+.pc-show {
+  display: block;
+  width: 100%;
+  margin-top: 22px;
+  min-height: 52px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: var(--shadow-press);
+}
+.pc-show:active { transform: translateY(1px); }
 .pc-back { display: grid; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
 .pc-forms, .pc-note { color: var(--muted); font-size: 14px; }
 .pc-variant { font-size: 15px; }

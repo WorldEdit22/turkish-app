@@ -76,6 +76,14 @@ saved.set(
 
 await import('../js/app.js');
 
+// The app opens in Practice; the older tests below start from Browse.
+const openedWith = $('#list').innerHTML;
+$('#mode').fire('click', { target: { closest: (s) => (s === '[data-mode]' ? { dataset: { mode: 'browse' } } : null) } });
+
+test('the app opens in Practice', () => {
+  assert.ok(/class="pc"|class="pc-done"/.test(openedWith), 'the list shows a practice card or the done screen');
+});
+
 // A click on a block's ⓘ, the way the list's click handler sees it.
 const openBlock = (key) => {
   const block = { dataset: { key }, classList: { toggle() {} }, setAttribute() {} };

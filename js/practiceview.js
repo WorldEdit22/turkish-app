@@ -33,14 +33,12 @@ const optional = (cls, text) => (text ? `<div class="${cls}">${esc(text)}</div>`
 const targetLine = (text, say) => `<div class="pc-line"><span class="pc-target">${esc(text)}</span>${speaker(say)}</div>`;
 const UNDO = '<button class="pc-undo" data-act="undo">↶ Undo</button>';
 
-// face: { native, target, say, dot, icon, hint, forms, note, variant, example }
+// face: { native, target, say, icon, hint, forms, note, variant, example }
+//   icon is the word's topic icon (none on a pattern), shown in the card's corner.
 //   variant is set only for a pattern; its front also shows the example, in the front's language.
 // state: { dir: 'say'|'understand', revealed, previews: { forgot, hard, easy }, canUndo }
 export function cardHtml(face, { dir, revealed, previews, canUndo }) {
-  const meta =
-    face.dot || face.icon
-      ? `<div class="pc-meta">${face.dot ? `<span class="dot t-${esc(face.dot)}"></span>` : ''}${face.icon ? `<span class="pc-icon">${esc(face.icon)}</span>` : ''}</div>`
-      : '';
+  const icon = face.icon ? `<span class="pc-icon" aria-hidden="true">${esc(face.icon)}</span>` : '';
   const ex = face.example;
   const nativeLine = (text) => `<div class="pc-native">${esc(text)}</div>`;
 
@@ -64,7 +62,8 @@ export function cardHtml(face, { dir, revealed, previews, canUndo }) {
       '</div>';
   }
 
-  const top = `<div class="pc-front"${revealed ? '' : ' data-act="reveal"'}>${meta}${front}${revealed ? '' : '<div class="pc-show">Show answer</div>'}</div>`;
+  // Only the button reveals, so a tap beside the speaker never does.
+  const top = `<div class="pc-front">${front}${revealed ? '' : '<button class="pc-show" data-act="reveal">Show answer</button>'}</div>`;
 
   // Unrevealed, the row stays in the layout (hidden, inert) so Undo below doesn't move between cards.
   const grades =
@@ -77,7 +76,7 @@ export function cardHtml(face, { dir, revealed, previews, canUndo }) {
       .join('') +
     '</div>';
 
-  return `<div class="pc">${top}${back}</div>${grades}${canUndo ? UNDO : ''}`;
+  return `<div class="pc">${icon}${top}${back}</div>${grades}${canUndo ? UNDO : ''}`;
 }
 
 // canUndo: the last answer can still be undone, also after the last card of the queue.

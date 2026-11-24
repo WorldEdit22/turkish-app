@@ -6,7 +6,6 @@ const face = (o = {}) => ({
   native: 'water',
   target: 'su',
   say: 'su',
-  dot: 'noun',
   icon: '💧',
   hint: null,
   forms: null,
@@ -20,11 +19,25 @@ const opts = (o = {}) => ({ dir: 'say', revealed: false, previews, canUndo: fals
 
 test('the say side shows the native text and hides the answer until revealed', () => {
   const html = cardHtml(face(), opts());
-  assert.match(html, /data-act="reveal"/);
   assert.ok(html.includes('water'));
   assert.ok(!html.includes('data-grade'));
   assert.ok(!html.includes('su'));
-  assert.ok(html.includes('Show answer'));
+});
+
+// A tap beside the speaker must not reveal: only the Show answer button does.
+test('only the Show answer button reveals, not the rest of the card', () => {
+  for (const dir of ['say', 'understand']) {
+    const html = cardHtml(face(), opts({ dir }));
+    assert.equal((html.match(/data-act="reveal"/g) || []).length, 1, dir);
+    assert.ok(html.includes('<button class="pc-show" data-act="reveal">Show answer</button>'), dir);
+  }
+});
+
+test('the topic icon sits in the corner and there is no word-type dot', () => {
+  const html = cardHtml(face(), opts());
+  assert.ok(html.startsWith('<div class="pc"><span class="pc-icon" aria-hidden="true">💧</span>'));
+  assert.ok(!html.includes('class="dot') && !html.includes('pc-meta'));
+  assert.ok(!cardHtml(face({ icon: null }), opts()).includes('pc-icon'), 'a pattern card has no icon');
 });
 
 test('revealed: the other side, a speaker, the example and three answers with their intervals', () => {
@@ -44,7 +57,6 @@ test('revealed: the other side, a speaker, the example and three answers with th
 
 test('the understand side starts from the target text with a speaker', () => {
   const html = cardHtml(face({ say: 'su!' }), opts({ dir: 'understand' }));
-  assert.match(html, /data-act="reveal"/);
   assert.match(html, /data-say="su!"/);
   assert.ok(!html.includes('water'));
   const back = cardHtml(face(), opts({ dir: 'understand', revealed: true }));

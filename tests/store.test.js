@@ -112,7 +112,7 @@ test('saved learned sorts and the status filter are dropped', () => {
   assert.equal(store.ui.sort.words, 'topic');
   assert.equal(store.ui.sort.patterns, 'common');
   assert.equal(store.ui.status, undefined);
-  assert.equal(store.ui.mode, 'browse');
+  assert.equal(store.ui.mode, 'practice');
   assert.equal(store.ui.dir, 'say');
   assert.equal(store.ui.topic, 'all');
 });
