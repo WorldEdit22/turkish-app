@@ -24,6 +24,7 @@ const ASSETS = [
   'js/update.js',
   'data/alphabet.js',
   'data/book.js',
+  'data/help.js',
   'data/words.js',
   'data/patterns.js',
   'data/ranks.js',

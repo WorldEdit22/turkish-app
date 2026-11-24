@@ -23,8 +23,14 @@ test('the page is a column that does not scroll; only main scrolls', () => {
 });
 
 test('the book window has the same window styles as the others', () => {
-  assert.ok(/dialog#sheet, dialog#translator, dialog#book \{/.test(css), 'the window rule names #book');
+  assert.ok(/dialog#sheet, dialog#translator, dialog#book, dialog#help \{/.test(css), 'the window rule names #book');
   assert.ok(/dialog#book::backdrop/.test(css), 'the backdrop rule names #book');
+});
+
+test('the help window has the same window styles as the others', () => {
+  assert.ok(/dialog#sheet, dialog#translator, dialog#book, dialog#help \{/.test(css), 'the window rule names #help');
+  assert.ok(/dialog#help::backdrop/.test(css), 'the backdrop rule names #help');
+  assert.ok(/dialog#help\[open\]/.test(css), 'the open animation names #help');
 });
 
 test('the progress text gives way, so the top row never pushes the gear off screen', () => {

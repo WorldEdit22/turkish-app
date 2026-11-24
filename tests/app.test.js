@@ -227,6 +227,33 @@ test('a speaker in a section speaks and stays', () => {
   }
 });
 
+const { HELP } = await import('../data/help.js');
+const clickHelp = (dataset) => $('#help').fire('click', { target: { closest: (s) => (s === '[data-act]' ? { dataset } : null) } });
+const helpRows = () => ($('#help-body').innerHTML.match(/data-act="open-section"/g) || []).length;
+
+test('the ? button opens the help: intro, then the topics in order', () => {
+  try {
+    $('#help-btn').fire('click');
+    assert.ok($('#help').open);
+    const html = $('#help-body').innerHTML;
+    assert.ok(clean(html));
+    assert.ok(html.includes('class="gd-intro"') && html.includes(HELP.intro.replaceAll("'", '&#39;')), 'the intro shows');
+    assert.equal(helpRows(), HELP.sections.length);
+    const ids = [...html.matchAll(/data-act="open-section" data-id="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(ids, ['practice', 'browse', 'windows', 'search', 'translate', 'book', 'ai', 'settings', 'routine']);
+    clickHelp({ act: 'open-section', id: 'routine' });
+    assert.ok($('#help-body').innerHTML.includes('data-act="back"') && !helpRows(), 'a topic page');
+    assert.ok(clean($('#help-body').innerHTML));
+    clickHelp({ act: 'back' });
+    assert.equal(helpRows(), HELP.sections.length, 'back shows the list');
+  } finally {
+    if ($('#help').open) $('#help').close();
+    $('#help-btn').fire('click');
+    if (!helpRows()) clickHelp({ act: 'back' });
+    $('#help').close();
+  }
+});
+
 const { store } = await import('../js/store.js');
 const clickSheet = (dataset) => $('#sheet-body').fire('click', { target: { closest: (s) => (s === '[data-act]' ? { dataset } : null) } });
 const onButton = (html, dir, grade) => html.includes(`class="on" data-act="recall" data-dir="${dir}" data-grade="${grade}"`);

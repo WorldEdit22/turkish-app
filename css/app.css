@@ -476,7 +476,7 @@ main {
 
 /* ---------- sheet ---------- */
 
-dialog#sheet, dialog#translator, dialog#book {
+dialog#sheet, dialog#translator, dialog#book, dialog#help {
   border: 0;
   padding: 0;
   margin: auto auto 0;
@@ -489,9 +489,9 @@ dialog#sheet, dialog#translator, dialog#book {
   color: var(--text);
   box-shadow: var(--sheet-shadow);
 }
-dialog#sheet[open], dialog#translator[open], dialog#book[open] { animation: up 0.22s ease-out; }
-dialog#sheet:focus, dialog#translator:focus, dialog#book:focus { outline: none; }
-dialog#sheet::backdrop, dialog#translator::backdrop, dialog#book::backdrop { background: rgba(4, 30, 34, 0.4); }
+dialog#sheet[open], dialog#translator[open], dialog#book[open], dialog#help[open] { animation: up 0.22s ease-out; }
+dialog#sheet:focus, dialog#translator:focus, dialog#book:focus, dialog#help:focus { outline: none; }
+dialog#sheet::backdrop, dialog#translator::backdrop, dialog#book::backdrop, dialog#help::backdrop { background: rgba(4, 30, 34, 0.4); }
 /* Full height, so the text box sits high on the screen, above the iPhone keyboard. */
 dialog#translator { height: 92vh; height: 92dvh; }
 /* The body fills the window, so only a tap on the dimmed area outside counts as a backdrop tap. */

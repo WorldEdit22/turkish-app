@@ -9,7 +9,7 @@ import { answer, buildQueue, correct, dayOf, DIRS, isKnown, isMastered, isNew, n
 import { cardHtml, countsText, doneHtml, recallHtml } from './practiceview.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { reloadOnUpdate } from './update.js';
-import { esc, SPEAKER, BUBBLE, BOOK as BOOK_ICON } from './html.js';
+import { esc, SPEAKER, BUBBLE, BOOK as BOOK_ICON, QUESTION } from './html.js';
 import { shrinkPhoto } from './photo.js';
 import { sentencesOf, scanDate, scansListHtml, scanHtml, sentenceHtml } from './scanview.js';
 import { translate, TranslateError, FAILED, googleLink, swapState } from './translate.js';
@@ -17,6 +17,7 @@ import { translatorHtml, resultHtml } from './translateview.js';
 import { alphabetBodyHtml } from './alphabetview.js';
 import { guideListHtml, guideSectionHtml } from './guideview.js';
 import { BOOK } from '../data/book.js';
+import { HELP } from '../data/help.js';
 
 // ---------- data ----------
 
@@ -747,7 +748,8 @@ translator.addEventListener('close', () => {
 // It remembers where it was: reopening shows the same page at the same scroll.
 
 const book = $('#book');
-const anyWindowOpen = () => sheet.open || translator.open || book.open;
+const help = $('#help');
+const anyWindowOpen = () => sheet.open || translator.open || book.open || help.open;
 
 // content() → { title, intro, sections, hint, alphabet() }, called each time the window opens.
 function guideWindow(dialog, body, content) {
@@ -814,6 +816,14 @@ const bookWindow = guideWindow(book, $('#book-body'), () => ({
   alphabet: () => alphabetBodyHtml(LETTERS, TRICKY),
 }));
 const openBook = () => bookWindow.open();
+
+const helpWindow = guideWindow(help, $('#help-body'), () => ({
+  title: 'Help',
+  intro: HELP.intro,
+  sections: HELP.sections,
+  hint: null,
+  alphabet: () => '',
+}));
 
 async function askAi(button) {
   const x = ITEM.get(openKey);
@@ -1009,7 +1019,7 @@ let toastTimer = null;
 function toast(message, ms = 1500) {
   const el = $('#toast');
   // An open window sits above the whole page, so the toast goes inside the top one while it is open.
-  const host = translator.open ? translator : book.open ? book : sheet.open ? sheet : document.body;
+  const host = translator.open ? translator : book.open ? book : help.open ? help : sheet.open ? sheet : document.body;
   if (el.parentElement !== host) host.append(el);
   el.textContent = message;
   el.classList.add('show');
@@ -1069,6 +1079,8 @@ $('#tr-btn').innerHTML = BUBBLE;
 $('#tr-btn').addEventListener('click', () => openTranslator());
 $('#book-btn').innerHTML = BOOK_ICON;
 $('#book-btn').addEventListener('click', () => openBook());
+$('#help-btn').innerHTML = QUESTION;
+$('#help-btn').addEventListener('click', () => helpWindow.open());
 
 $('#sort').addEventListener('change', (e) => {
   ui.sort[ui.tab] = e.target.value;
