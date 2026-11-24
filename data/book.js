@@ -493,7 +493,7 @@ export const BOOK = [
       },
       { p: 'Can: -ebil goes right after the stem, then any tense: yardım ed*ebil*ir misin? (can you help?). After a vowel it takes a y: bekle*yebil*irim.' },
       { p: "Can't: use -eme / -ama instead, without bil: gel*eme*m (I can't come), yap*ama*dım (I couldn't do it)." },
-      { p: 'Have to: the everyday way is the -me form (gitme, "going") with "my" and lazım (needed): gitme*m* lazım = I have to go (literally "my going is needed"). For others: gitme*n* lazım (you), gitme*si* lazım (he, she). -meli is a firmer "must", and with sen it gives advice.' },
+      { p: 'Have to: the everyday way is the -me form (gitme, "going") with "my" and lazım (needed): gitme*m* lazım = I have to go (literally "my going is needed"). The same goes for gelme*m* lazım: it is not the negative gelmem, "I don\'t come", but the "coming" form plus "my". For others: gitme*n* lazım (you), gitme*si* lazım (he, she). -meli is a firmer "must", and with sen it gives advice.' },
       { p: 'Want to: the -mek form with istemek, as in the last example.' },
       {
         ex: [

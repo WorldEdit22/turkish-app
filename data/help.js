@@ -22,7 +22,7 @@ export const HELP = {
       title: 'Browse',
       sub: 'Words and patterns, by topic',
       blocks: [
-        { p: 'In *Browse*, the *Words* and *Patterns* tabs show every block. Pick a topic or type with the buttons under the search field, and sort the list with the menu.' },
+        { p: 'In *Browse*, the *Words* and *Patterns* tabs show every block. The buttons under the search field filter by word type (*Words*) or pattern group (*Patterns*). The menu sorts the list, for example *By topic*.' },
         { p: 'Tap a block to select it. Tap it again to unselect it. *Clear* removes all your selections in this tab.' },
         { p: 'Your selected blocks are used when the app writes example sentences, so pick the words you are learning now.' },
       ],
@@ -66,7 +66,7 @@ export const HELP = {
       sub: 'The open book at the top',
       blocks: [
         { p: 'The open book at the top opens a short grammar book. It starts with the letters and their sounds, then covers one idea at a time.' },
-        { p: 'Every Turkish sentence has a speaker button. The book is there too.' },
+        { p: 'Every Turkish sentence has a speaker button. The book button is also in the title row of every word, pattern and scan window.' },
         { tip: 'Open it when you are curious about why a word looks the way it does. You never have to read it in order.' },
       ],
     },
