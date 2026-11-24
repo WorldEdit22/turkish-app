@@ -1,4 +1,4 @@
-// The Turkish alphabet for the alphabet window: every letter with its Turkish name,
+// The Turkish alphabet for the grammar book's first section: every letter with its Turkish name,
 // how it sounds in English terms (Swedish where English has no such sound), and an
 // example word. The voice reads the name when a letter is tapped.
 // TRICKY are the letters that trip up English speakers.

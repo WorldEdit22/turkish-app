@@ -15,6 +15,8 @@ A small, fast web app for learning the most common Turkish sentence patterns and
 - **Translate:** the chat-bubble button, next to the gear and next to ✕ in every window, opens a Turkish ⇄ English translator. It translates as you type, ⇄ swaps the direction, and a link opens the same text in Google Translate. The text is sent to Google Translate (no key, no AI), so it needs the internet.
 - Optional **More examples** button that asks a free AI (Gemini, Groq, Mistral or OpenRouter) for extra sentences. Answers are saved on the phone.
 - **Scan a page:** the camera button next to the search field takes or picks a photo of Turkish text. Gemini reads it into sentences shown like a book page. Tap a sentence for its translation, how it is built, and every word with its base form, meaning and suffixes. Scans (text only) and explanations are saved on the phone, so they also open offline. Needs a Gemini key.
+- **Grammar book:** the book button in the top row (and in the word, pattern and scan windows) opens short grammar sections with tappable examples. The letters and sounds are its first section.
+- **Help:** the **?** button in the top row explains what the app is for, gives a short guide to each feature, and suggests a daily routine.
 - A speaker button reads Turkish aloud using the phone's built-in Turkish voice.
 
 No frameworks, no build step and no server code: plain HTML, CSS and JavaScript modules.
