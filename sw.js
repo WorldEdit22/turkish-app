@@ -11,6 +11,7 @@ const ASSETS = [
   'js/ai.js',
   'js/alphabetview.js',
   'js/grammar.js',
+  'js/guideview.js',
   'js/combine.js',
   'js/examples.js',
   'js/html.js',
