@@ -5,7 +5,7 @@ import { LETTERS, TRICKY } from '../data/alphabet.js';
 import { fits } from './combine.js';
 import { patternExamples, wordExamples, wordPatternPairs, slotOf } from './examples.js';
 import { store } from './store.js';
-import { answer, buildQueue, correct, dayOf, DIRS, isKnown, isMastered, isNew, newCandidates, nextInterval, requeue, status, unqueue } from './srs.js';
+import { answer, buildQueue, correct, dayOf, DIRS, isKnown, isMastered, isNew, newCandidates, NEW_POOL, nextInterval, PATTERN_POOL, requeue, status, unqueue } from './srs.js';
 import { cardHtml, countsText, doneHtml, recallHtml } from './practiceview.js';
 import { PROVIDERS, AIError, generate, patternPrompt, wordPrompt, readPage, explainSentence } from './ai.js';
 import { reloadOnUpdate } from './update.js';
@@ -290,7 +290,8 @@ function ensureSession() {
   const today = dayOf(Date.now());
   const sig = `${ui.tab}|${ui.tab === 'patterns' ? ui.pgroup : ui.topic}|${ui.dir}|${today}`;
   if (session?.sig !== sig) {
-    const queue = buildQueue(selectionKeys(), (key) => store.card(key, ui.dir), today, store.doseLeft(ui.dir, today), Math.random, otherOf);
+    const pool = ui.tab === 'patterns' ? PATTERN_POOL : NEW_POOL;
+    const queue = buildQueue(selectionKeys(), (key) => store.card(key, ui.dir), today, store.doseLeft(ui.dir, today), Math.random, otherOf, pool);
     session = { sig, queue, face: null, revealed: false, undo: null };
   }
   return session;

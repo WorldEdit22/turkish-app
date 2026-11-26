@@ -646,6 +646,26 @@ test('on Patterns, practice starts with the most useful pattern; the back shows 
     }
   }));
 
+test("on Patterns, a beginner's new cards come at random from the 20 most useful", () =>
+  inPractice(() => {
+    let seed = 7; // repeatable "random"
+    Math.random = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+    tabTo('patterns');
+    try {
+      const top = PATTERNS.slice(0, 20).map((p) => esc(p.en));
+      const shown = [];
+      for (let i = 0; i < 15; i++) {
+        shown.push(front());
+        reveal();
+        answerWith('easy');
+      }
+      assert.ok(shown.every((s) => top.includes(s)), shown.join(' | '));
+      assert.notDeepEqual(shown, top.slice(0, 15), 'at random');
+    } finally {
+      tabTo('words');
+    }
+  }));
+
 test('the title row shows due and new counts', () => {
   const w = newWords('say').at(-1); // the least common word, made due below
   inPractice(

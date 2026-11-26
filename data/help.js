@@ -12,7 +12,7 @@ export const HELP = {
       blocks: [
         { p: 'Switch to *Practice* at the top. You get one card at a time. Say the answer to yourself, then tap *Show answer*.' },
         { p: 'Tell the app how it went: *Forgot*, *Hard* or *Easy*. Each button shows when the card will come back. Forgotten cards return soon, easy ones much later.' },
-        { list: ['Tapped the wrong one? *Undo* takes the answer back.', 'The button at the top switches direction: *EN → TR* (say it in Turkish) or *TR → EN* (understand it).'] },
+        { list: ['Tapped the wrong one? *Undo* takes the answer back.', 'The button at the top switches direction: *EN → TR* (say it in Turkish) or *TR → EN* (understand it).', 'A word or pattern you just learned one way comes up as new the other way only after a week, so it is not fresh in your memory.'] },
         { tip: 'You get 15 new cards a day in each direction. When they are done, *More new cards* gives you 15 more.' },
       ],
     },

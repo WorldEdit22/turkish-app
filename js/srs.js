@@ -14,6 +14,8 @@ export const REQUEUE_GAP = 4;
 // New cards are drawn at random from this many of the most common unseen items, so the
 // two directions get different words while beginners still meet useful ones first.
 export const NEW_POOL = 60;
+// Patterns go from simple to advanced, so their new cards come from a smaller pool.
+export const PATTERN_POOL = 20;
 // An item answered in the other direction this recently is not offered as new here:
 // it would still be fresh in memory.
 export const HOLD_DAYS = 7;
@@ -82,18 +84,18 @@ export function newCandidates(keys, cardOf, today, otherOf = () => undefined) {
   return keys.filter((k) => isNew(cardOf(k)) && !seenWithin(otherOf(k), today, HOLD_DAYS));
 }
 
-// Due cards oldest first (shuffled within a day, the sort is stable); those answered in the
-// other direction today go last. Then new cards, at random from the first NEW_POOL candidates.
-export function buildQueue(keys, cardOf, today, newLeft, rand = Math.random, otherOf = () => undefined) {
+// Due cards oldest first (shuffled within a day, the sort is stable), then new cards, at random
+// from the first `pool` candidates. Due cards answered in the other direction today go last,
+// after the new cards, so they are not fresh in memory.
+export function buildQueue(keys, cardOf, today, newLeft, rand = Math.random, otherOf = () => undefined, pool = NEW_POOL) {
   const due = keys.filter((k) => {
     const c = cardOf(k);
     return !isNew(c) && c.due <= today;
   });
   const sorted = shuffle(due, rand).sort((x, y) => cardOf(x).due - cardOf(y).due);
   const fresh = (k) => !seenWithin(otherOf(k), today, 1);
-  const reviews = [...sorted.filter(fresh), ...sorted.filter((k) => !fresh(k))];
-  const pool = newCandidates(keys, cardOf, today, otherOf).slice(0, NEW_POOL);
-  return [...reviews, ...shuffle(pool, rand).slice(0, Math.max(0, newLeft))];
+  const news = shuffle(newCandidates(keys, cardOf, today, otherOf).slice(0, pool), rand).slice(0, Math.max(0, newLeft));
+  return [...sorted.filter(fresh), ...news, ...sorted.filter((k) => !fresh(k))];
 }
 
 export function requeue(queue, key) {

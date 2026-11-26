@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   dayOf, fuzz, nextInterval, answer, correct, isNew, isKnown, isMastered, status,
   buildQueue, requeue, unqueue, doseLeft, useDose, addDose, giveBackDose, migrateLearned,
-  newCandidates, NEW_POOL, HOLD_DAYS,
+  newCandidates, NEW_POOL, PATTERN_POOL, HOLD_DAYS,
 } from '../js/srs.js';
 
 const fixed = (r) => () => r; // a rand that always returns r
@@ -50,11 +50,19 @@ test('an item answered in the other direction within 7 days is held back as new'
   assert.ok(!buildQueue(['k0', 'k1'], () => undefined, D, 5, fixed(0.999), (k) => other[k]).includes('k0'));
 });
 
-test('a due card answered in the other direction today goes after the other due cards', () => {
+test('a due card answered in the other direction today goes last, after the new cards', () => {
   const due = (d) => ({ ivl: 3, due: d, last: 'easy', prev: null });
   const cards = { a: due(D - 2), b: due(D - 1), c: due(D) };
   const other = { a: { seen: D } };
-  assert.deepEqual(buildQueue(['a', 'b', 'c'], (k) => cards[k], D, 0, fixed(0), (k) => other[k]), ['b', 'c', 'a']);
+  const keys = ['a', 'b', 'c', 'n1', 'n2'];
+  assert.deepEqual(buildQueue(keys, (k) => cards[k], D, 5, fixed(0.999), (k) => other[k]), ['b', 'c', 'n1', 'n2', 'a']);
+});
+
+test('patterns draw their new cards from the 20 most useful', () => {
+  assert.equal(PATTERN_POOL, 20);
+  const q = buildQueue(keys100, () => undefined, D, 15, seeded(7), undefined, PATTERN_POOL);
+  assert.equal(q.length, 15);
+  assert.ok(q.every((k) => keys100.indexOf(k) < 20), q.join(' '));
 });
 
 test('a card with an interval: Hard ×1.2, Easy ×2.5, at least +1 day; Forgot clears it', () => {
