@@ -139,10 +139,10 @@ export const BOOK = [
     chapter: 'Building a sentence',
     icon: '❓',
     title: 'Questions',
-    sub: 'The particle mi, and question words',
+    sub: 'mi, question words, and veya or yoksa',
     blocks: [
-      { p: 'For a yes/no question, put *mi* after the word you ask about. It is written as a separate word but follows 4-way harmony: mi, mı, mu, mü.' },
-      { p: 'Personal endings move onto mi: Yorgun *musun*? (Are you tired?), Hazır *mıyız*? (Are we ready?). Only -ler (they) stays on the word: Geliyorlar *mı*? (Are they coming?) Put mi after another word to ask about just that: Dün *mü* geldin? (Was it yesterday you came?)' },
+      { p: 'For a yes/no question, put *mi* right after the word you ask about. It is written as a separate word but follows 4-way harmony: mi, mı, mu, mü. At the end it asks about the whole sentence; after another word, about just that word: Dün *mü* geldin? (Was it yesterday you came?)' },
+      { p: 'With "to be" and most tenses, the personal ending moves onto mi: Mutlu *muyum*? (Am I happy?), Geliyor *musun*? (Are you coming?). Only -ler (they) stays on the word: Geliyorlar *mı*? The -di past is the other way round, with the ending before mi: Geldin *mi*? (Did you come?)' },
       { p: 'Question words take no mi. They stand where the answer would go, usually right before the verb:' },
       {
         table: {
@@ -157,15 +157,17 @@ export const BOOK = [
           ],
         },
       },
+      { p: 'In a question that offers a choice, "or" is *yoksa*, and mi follows each option. *veya* (or ya da) is the plain "or": Çay veya kahve içer misin? only asks whether you want a drink.' },
       {
         ex: [
           ['Çay sıcak *mı*?', 'Is the tea hot?'],
-          ['Yorgun *musun*?', 'Are you tired?'],
+          ['Rahatsız ediyor *muyum*?', 'Am I disturbing you?'],
           ['Yemek yedin *mi*?', 'Have you eaten?'],
           ['*Nereye* gidiyorsun?', 'Where are you going?'],
+          ['Çay *mı* istersin, *yoksa* kahve *mi*?', 'Would you like tea, or coffee?'],
         ],
       },
-      { tip: 'Say Geliyor *musun*?, not Geliyorsun mu?: the ending goes on mi. The -di past is the other way round: Geldin *mi*? And mi is always written as its own word.' },
+      { tip: 'Say Geliyor *musun*?, not Geliyorsun mu?: the ending goes on mi, except after -di. And mi is always written as its own word.' },
     ],
   },
   {

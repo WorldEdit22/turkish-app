@@ -76,7 +76,9 @@ test('every grammar section has a tip, in about 120–250 words', () => {
 });
 
 // Points the spec names for a section: each must appear in it (any case, without the * marks).
-const COVERAGE = {};
+const COVERAGE = {
+  questions: ['yoksa', 'muyum'],
+};
 test('every section covers the points the spec names', () => {
   for (const [id, terms] of Object.entries(COVERAGE)) {
     const s = BOOK.find((x) => x.id === id);
