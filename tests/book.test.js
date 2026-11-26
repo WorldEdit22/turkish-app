@@ -3,8 +3,12 @@ import assert from 'node:assert/strict';
 import { BOOK } from '../data/book.js';
 
 const IDS = [
-  'letters', 'harmony', 'consonants', 'order', 'plural', 'tobe', 'cases', 'possessive', 'pronouns', 'questions',
-  'iyor', 'aorist', 'past', 'future', 'negation', 'modals', 'linking', 'postpositions', 'numbers',
+  'letters', 'harmony', 'consonants', 'order', 'tobe', 'questions', 'negation', 'plural', 'cases', 'possessive',
+  'pronouns', 'postpositions', 'numbers', 'iyor', 'aorist', 'past', 'future', 'modals', 'linking',
+];
+const CHAPTERS = [
+  'Sounds and letters', 'Building a sentence', 'Nouns and their endings', 'Small words', 'Tenses', 'Moods and voice',
+  'Longer sentences',
 ];
 const KINDS = ['p', 'list', 'table', 'ex', 'tip', 'alphabet'];
 const grammar = BOOK.filter((s) => !s.blocks.some((b) => b.alphabet));
@@ -20,9 +24,14 @@ test("the book's sections in order, letters first", () => {
   assert.deepEqual(BOOK[0].blocks, [{ alphabet: true }]);
 });
 
-test('every section has an icon, title, sub and blocks of the known kinds', () => {
+test('every section is in a chapter; the chapters come in order, each in one run', () => {
+  const runs = BOOK.map((s) => s.chapter).filter((c, i, all) => i === 0 || c !== all[i - 1]);
+  assert.deepEqual(runs, CHAPTERS);
+});
+
+test('every section has an icon, title, sub, chapter and blocks of the known kinds', () => {
   for (const s of BOOK) {
-    for (const k of ['id', 'icon', 'title', 'sub']) assert.ok(typeof s[k] === 'string' && s[k].trim(), `${s.id}.${k}`);
+    for (const k of ['id', 'icon', 'title', 'sub', 'chapter']) assert.ok(typeof s[k] === 'string' && s[k].trim(), `${s.id}.${k}`);
     assert.ok(Array.isArray(s.blocks) && s.blocks.length, s.id);
     for (const b of s.blocks) {
       const keys = Object.keys(b);
@@ -36,6 +45,7 @@ test('every section has an icon, title, sub and blocks of the known kinds', () =
         assert.ok(head === null || Array.isArray(head), `${s.id}: table head`);
         assert.ok(Array.isArray(rows) && rows.length, `${s.id}: table rows`);
         const width = head ? head.length : rows[0].length;
+        assert.ok(width <= 4, `${s.id}: ${width} table columns`);
         for (const r of rows) assert.ok(r.length === width && r.every((c) => typeof c === 'string'), `${s.id}: table row ${r}`);
       }
       if (b.ex) assert.ok(Array.isArray(b.ex), `${s.id}: ex`);
@@ -62,6 +72,17 @@ test('every grammar section has a tip, in about 120–250 words', () => {
     assert.ok(s.blocks.some((b) => b.tip), `${s.id} has a tip`);
     const words = wordCount(s);
     assert.ok(words >= 120 && words <= 250, `${s.id}: ${words} words`);
+  }
+});
+
+// Points the spec names for a section: each must appear in it (any case, without the * marks).
+const COVERAGE = {};
+test('every section covers the points the spec names', () => {
+  for (const [id, terms] of Object.entries(COVERAGE)) {
+    const s = BOOK.find((x) => x.id === id);
+    assert.ok(s, `${id} exists`);
+    const text = strings(s.blocks).join(' ').replaceAll('*', '').toLocaleLowerCase('tr');
+    for (const t of terms) assert.ok(text.includes(t.toLocaleLowerCase('tr')), `${id}: ${t}`);
   }
 });
 

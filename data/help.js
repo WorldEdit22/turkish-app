@@ -66,6 +66,7 @@ export const HELP = {
       sub: 'The open book at the top',
       blocks: [
         { p: 'The open book at the top opens a short grammar book. It starts with the letters and their sounds, then covers one idea at a time.' },
+        { p: 'The book is grouped into chapters. *Next* at the bottom of a page goes on to the next one.' },
         { p: 'Every Turkish sentence has a speaker button. The book button is also in the title row of every word, pattern and scan window.' },
         { tip: 'Open it when you are curious about why a word looks the way it does. You never have to read it in order.' },
       ],

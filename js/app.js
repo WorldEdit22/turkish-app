@@ -755,7 +755,7 @@ const book = $('#book');
 const help = $('#help');
 const anyWindowOpen = () => sheet.open || translator.open || book.open || help.open;
 
-// content() → { title, intro, sections, hint, alphabet() }, called each time the window opens.
+// content() → { title, intro, sections, linkNext, hint, alphabet() }, called each time the window opens.
 function guideWindow(dialog, body, content) {
   const state = { id: null, listScroll: 0, sectionScroll: 0 };
 
@@ -764,7 +764,11 @@ function guideWindow(dialog, body, content) {
     const section = c.sections.find((s) => s.id === state.id);
     state.id = section ? section.id : null;
     body.innerHTML = section
-      ? guideSectionHtml(section, { hint: c.hint, alphabet: section.blocks.some((b) => b.alphabet) ? c.alphabet() : '' })
+      ? guideSectionHtml(section, {
+          hint: c.hint,
+          alphabet: section.blocks.some((b) => b.alphabet) ? c.alphabet() : '',
+          next: c.linkNext ? c.sections[c.sections.indexOf(section) + 1] ?? null : null,
+        })
       : guideListHtml(c);
     dialog.scrollTop = section ? state.sectionScroll : state.listScroll;
   }
@@ -784,7 +788,7 @@ function guideWindow(dialog, body, content) {
     if (!btn) return;
     const { act, id } = btn.dataset;
     if (act === 'close') shut();
-    else if (act === 'open-section') {
+    else if (act === 'open-section' || act === 'next') {
       saveScroll();
       state.id = id;
       state.sectionScroll = 0;
@@ -816,6 +820,7 @@ const bookWindow = guideWindow(book, $('#book-body'), () => ({
   title: 'Grammar',
   intro: '',
   sections: BOOK,
+  linkNext: true,
   hint: null,
   alphabet: () => alphabetBodyHtml(LETTERS, TRICKY),
 }));

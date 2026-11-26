@@ -28,6 +28,23 @@ test('the list shows every section as a row that opens it', () => {
   assert.ok(html.includes('s-top'));
 });
 
+test('the list shows a heading where the chapter changes, and none without chapters', () => {
+  const s = (id, chapter) => ({ id, chapter, icon: 'x', title: id, sub: 's', blocks: [] });
+  const html = guideListHtml({ title: 'B', sections: [s('a', 'One'), s('b', 'One'), s('c', 'Two & more')] });
+  assert.equal(html.split('class="gd-chapter"').length - 1, 2);
+  const at = (t) => html.indexOf(t);
+  assert.ok(at('<h3 class="gd-chapter">One</h3>') < at('data-id="a"'));
+  assert.ok(at('data-id="b"') < at('<h3 class="gd-chapter">Two &amp; more</h3>') && at('<h3 class="gd-chapter">Two &amp; more</h3>') < at('data-id="c"'));
+  assert.ok(!guideListHtml({ title: 'H', sections: [{ id: 'a', icon: 'x', title: 'a', sub: 's', blocks: [] }] }).includes('gd-chapter'));
+});
+
+test('a section page can end with a Next button to the next section', () => {
+  const sec = { id: 'a', icon: 'x', title: 'A', sub: 's', blocks: [{ p: 'Hi' }] };
+  const html = guideSectionHtml(sec, { alphabet: '', next: { id: 'b"', title: 'Two & more' } });
+  assert.ok(html.endsWith('<button class="gd-next" data-act="next" data-id="b&quot;">Next: Two &amp; more ›</button>'));
+  assert.ok(!guideSectionHtml(sec, { alphabet: '' }).includes('gd-next'));
+});
+
 test('the list has no intro paragraph without an intro', () => {
   assert.ok(!guideListHtml({ title: 'T', sections: [] }).includes('gd-intro'));
 });

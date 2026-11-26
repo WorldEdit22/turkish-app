@@ -20,6 +20,13 @@ test('every topic has an icon, title, sub and 2 to 6 short lines, and no example
   }
 });
 
+test('the book topic mentions the chapters and Next', () => {
+  const book = HELP.sections.find((s) => s.id === 'book');
+  const text = book.blocks.flatMap((b) => b.list || [b.p || b.tip]).join(' ');
+  assert.match(text, /chapters/);
+  assert.match(text, /\*Next\*/);
+});
+
 test('the practice topic says why a word learned one way waits before it comes up new the other way', () => {
   const practice = HELP.sections.find((s) => s.id === 'practice');
   const text = practice.blocks.flatMap((b) => b.list || [b.p || b.tip]).join(' ');

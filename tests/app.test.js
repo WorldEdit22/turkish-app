@@ -254,6 +254,45 @@ test('the ? button opens the help: intro, then the topics in order', () => {
   }
 });
 
+test('the book list shows the chapter headings in order', async () => {
+  const { esc } = await import('../js/html.js');
+  try {
+    $('#book-btn').fire('click');
+    const headings = [...$('#book-body').innerHTML.matchAll(/<h3 class="gd-chapter">([^<]*)<\/h3>/g)].map((m) => m[1]);
+    assert.deepEqual(headings, [...new Set(BOOK.map((s) => s.chapter))].map(esc));
+  } finally {
+    resetBook();
+  }
+});
+
+test('Next opens the next section at its top; the last section and help topics have none', async () => {
+  const { esc } = await import('../js/html.js');
+  try {
+    $('#book-btn').fire('click');
+    clickBook({ act: 'open-section', id: BOOK[0].id });
+    assert.ok($('#book-body').innerHTML.includes(`data-act="next" data-id="${BOOK[1].id}"`));
+    $('#book').scrollTop = 50;
+    clickBook({ act: 'next', id: BOOK[1].id });
+    assert.ok($('#book-body').innerHTML.includes(`<h2>${esc(BOOK[1].title)}</h2>`));
+    assert.equal($('#book').scrollTop, 0, 'the next page starts at its top');
+    $('#book').close();
+    $('#book-btn').fire('click');
+    assert.ok($('#book-body').innerHTML.includes(`<h2>${esc(BOOK[1].title)}</h2>`), 'reopens on the next section');
+    clickBook({ act: 'back' });
+    clickBook({ act: 'open-section', id: BOOK.at(-1).id });
+    assert.ok(!$('#book-body').innerHTML.includes('gd-next'), 'the last section has no Next');
+    $('#help-btn').fire('click');
+    clickHelp({ act: 'open-section', id: 'book' });
+    assert.ok($('#help-body').innerHTML.includes('data-act="back"') && !$('#help-body').innerHTML.includes('gd-next'), 'a help topic has no Next');
+  } finally {
+    if ($('#help').open) $('#help').close();
+    $('#help-btn').fire('click');
+    if (!helpRows()) clickHelp({ act: 'back' });
+    $('#help').close();
+    resetBook();
+  }
+});
+
 const { store } = await import('../js/store.js');
 const clickSheet = (dataset) => $('#sheet-body').fire('click', { target: { closest: (s) => (s === '[data-act]' ? { dataset } : null) } });
 const onButton = (html, dir, grade) => html.includes(`class="on" data-act="recall" data-dir="${dir}" data-grade="${grade}"`);

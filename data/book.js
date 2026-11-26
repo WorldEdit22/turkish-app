@@ -4,6 +4,7 @@
 export const BOOK = [
   {
     id: 'letters',
+    chapter: 'Sounds and letters',
     icon: '🔤',
     title: 'Letters and sounds',
     sub: 'All 29 letters, and the tricky ones',
@@ -11,6 +12,7 @@ export const BOOK = [
   },
   {
     id: 'harmony',
+    chapter: 'Sounds and letters',
     icon: '🧩',
     title: 'Vowel harmony',
     sub: 'Why endings change their vowel',
@@ -42,6 +44,7 @@ export const BOOK = [
   },
   {
     id: 'consonants',
+    chapter: 'Sounds and letters',
     icon: '🔀',
     title: 'Consonant changes',
     sub: 'Why kitap becomes kitabı, and -de becomes -te',
@@ -75,6 +78,7 @@ export const BOOK = [
   },
   {
     id: 'order',
+    chapter: 'Building a sentence',
     icon: '🚂',
     title: 'Word order',
     sub: 'The verb comes last',
@@ -96,39 +100,8 @@ export const BOOK = [
     ],
   },
   {
-    id: 'plural',
-    icon: '👥',
-    title: 'Plural',
-    sub: '-ler / -lar, and when to leave it out',
-    blocks: [
-      { p: 'The plural ending is *-ler* or *-lar* (2-way harmony): -ler after e, i, ö, ü and -lar after a, ı, o, u.' },
-      {
-        table: {
-          head: ['One', 'Several'],
-          rows: [
-            ['ev (house)', 'ev*ler*'],
-            ['göz (eye)', 'göz*ler*'],
-            ['kitap (book)', 'kitap*lar*'],
-            ['okul (school)', 'okul*lar*'],
-          ],
-        },
-      },
-      { p: 'Other endings come after it: ev*ler*de (in the houses), arkadaş*lar*ım (my friends).' },
-      { p: 'After a number, or a word like çok (many) or kaç (how many), the noun stays singular: iki kitap (two books), çok insan (many people). The number already says there are several.' },
-      { p: 'With a plural subject the verb often stays singular: Çocuklar oynuyor. And on a family word, -ler means "and the family": annem*ler* is my mum and the rest of the family, usually my parents.' },
-      {
-        ex: [
-          ['Çocuk*lar* bahçede oynuyor.', 'The children are playing in the garden.'],
-          ['Arkadaş*lar*ımla buluşuyorum.', "I'm meeting my friends."],
-          ['İki kardeşim var.', 'I have two siblings.'],
-          ['Annem*ler*e gidiyoruz.', "We're going to my parents' place."],
-        ],
-      },
-      { tip: 'No -ler after a number: iki kitap, not iki kitaplar. English says "two books", Turkish says "two book".' },
-    ],
-  },
-  {
     id: 'tobe',
+    chapter: 'Building a sentence',
     icon: '🙋',
     title: '"To be" and personal endings',
     sub: 'I am, you are… and var / yok',
@@ -162,7 +135,114 @@ export const BOOK = [
     ],
   },
   {
+    id: 'questions',
+    chapter: 'Building a sentence',
+    icon: '❓',
+    title: 'Questions',
+    sub: 'The particle mi, and question words',
+    blocks: [
+      { p: 'For a yes/no question, put *mi* after the word you ask about. It is written as a separate word but follows 4-way harmony: mi, mı, mu, mü.' },
+      { p: 'Personal endings move onto mi: Yorgun *musun*? (Are you tired?), Hazır *mıyız*? (Are we ready?). Only -ler (they) stays on the word: Geliyorlar *mı*? (Are they coming?) Put mi after another word to ask about just that: Dün *mü* geldin? (Was it yesterday you came?)' },
+      { p: 'Question words take no mi. They stand where the answer would go, usually right before the verb:' },
+      {
+        table: {
+          head: null,
+          rows: [
+            ['ne', 'what', 'kim', 'who'],
+            ['nerede', 'where', 'nereye', 'where to'],
+            ['ne zaman', 'when', 'nereden', 'where from'],
+            ['neden, niye', 'why', 'nasıl', 'how'],
+            ['kaç', 'how many', 'ne kadar', 'how much'],
+            ['hangi', 'which', 'kimin', 'whose'],
+          ],
+        },
+      },
+      {
+        ex: [
+          ['Çay sıcak *mı*?', 'Is the tea hot?'],
+          ['Yorgun *musun*?', 'Are you tired?'],
+          ['Yemek yedin *mi*?', 'Have you eaten?'],
+          ['*Nereye* gidiyorsun?', 'Where are you going?'],
+        ],
+      },
+      { tip: 'Say Geliyor *musun*?, not Geliyorsun mu?: the ending goes on mi. The -di past is the other way round: Geldin *mi*? And mi is always written as its own word.' },
+    ],
+  },
+  {
+    id: 'negation',
+    chapter: 'Building a sentence',
+    icon: '🚫',
+    title: 'Negation and commands',
+    sub: 'değil, yok, -me, and telling someone to do something',
+    blocks: [
+      { p: 'There are three ways to say "not":' },
+      {
+        list: [
+          '*değil* for "is not": Pahalı değil. (It\'s not expensive.)',
+          '*yok* for "there is no" or "I have no": Param yok. (I have no money.)',
+          '*-me / -ma* on a verb, right after the stem: gel*me*di (he didn\'t come).',
+        ],
+      },
+      {
+        table: {
+          head: ['', 'yes', 'no'],
+          rows: [
+            ['-iyor', 'geliyorum', 'gel*mi*yorum'],
+            ['-di', 'geldim', 'gel*me*dim'],
+            ['-ecek', 'geleceğim', 'gel*me*yeceğim'],
+            ['-ir', 'gelirim', 'gel*mem*'],
+            ['command', 'gel', 'gel*me*'],
+          ],
+        },
+      },
+      { p: "Commands: the bare stem is a command to someone you call sen: Gel! (Come!), Bak! (Look!). For siz, polite or to several people, add -in (4-way), after a vowel -yin: Gel*in*! Bekle*yin*! And \"let's\" is -elim / -alım: Gid*elim*!" },
+      {
+        ex: [
+          ['Bugün gel*mi*yorum.', "I'm not coming today."],
+          ['Merak et*me*!', "Don't worry!"],
+          ['Buyurun, otur*un*.', 'Please, have a seat.'],
+          ['Hadi, gid*elim*!', "Come on, let's go!"],
+        ],
+      },
+      { tip: 'Don\'t use değil to make a verb negative: "I\'m not going" is Git*mi*yorum, not Gidiyorum değil. değil goes with nouns and adjectives.' },
+    ],
+  },
+  {
+    id: 'plural',
+    chapter: 'Nouns and their endings',
+    icon: '👥',
+    title: 'Plural',
+    sub: '-ler / -lar, and when to leave it out',
+    blocks: [
+      { p: 'The plural ending is *-ler* or *-lar* (2-way harmony): -ler after e, i, ö, ü and -lar after a, ı, o, u.' },
+      {
+        table: {
+          head: ['One', 'Several'],
+          rows: [
+            ['ev (house)', 'ev*ler*'],
+            ['göz (eye)', 'göz*ler*'],
+            ['kitap (book)', 'kitap*lar*'],
+            ['okul (school)', 'okul*lar*'],
+          ],
+        },
+      },
+      { p: 'Other endings come after it: ev*ler*de (in the houses), arkadaş*lar*ım (my friends).' },
+      { p: 'After a number, or a word like çok (many) or kaç (how many), the noun stays singular: iki kitap (two books), çok insan (many people). The number already says there are several.' },
+      { p: 'With a plural subject the verb often stays singular: Çocuklar oynuyor. And on a family word, -ler means "and the family": annem*ler* is my mum and the rest of the family, usually my parents.' },
+      {
+        ex: [
+          ['Çocuk*lar* bahçede oynuyor.', 'The children are playing in the garden.'],
+          ['Arkadaş*lar*ımla buluşuyorum.', "I'm meeting my friends."],
+          ['İki kardeşim var.', 'I have two siblings.'],
+          ['Annem*ler*e gidiyoruz.', "We're going to my parents' place."],
+        ],
+      },
+      { tip: 'No -ler after a number: iki kitap, not iki kitaplar. English says "two books", Turkish says "two book".' },
+    ],
+  },
+  {
     id: 'cases',
+    chapter: 'Nouns and their endings',
     icon: '📍',
     title: 'The cases',
     sub: '-i, -e, -de, -den, -in: the, to, at, from, of',
@@ -197,6 +277,7 @@ export const BOOK = [
   },
   {
     id: 'possessive',
+    chapter: 'Nouns and their endings',
     icon: '🏷️',
     title: 'Possessive endings and compound nouns',
     sub: "My house, Ali's car, Turkish coffee",
@@ -231,6 +312,7 @@ export const BOOK = [
   },
   {
     id: 'pronouns',
+    chapter: 'Small words',
     icon: '👉',
     title: 'Pronouns',
     sub: 'ben, sen, o… and their forms',
@@ -263,40 +345,80 @@ export const BOOK = [
     ],
   },
   {
-    id: 'questions',
-    icon: '❓',
-    title: 'Questions',
-    sub: 'The particle mi, and question words',
+    id: 'postpositions',
+    chapter: 'Small words',
+    icon: '⚖️',
+    title: 'Postpositions and comparison',
+    sub: 'için, ile, gibi, and bigger / biggest',
     blocks: [
-      { p: 'For a yes/no question, put *mi* after the word you ask about. It is written as a separate word but follows 4-way harmony: mi, mı, mu, mü.' },
-      { p: 'Personal endings move onto mi: Yorgun *musun*? (Are you tired?), Hazır *mıyız*? (Are we ready?). Only -ler (they) stays on the word: Geliyorlar *mı*? (Are they coming?) Put mi after another word to ask about just that: Dün *mü* geldin? (Was it yesterday you came?)' },
-      { p: 'Question words take no mi. They stand where the answer would go, usually right before the verb:' },
+      { p: 'English puts "for", "with" and "like" before a word. Turkish puts them after it: annem *için* (for my mum), arkadaşım *gibi* (like my friend).' },
+      { p: 'ile (with, by) is usually an ending: -le / -la, after a vowel -yle / -yla: otobüs*le* (by bus), araba*yla* (by car). With pronouns, use the -in form: benim için, seninle, onun gibi (but onlar için).' },
+      { p: 'Some need a case: -den önce (before), -den sonra (after), -e kadar (until): yemek*ten sonra* (after the meal), akşam*a kadar* (until the evening). Place words are nouns with endings: masanın *üstünde* (on the table).' },
+      { p: 'Comparison: daha (more) and en (most) go before the adjective, and "than" is -den on the other thing:' },
       {
         table: {
           head: null,
           rows: [
-            ['ne', 'what', 'kim', 'who'],
-            ['nerede', 'where', 'nereye', 'where to'],
-            ['ne zaman', 'when', 'nereden', 'where from'],
-            ['neden, niye', 'why', 'nasıl', 'how'],
-            ['kaç', 'how many', 'ne kadar', 'how much'],
-            ['hangi', 'which', 'kimin', 'whose'],
+            ['büyük', 'big'],
+            ['daha büyük', 'bigger'],
+            ['en büyük', 'biggest'],
+            ['ev*den* büyük', 'bigger than a house'],
           ],
         },
       },
       {
         ex: [
-          ['Çay sıcak *mı*?', 'Is the tea hot?'],
-          ['Yorgun *musun*?', 'Are you tired?'],
-          ['Yemek yedin *mi*?', 'Have you eaten?'],
-          ['*Nereye* gidiyorsun?', 'Where are you going?'],
+          ['Bu senin *için*.', 'This is for you.'],
+          ['İşe otobüs*le* gidiyorum.', 'I go to work by bus.'],
+          ['Anahtar masanın *üstünde*.', 'The key is on the table.'],
+          ['Türkçe İngilizce*den* daha zor.', 'Turkish is harder than English.'],
         ],
       },
-      { tip: 'Say Geliyor *musun*?, not Geliyorsun mu?: the ending goes on mi. The -di past is the other way round: Geldin *mi*? And mi is always written as its own word.' },
+      { tip: 'There is no word for "than": the thing you compare with takes -den and comes first. Ben*den* büyük = bigger than me (literally "from me big").' },
+    ],
+  },
+  {
+    id: 'numbers',
+    chapter: 'Small words',
+    icon: '🕐',
+    title: 'Numbers and time',
+    sub: 'Counting, ages and the clock',
+    blocks: [
+      {
+        table: {
+          head: null,
+          rows: [
+            ['1 bir', '10 on'],
+            ['2 iki', '20 yirmi'],
+            ['3 üç', '30 otuz'],
+            ['4 dört', '40 kırk'],
+            ['5 beş', '50 elli'],
+            ['6 altı', '60 altmış'],
+            ['7 yedi', '70 yetmiş'],
+            ['8 sekiz', '80 seksen'],
+            ['9 dokuz', '90 doksan'],
+            ['0 sıfır', '100 yüz'],
+          ],
+        },
+      },
+      { p: 'Bigger numbers are built like a sum, biggest first: on bir (11), yirmi beş (25), yüz elli (150), iki bin yirmi altı (2026). A hundred and a thousand are just yüz and bin, never bir yüz.' },
+      { p: 'After a number the noun stays singular: iki çay (two teas), üç gün (three days).' },
+      { p: "The clock: Saat kaç? (What time is it?) Saat üç. (It's three.) Half past is buçuk: üç buçuk. \"At\" is -de: saat üç*te* (at three)." },
+      { p: 'Quarter past is çeyrek geçiyor, with -i on the hour. Quarter to is çeyrek var, with -e: Saat üç*ü* çeyrek geçiyor. (3:15) Saat dörd*e* çeyrek var. (3:45)' },
+      {
+        ex: [
+          ['Saat kaç?', 'What time is it?'],
+          ['Saat üç buçuk.', "It's half past three."],
+          ['Saat sekiz*de* geliyorum.', "I'm coming at eight."],
+          ['Babam altmış beş yaşında.', 'Dad is sixty-five.'],
+        ],
+      },
+      { tip: 'The -de for "at" follows the number\'s last sound: bir*de*, iki*de*, üç*te*, dört*te*, beş*te*, altı*da*, yedi*de*, sekiz*de*, dokuz*da*, on*da*.' },
     ],
   },
   {
     id: 'iyor',
+    chapter: 'Tenses',
     icon: '⏳',
     title: 'Present continuous -iyor',
     sub: 'What is happening now, and these days',
@@ -331,6 +453,7 @@ export const BOOK = [
   },
   {
     id: 'aorist',
+    chapter: 'Tenses',
     icon: '🔁',
     title: 'Simple present -ir',
     sub: 'Habits, offers and polite requests',
@@ -371,6 +494,7 @@ export const BOOK = [
   },
   {
     id: 'past',
+    chapter: 'Tenses',
     icon: '⏪',
     title: 'Past -di and -miş',
     sub: 'What happened, and what you heard happened',
@@ -404,6 +528,7 @@ export const BOOK = [
   },
   {
     id: 'future',
+    chapter: 'Tenses',
     icon: '🔮',
     title: 'Future -ecek',
     sub: 'I will, I am going to',
@@ -436,45 +561,8 @@ export const BOOK = [
     ],
   },
   {
-    id: 'negation',
-    icon: '🚫',
-    title: 'Negation and commands',
-    sub: 'değil, yok, -me, and telling someone to do something',
-    blocks: [
-      { p: 'There are three ways to say "not":' },
-      {
-        list: [
-          '*değil* for "is not": Pahalı değil. (It\'s not expensive.)',
-          '*yok* for "there is no" or "I have no": Param yok. (I have no money.)',
-          '*-me / -ma* on a verb, right after the stem: gel*me*di (he didn\'t come).',
-        ],
-      },
-      {
-        table: {
-          head: ['', 'yes', 'no'],
-          rows: [
-            ['-iyor', 'geliyorum', 'gel*mi*yorum'],
-            ['-di', 'geldim', 'gel*me*dim'],
-            ['-ecek', 'geleceğim', 'gel*me*yeceğim'],
-            ['-ir', 'gelirim', 'gel*mem*'],
-            ['command', 'gel', 'gel*me*'],
-          ],
-        },
-      },
-      { p: "Commands: the bare stem is a command to someone you call sen: Gel! (Come!), Bak! (Look!). For siz, polite or to several people, add -in (4-way), after a vowel -yin: Gel*in*! Bekle*yin*! And \"let's\" is -elim / -alım: Gid*elim*!" },
-      {
-        ex: [
-          ['Bugün gel*mi*yorum.', "I'm not coming today."],
-          ['Merak et*me*!', "Don't worry!"],
-          ['Buyurun, otur*un*.', 'Please, have a seat.'],
-          ['Hadi, gid*elim*!', "Come on, let's go!"],
-        ],
-      },
-      { tip: 'Don\'t use değil to make a verb negative: "I\'m not going" is Git*mi*yorum, not Gidiyorum değil. değil goes with nouns and adjectives.' },
-    ],
-  },
-  {
     id: 'modals',
+    chapter: 'Moods and voice',
     icon: '💪',
     title: 'Can / must / want',
     sub: '-ebil, -eme, -meli, lazım and istemek',
@@ -509,6 +597,7 @@ export const BOOK = [
   },
   {
     id: 'linking',
+    chapter: 'Longer sentences',
     icon: '🔗',
     title: 'Linking sentences',
     sub: 've, ama, çünkü, -ince and -ip',
@@ -536,76 +625,6 @@ export const BOOK = [
         ],
       },
       { tip: 'Write de (too) apart and -de (at) together: Ben de evdeyim. (I am at home too.) Mixing them up is a classic spelling mistake, even among Turks.' },
-    ],
-  },
-  {
-    id: 'postpositions',
-    icon: '⚖️',
-    title: 'Postpositions and comparison',
-    sub: 'için, ile, gibi, and bigger / biggest',
-    blocks: [
-      { p: 'English puts "for", "with" and "like" before a word. Turkish puts them after it: annem *için* (for my mum), arkadaşım *gibi* (like my friend).' },
-      { p: 'ile (with, by) is usually an ending: -le / -la, after a vowel -yle / -yla: otobüs*le* (by bus), araba*yla* (by car). With pronouns, use the -in form: benim için, seninle, onun gibi (but onlar için).' },
-      { p: 'Some need a case: -den önce (before), -den sonra (after), -e kadar (until): yemek*ten sonra* (after the meal), akşam*a kadar* (until the evening). Place words are nouns with endings: masanın *üstünde* (on the table).' },
-      { p: 'Comparison: daha (more) and en (most) go before the adjective, and "than" is -den on the other thing:' },
-      {
-        table: {
-          head: null,
-          rows: [
-            ['büyük', 'big'],
-            ['daha büyük', 'bigger'],
-            ['en büyük', 'biggest'],
-            ['ev*den* büyük', 'bigger than a house'],
-          ],
-        },
-      },
-      {
-        ex: [
-          ['Bu senin *için*.', 'This is for you.'],
-          ['İşe otobüs*le* gidiyorum.', 'I go to work by bus.'],
-          ['Anahtar masanın *üstünde*.', 'The key is on the table.'],
-          ['Türkçe İngilizce*den* daha zor.', 'Turkish is harder than English.'],
-        ],
-      },
-      { tip: 'There is no word for "than": the thing you compare with takes -den and comes first. Ben*den* büyük = bigger than me (literally "from me big").' },
-    ],
-  },
-  {
-    id: 'numbers',
-    icon: '🕐',
-    title: 'Numbers and time',
-    sub: 'Counting, ages and the clock',
-    blocks: [
-      {
-        table: {
-          head: null,
-          rows: [
-            ['1 bir', '10 on'],
-            ['2 iki', '20 yirmi'],
-            ['3 üç', '30 otuz'],
-            ['4 dört', '40 kırk'],
-            ['5 beş', '50 elli'],
-            ['6 altı', '60 altmış'],
-            ['7 yedi', '70 yetmiş'],
-            ['8 sekiz', '80 seksen'],
-            ['9 dokuz', '90 doksan'],
-            ['0 sıfır', '100 yüz'],
-          ],
-        },
-      },
-      { p: 'Bigger numbers are built like a sum, biggest first: on bir (11), yirmi beş (25), yüz elli (150), iki bin yirmi altı (2026). A hundred and a thousand are just yüz and bin, never bir yüz.' },
-      { p: 'After a number the noun stays singular: iki çay (two teas), üç gün (three days).' },
-      { p: "The clock: Saat kaç? (What time is it?) Saat üç. (It's three.) Half past is buçuk: üç buçuk. \"At\" is -de: saat üç*te* (at three)." },
-      { p: 'Quarter past is çeyrek geçiyor, with -i on the hour. Quarter to is çeyrek var, with -e: Saat üç*ü* çeyrek geçiyor. (3:15) Saat dörd*e* çeyrek var. (3:45)' },
-      {
-        ex: [
-          ['Saat kaç?', 'What time is it?'],
-          ['Saat üç buçuk.', "It's half past three."],
-          ['Saat sekiz*de* geliyorum.', "I'm coming at eight."],
-          ['Babam altmış beş yaşında.', 'Dad is sixty-five.'],
-        ],
-      },
-      { tip: 'The -de for "at" follows the number\'s last sound: bir*de*, iki*de*, üç*te*, dört*te*, beş*te*, altı*da*, yedi*de*, sekiz*de*, dokuz*da*, on*da*.' },
     ],
   },
 ];
