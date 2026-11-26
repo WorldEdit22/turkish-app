@@ -45,8 +45,8 @@ async function runActivate(names) {
 
 test("activate deletes only this app's old caches", async () => {
   // Other apps on the same github.io origin (the Swedish app) keep their offline copies.
-  const deleted = await runActivate(['turkish-v14', 'swedish-v4', 'turkish-v15', 'other']);
-  assert.deepEqual(deleted.sort(), ['turkish-v14']);
+  const deleted = await runActivate(['turkish-v15', 'swedish-v5', 'turkish-v16', 'other']);
+  assert.deepEqual(deleted.sort(), ['turkish-v15']);
 });
 
 test('install fetches every file fresh, never from the HTTP cache', async () => {

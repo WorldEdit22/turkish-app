@@ -375,20 +375,30 @@ const tapChip = (dataset) => $('#types').fire('click', { target: { closest: () =
 // The native text on the front of the card on screen (the say side).
 const front = () => $('#list').innerHTML.match(/<div class="pc-native">([^<]*)<\/div>/)?.[1];
 const label = (x) => esc(x.label);
-// Words most common first (app.js ranks them), and those still new in a direction.
+// Words most common first (app.js ranks them) that may come up as new in a direction:
+// new there, and not answered in the other direction within the last week.
 const BY_RANK = [...WORDS].sort((a, b) => a.rank - b.rank);
-const newWords = (dir, cat) => BY_RANK.filter((w) => (!cat || w.cat === cat) && isNew(store.card(w.id, dir)));
+const otherDir = (dir) => (dir === 'say' ? 'understand' : 'say');
+const heldBack = (id, dir) => {
+  const seen = store.card(id, otherDir(dir))?.seen;
+  return seen != null && today() - seen < 7;
+};
+const newWords = (dir, cat) => BY_RANK.filter((w) => (!cat || w.cat === cat) && isNew(store.card(w.id, dir)) && !heldBack(w.id, dir));
 
 // Runs fn in Practice (after setup); then back to Browse with the cards, the dose, the direction and the topic as they were.
+// Math.random near 1 leaves every shuffle in order, so new cards come most common first and the tests can name them.
 function inPractice(fn, setup = () => {}) {
   const cards = structuredClone(store.cards);
   const daily = structuredClone(store.practice.daily);
   const { dir, topic } = ui;
+  const random = Math.random;
+  Math.random = () => 0.999;
   try {
     setup();
     setMode('practice');
     fn();
   } finally {
+    Math.random = random;
     setMode('browse');
     store.replaceCards(cards);
     store.practice.daily = daily;
@@ -570,6 +580,33 @@ test('the direction switch flips the front to the target language', () =>
     assert.equal($('#dir').textContent, 'EN → TR');
     assert.equal(front(), label(newWords('say')[0]));
   }));
+
+test("words done as new in one direction don't come up as new in the other the same week", () =>
+  inPractice(() => {
+    const [a, b, c, d] = newWords('say');
+    for (let i = 0; i < 3; i++) {
+      reveal();
+      answerWith('easy');
+    }
+    $('#dir').fire('click');
+    const html = $('#list').innerHTML;
+    assert.ok(html.includes(`<span class="pc-target">${esc(d.tr)}</span>`), 'the 4th most common word comes first');
+    for (const w of [a, b, c]) assert.ok(!html.includes(`<span class="pc-target">${esc(w.tr)}</span>`), w.tr);
+  }));
+
+test('"M new" and More count only the new cards that may be offered', () => {
+  const drinks = WORDS.filter((w) => w.cat === 'drinks');
+  inPractice(
+    () => {
+      assert.equal($('#progress').textContent, '0 due · 0 new');
+      assert.ok(!$('#list').innerHTML.includes('data-act="more"'), 'no More: every drink was just answered the other way');
+    },
+    () => {
+      for (const w of drinks) store.setCard(w.id, 'understand', { ivl: 3, due: today() + 3, last: 'easy', prev: null, seen: today() });
+      Object.assign(ui, { dir: 'say', topic: 'drinks' });
+    },
+  );
+});
 
 test('a topic chip limits practice to that topic', () =>
   inPractice(() => {
