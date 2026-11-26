@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   dayOf, fuzz, nextInterval, answer, correct, isNew, isKnown, isMastered, status,
   buildQueue, requeue, unqueue, doseLeft, useDose, addDose, giveBackDose, migrateLearned,
+  newCandidates, NEW_POOL, HOLD_DAYS,
 } from '../js/srs.js';
 
 const fixed = (r) => () => r; // a rand that always returns r
@@ -22,9 +23,38 @@ test('fuzz spreads 2+ day intervals by ±15%, at least ±1 day', () => {
 
 test('a new card: Forgot today, Hard 1 day, Easy 3 days', () => {
   const r = fixed(0.5); // no fuzz offset
-  assert.deepEqual(answer(undefined, 'forgot', D, r), { ivl: 0, due: D, last: 'forgot', prev: null });
-  assert.deepEqual(answer(undefined, 'hard', D, r), { ivl: 1, due: D + 1, last: 'hard', prev: null });
-  assert.deepEqual(answer(undefined, 'easy', D, r), { ivl: 3, due: D + 3, last: 'easy', prev: null });
+  assert.deepEqual(answer(undefined, 'forgot', D, r), { ivl: 0, due: D, last: 'forgot', prev: null, seen: D });
+  assert.deepEqual(answer(undefined, 'hard', D, r), { ivl: 1, due: D + 1, last: 'hard', prev: null, seen: D });
+  assert.deepEqual(answer(undefined, 'easy', D, r), { ivl: 3, due: D + 3, last: 'easy', prev: null, seen: D });
+});
+
+// A small seeded generator, so "random" picks are repeatable.
+const seeded = (seed) => () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+const keys100 = Array.from({ length: 100 }, (_, i) => `k${i}`);
+
+test('new cards are drawn at random from the 60 most common unseen', () => {
+  assert.equal(NEW_POOL, 60);
+  const q = buildQueue(keys100, () => undefined, D, 15, seeded(7));
+  assert.equal(q.length, 15);
+  assert.equal(new Set(q).size, 15);
+  assert.ok(q.every((k) => keys100.indexOf(k) < 60), 'only from the 60 most common');
+  assert.notDeepEqual(q, keys100.slice(0, 15), 'not simply the first 15');
+  assert.deepEqual(buildQueue(keys100, () => undefined, D, 15, fixed(0.999)), keys100.slice(0, 15), 'rand near 1 keeps the order');
+});
+
+test('an item answered in the other direction within 7 days is held back as new', () => {
+  assert.equal(HOLD_DAYS, 7);
+  const other = { k0: { seen: D - 6 }, k1: { seen: D - 7 }, k2: { ivl: 7, due: D + 3, last: 'easy', prev: null } };
+  const fresh = newCandidates(['k0', 'k1', 'k2', 'k3'], () => undefined, D, (k) => other[k]);
+  assert.deepEqual(fresh, ['k1', 'k2', 'k3'], 'k0 is held back; k1 is a week old; k2 has no day (old card)');
+  assert.ok(!buildQueue(['k0', 'k1'], () => undefined, D, 5, fixed(0.999), (k) => other[k]).includes('k0'));
+});
+
+test('a due card answered in the other direction today goes after the other due cards', () => {
+  const due = (d) => ({ ivl: 3, due: d, last: 'easy', prev: null });
+  const cards = { a: due(D - 2), b: due(D - 1), c: due(D) };
+  const other = { a: { seen: D } };
+  assert.deepEqual(buildQueue(['a', 'b', 'c'], (k) => cards[k], D, 0, fixed(0), (k) => other[k]), ['b', 'c', 'a']);
 });
 
 test('a card with an interval: Hard ×1.2, Easy ×2.5, at least +1 day; Forgot clears it', () => {
@@ -76,9 +106,10 @@ test('nextInterval is the button label: no fuzz', () => {
   assert.deepEqual(['hard', 'easy'].map((g) => nextInterval({ ivl: 8, due: D, last: 'easy', prev: null }, g)), [10, 20]);
 });
 
-test('the queue: due cards oldest first, then new cards in the given order up to the dose', () => {
+// rand near 1 leaves a shuffle in order, so the new cards here come in the given order.
+test('the queue: due cards oldest first, then new cards up to the dose', () => {
   const cards = { a: { ivl: 3, due: D - 2, last: 'easy', prev: null }, c: { ivl: 3, due: D, last: 'easy', prev: null }, e: { ivl: 3, due: D + 1, last: 'easy', prev: null } };
-  const q = buildQueue(['a', 'b', 'c', 'd', 'e', 'f'], (k) => cards[k], D, 2, fixed(0));
+  const q = buildQueue(['a', 'b', 'c', 'd', 'e', 'f'], (k) => cards[k], D, 2, fixed(0.999));
   assert.deepEqual(q, ['a', 'c', 'b', 'd']);
   assert.deepEqual(buildQueue(['b', 'd'], () => undefined, D, 0, fixed(0)), []);
 });

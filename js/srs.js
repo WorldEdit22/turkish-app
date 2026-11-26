@@ -1,8 +1,9 @@
 // Spaced-repetition scheduling for practice mode (shared byte for byte by both apps).
 //
-// A card is { ivl, due, last, prev }: ivl is the current interval in days, due the
+// A card is { ivl, due, last, prev, seen }: ivl is the current interval in days, due the
 // day number it is next due (null for a card marked New), last the latest grade,
-// prev the state before that answer (stored without its own prev, so it never nests).
+// prev the state before that answer (stored without its own prev, so it never nests),
+// seen the day of the latest answer (missing on cards from before it was recorded).
 // A card that has never been answered is simply undefined. Everything here is pure;
 // the random source and "today" are passed in so tests can fix them.
 
@@ -10,6 +11,12 @@ export const DIRS = ['say', 'understand'];
 export const NEW_PER_DAY = 15;
 export const MASTERED_DAYS = 21;
 export const REQUEUE_GAP = 4;
+// New cards are drawn at random from this many of the most common unseen items, so the
+// two directions get different words while beginners still meet useful ones first.
+export const NEW_POOL = 60;
+// An item answered in the other direction this recently is not offered as new here:
+// it would still be fresh in memory.
+export const HOLD_DAYS = 7;
 
 // A day starts at 4 a.m., so a late-night session still counts as the same day.
 export function dayOf(ms) {
@@ -41,7 +48,7 @@ const stripped = (card) => (card ? { ivl: card.ivl, due: card.due, last: card.la
 
 export function answer(card, grade, today, rand = Math.random) {
   const ivl = grade === 'forgot' ? 0 : fuzz(nextInterval(card, grade), rand);
-  return { ivl, due: today + ivl, last: grade, prev: stripped(card) };
+  return { ivl, due: today + ivl, last: grade, prev: stripped(card), seen: today };
 }
 
 // Replaces the last answer: the grade is applied to the state before it.
@@ -67,15 +74,26 @@ function shuffle(list, rand) {
   return a;
 }
 
-// Due cards oldest first (shuffled within a day, the sort is stable), then new cards.
-export function buildQueue(keys, cardOf, today, newLeft, rand = Math.random) {
+const seenWithin = (card, today, days) => card?.seen != null && today - card.seen < days;
+
+// The keys new in this direction that may be offered today, in the given order:
+// not answered in the other direction (`otherOf`) within HOLD_DAYS.
+export function newCandidates(keys, cardOf, today, otherOf = () => undefined) {
+  return keys.filter((k) => isNew(cardOf(k)) && !seenWithin(otherOf(k), today, HOLD_DAYS));
+}
+
+// Due cards oldest first (shuffled within a day, the sort is stable); those answered in the
+// other direction today go last. Then new cards, at random from the first NEW_POOL candidates.
+export function buildQueue(keys, cardOf, today, newLeft, rand = Math.random, otherOf = () => undefined) {
   const due = keys.filter((k) => {
     const c = cardOf(k);
     return !isNew(c) && c.due <= today;
   });
   const sorted = shuffle(due, rand).sort((x, y) => cardOf(x).due - cardOf(y).due);
-  const fresh = keys.filter((k) => isNew(cardOf(k))).slice(0, Math.max(0, newLeft));
-  return [...sorted, ...fresh];
+  const fresh = (k) => !seenWithin(otherOf(k), today, 1);
+  const reviews = [...sorted.filter(fresh), ...sorted.filter((k) => !fresh(k))];
+  const pool = newCandidates(keys, cardOf, today, otherOf).slice(0, NEW_POOL);
+  return [...reviews, ...shuffle(pool, rand).slice(0, Math.max(0, newLeft))];
 }
 
 export function requeue(queue, key) {
