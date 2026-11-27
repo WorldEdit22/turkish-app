@@ -653,8 +653,8 @@ export const BOOK = [
     title: 'Postpositions',
     sub: 'için, gibi, kadar, hakkında: for, like, until, about',
     blocks: [
-      { p: 'English puts "for" and "like" before a word. Turkish puts them after it: annem *için* (for my mum), arkadaşım *gibi* (like my friend). They are separate words, and their vowels never change.' },
-      { p: 'With pronouns, use the -in form: benim için, senin gibi, onun hakkında (but onlar için).' },
+      { p: 'English puts "for" and "like" before a word. Turkish puts them after it: annem *için* (for my mum), arkadaşım *gibi* (like my friend). They are separate words, and için, gibi and kadar never change.' },
+      { p: 'With pronouns, use the -in form: benim için, senin gibi, onun kadar (but onlar için). *hakkında* is different: it changes with the person, like a place word: (benim) hakkı*mda* (about me), (bizim) hakkı*mızda* (about us), onun hakkında.' },
       {
         table: {
           head: null,
@@ -662,7 +662,7 @@ export const BOOK = [
             ['için', 'for'],
             ['gibi', 'like'],
             ['kadar', 'as … as'],
-            ['hakkında', 'about'],
+            ['hakkında', 'about (hakkımda: about me)'],
             ['-e kadar', 'until, as far as'],
             ['-den önce', 'before'],
             ['-den sonra', 'after'],
