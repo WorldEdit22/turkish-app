@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { BOOK } from '../data/book.js';
 
 const IDS = [
-  'letters', 'harmony', 'consonants', 'order', 'tobe', 'questions', 'negation', 'plural', 'cases', 'possessive',
+  'letters', 'harmony', 'consonants', 'order', 'tobe', 'questions', 'negation',
+  'plural', 'adjectives', 'cases', 'object', 'dative', 'locative', 'ablative', 'possessive', 'compounds', 'with', 'wordbuilding',
   'pronouns', 'postpositions', 'numbers', 'iyor', 'aorist', 'past', 'future', 'modals', 'linking',
 ];
 const CHAPTERS = [
@@ -78,6 +79,16 @@ test('every grammar section has a tip, in about 120–250 words', () => {
 // Points the spec names for a section: each must appear in it (any case, without the * marks).
 const COVERAGE = {
   questions: ['yoksa', 'muyum'],
+  adjectives: ['daha', '-den daha'],
+  cases: ['evlerimizde'],
+  object: ['beni'],
+  dative: ['bana', 'binmek'],
+  locative: ['beşte'],
+  ablative: ['korkmak', 'daha'],
+  possessive: ['benim'],
+  compounds: ["ali'nin", 'kahvesi'],
+  with: ['benimle', 'şekersiz'],
+  wordbuilding: ['türkçe', 'kahveci', 'amerikalı'],
 };
 test('every section covers the points the spec names', () => {
   for (const [id, terms] of Object.entries(COVERAGE)) {
