@@ -375,7 +375,7 @@ export const BOOK = [
     blocks: [
       { p: '*-de* tells you where something is. It covers "at", "in" and "on" alike: ev*de* (at home), Ankara\'*da* (in Ankara), masa*da* (on the table). It has 2-way harmony (-de, -da) and needs no extra letter after a vowel.' },
       { p: 'After f, s, t, k, ç, ş, h or p it starts with t: mutfak*ta* (in the kitchen), sokak*ta* (in the street). See Consonant changes.' },
-      { p: 'It gives the time too: saat beş*te* (at five), Saat kaç*ta*? (At what time?)' },
+      { p: 'It gives the time too: saat beş*te* (at five), Saat kaç*ta*? (At what time?) See Telling the time.' },
       { p: 'With *var* and *yok* it says what there is in a place: Evde süt var mı? On a person it means "on me, with me": Bende şemsiye var. The question word *nerede* (where) has it too, and so do burada (here) and orada (there).' },
       {
         ex: [
@@ -579,32 +579,151 @@ export const BOOK = [
     ],
   },
   {
+    id: 'kendi',
+    chapter: 'Small words',
+    icon: '🪞',
+    title: 'Self and own: kendi',
+    sub: 'kendim, kendi evim, kendi kendime',
+    blocks: [
+      { p: '*kendi* means "self". With the "my, your…" endings it becomes kendim (myself), kendin (yourself) and so on, and then it takes case endings like any noun:' },
+      {
+        table: {
+          head: ['', 'myself…', 'myself… (object)', 'to myself…'],
+          rows: [
+            ['ben', 'kendi*m*', 'kendi*mi*', 'kendi*me*'],
+            ['sen', 'kendi*n*', 'kendi*ni*', 'kendi*ne*'],
+            ['o', 'kendi*si*', 'kendi*ni*', 'kendi*ne*'],
+            ['biz', 'kendi*miz*', 'kendi*mizi*', 'kendi*mize*'],
+            ['siz', 'kendi*niz*', 'kendi*nizi*', 'kendi*nize*'],
+            ['onlar', 'kendi*leri*', 'kendi*lerini*', 'kendi*lerine*'],
+          ],
+        },
+      },
+      { p: 'Use it where English says "myself, yourself": Kendimi iyi hissetmiyorum. (I don\'t feel well.) As the subject it stresses that nobody else did it: Kendim yaptım. (I did it myself.)' },
+      { p: 'Bare *kendi* before a noun means "own". The noun keeps its "my, your…" ending: kendi ev*im* (my own house), kendi araba*sı* (his own car).' },
+      { p: '*kendi kendime* (kendi kendine, kendi kendimize…) means "by myself, on my own" or "to myself", with nobody else involved.' },
+      {
+        ex: [
+          ['*Kendine* iyi bak!', 'Take care of yourself!'],
+          ['Bu pastayı *kendim* yaptım.', 'I made this cake myself.'],
+          ['Artık *kendi* odam var.', 'I have my own room now.'],
+          ['*Kendi kendime* Türkçe öğreniyorum.', "I'm teaching myself Turkish."],
+          ['Çocuk *kendi kendine* konuşuyor.', 'The child is talking to himself.'],
+        ],
+      },
+      { tip: 'When people do something to themselves, use kendi-, not o: Ali aynada *kendini* gördü. (Ali saw himself in the mirror.) Ali aynada onu gördü means he saw someone else.' },
+    ],
+  },
+  {
+    id: 'ki',
+    chapter: 'Small words',
+    icon: '📎',
+    title: 'The -ki ending, and ki',
+    sub: 'benimki, masadaki, dünkü, iyi ki',
+    blocks: [
+      { p: 'The ending *-ki* means "the one that is…", and turns a word into a describing word. Unlike almost every other ending, it ignores vowel harmony and is always -ki. Only a few words take -kü: dünkü, bugünkü.' },
+      {
+        table: {
+          head: ['After', 'Example', 'Means'],
+          rows: [
+            ['the -in form', "benim*ki*, Ali'nin*ki*", "mine, Ali's"],
+            ['-de', 'masada*ki* kitap', 'the book on the table'],
+            ['a time word', 'dün*kü* maç', "yesterday's match"],
+          ],
+        },
+      },
+      { p: 'After the -in form it means "mine, yours…": benimki, seninki, onunki, bizimki, sizinki, onlarınki. After -de it tells you where a thing is: evdeki herkes (everyone at home). After a time word it means "of that time": bugünkü gazete (today\'s paper), yarınki toplantı (tomorrow\'s meeting). A case ending after -ki takes an n first: seninki*n*i (yours, as the object).' },
+      { p: 'The separate word *ki* is something else: "that", joining two sentences. It often follows "so": O kadar yorgunum ki… (I\'m so tired that…). Biliyorum ki… (I know that…) sounds emphatic. And *iyi ki* means "it\'s a good thing that".' },
+      {
+        ex: [
+          ['Benim çantam kırmızı, *seninki* mavi.', 'My bag is red, yours is blue.'],
+          ['Buzdolabın*daki* yemeği yedin mi?', 'Did you eat the food in the fridge?'],
+          ['*Dünkü* maçı izledin mi?', "Did you watch yesterday's match?"],
+          ['*İyi ki* geldin!', "I'm so glad you came!"],
+          ['*İyi ki* doğdun!', 'Happy birthday! (Good thing you were born!)'],
+        ],
+      },
+      { tip: 'Write the ending -ki together with its word (masadaki, benimki) and the word ki apart (iyi ki), the same way -de (at) and de (too) differ.' },
+    ],
+  },
+  {
     id: 'postpositions',
     chapter: 'Small words',
     icon: '🎁',
     title: 'Postpositions',
-    sub: 'için, gibi, kadar: for, like, until',
+    sub: 'için, gibi, kadar, hakkında: for, like, until, about',
     blocks: [
       { p: 'English puts "for" and "like" before a word. Turkish puts them after it: annem *için* (for my mum), arkadaşım *gibi* (like my friend). They are separate words, and their vowels never change.' },
-      { p: 'With pronouns, use the -in form: benim için, senin gibi, onun için (but onlar için).' },
-      { p: 'Some need a case: -den önce (before), -den sonra (after), -e kadar (until): yemek*ten sonra* (after the meal), akşam*a kadar* (until the evening). Place words are nouns with endings: masanın *üstünde* (on the table).' },
+      { p: 'With pronouns, use the -in form: benim için, senin gibi, onun hakkında (but onlar için).' },
+      {
+        table: {
+          head: null,
+          rows: [
+            ['için', 'for'],
+            ['gibi', 'like'],
+            ['kadar', 'as … as'],
+            ['hakkında', 'about'],
+            ['-e kadar', 'until, as far as'],
+            ['-den önce', 'before'],
+            ['-den sonra', 'after'],
+          ],
+        },
+      },
+      { p: 'The last three need a case on the word before: akşam*a kadar* (until the evening), yemek*ten sonra* (after the meal). Without a case, kadar compares: Ali kadar uzun (as tall as Ali). Words for places, like "under" and "behind", work differently: see Place words.' },
       {
         ex: [
           ['Bu senin *için*.', 'This is for you.'],
           ['Aynı annem *gibi* konuşuyorsun.', 'You talk just like my mum.'],
           ['Akşam*a kadar* buradayım.', "I'm here until the evening."],
-          ['Anahtar masanın *üstünde*.', 'The key is on the table.'],
+          ['Yemek*ten sonra* yürüyüşe çıkalım mı?', 'Shall we go for a walk after the meal?'],
+          ['Bu film *hakkında* ne düşünüyorsun?', 'What do you think about this film?'],
         ],
       },
-      { tip: 'Learn each postposition with the case it needs: -den sonra, -den önce, -e kadar. için and gibi need none, except the -in form of a pronoun: benim için.' },
+      { tip: 'For "ago" and "later", put önce and sonra right after a length of time, with no -den: iki yıl önce (two years ago), bir saat sonra (an hour later).' },
+    ],
+  },
+  {
+    id: 'places',
+    chapter: 'Small words',
+    icon: '📦',
+    title: 'Place words',
+    sub: 'üstünde, altında, önünde: on, under, in front of',
+    blocks: [
+      { p: '"Under", "behind" and "next to" are nouns in Turkish: alt (bottom), arka (back), yan (side). They take the "his, her" ending and then a case, and the thing they belong to takes -in: evi*n* ön*ünde* = in front of the house, literally "at the house\'s front".' },
+      {
+        table: {
+          head: ['Noun', 'Where', 'Means'],
+          rows: [
+            ['iç', 'içinde', 'in, inside'],
+            ['üst', 'üstünde', 'on, above'],
+            ['alt', 'altında', 'under'],
+            ['ön', 'önünde', 'in front of'],
+            ['arka', 'arkasında', 'behind'],
+            ['yan', 'yanında', 'next to'],
+            ['ara', 'arasında', 'between'],
+          ],
+        },
+      },
+      { p: 'Like any noun, they take -e for "to" and -den for "from": masanın alt*ına* (to under the table), masanın alt*ından* (from under the table). Ask nerede?, nereye? or nereden?' },
+      { p: 'With a pronoun, the ending already says who, so the pronoun is often left out: (benim) yan*ımda* = next to me, or "on me". For plain "in", -de is usually enough: arabada (in the car). içinde stresses "inside".' },
+      {
+        ex: [
+          ['Anahtar masanın *üstünde*.', 'The key is on the table.'],
+          ['Eczane bankanın *yanında*.', 'The pharmacy is next to the bank.'],
+          ['Arabayı evin *önüne* park ettim.', 'I parked the car in front of the house.'],
+          ['Kedi yatağın *altından* çıktı.', 'The cat came out from under the bed.'],
+          ['*Yanımda* hiç para yok.', "I don't have any money on me."],
+        ],
+      },
+      { tip: 'English says "under" whether something is there, goes there or comes from there. Turkish shows it on the place word: altında (under), altına (to under), altından (from under).' },
     ],
   },
   {
     id: 'numbers',
     chapter: 'Small words',
-    icon: '🕐',
-    title: 'Numbers and time',
-    sub: 'Counting, ages and the clock',
+    icon: '🔢',
+    title: 'Numbers',
+    sub: 'Counting, ages, birinci, buçuk',
     blocks: [
       {
         table: {
@@ -624,18 +743,51 @@ export const BOOK = [
         },
       },
       { p: 'Bigger numbers are built like a sum, biggest first: on bir (11), yirmi beş (25), yüz elli (150), iki bin yirmi altı (2026). A hundred and a thousand are just yüz and bin, never bir yüz.' },
-      { p: 'After a number the noun stays singular: iki çay (two teas), üç gün (three days).' },
-      { p: "The clock: Saat kaç? (What time is it?) Saat üç. (It's three.) Half past is buçuk: üç buçuk. \"At\" is -de: saat üç*te* (at three)." },
-      { p: 'Quarter past is çeyrek geçiyor, with -i on the hour. Quarter to is çeyrek var, with -e: Saat üç*ü* çeyrek geçiyor. (3:15) Saat dörd*e* çeyrek var. (3:45)' },
+      { p: 'After a number the noun stays singular: iki çay (two teas), üç gün (three days). Age is yaşında: Otuz yaşındayım. (I\'m thirty.) Kaç yaşındasın? (How old are you?)' },
+      { p: 'For "first, second…" add *-inci* (4-way harmony; after a vowel, -nci): bir*inci*, iki*nci*, üç*üncü*, dörd*üncü* (with d), beş*inci*, on*uncu*. Ask with *kaçıncı*, "which one in order": Kaçıncı kattasın? (Which floor are you on?) In writing, a dot follows the digit: 3. kat (3rd floor).' },
+      { p: '*yarım* is "half" on its own: yarım saat (half an hour). After a number, "and a half" is *buçuk*: iki buçuk (two and a half), bir buçuk saat (an hour and a half).' },
+      {
+        ex: [
+          ['Babam altmış beş yaşında.', 'Dad is sixty-five.'],
+          ['*Üçüncü* katta oturuyoruz.', 'We live on the third floor.'],
+          ['*Yarım* kilo peynir, lütfen.', 'Half a kilo of cheese, please.'],
+          ['*Bir buçuk* saat bekledik.', 'We waited an hour and a half.'],
+        ],
+      },
+      { tip: '"One and a half" is bir buçuk, never bir yarım: buçuk comes after a number, yarım stands on its own. For the clock, see Telling the time.' },
+    ],
+  },
+  {
+    id: 'time',
+    chapter: 'Small words',
+    icon: '🕐',
+    title: 'Telling the time',
+    sub: 'Saat kaç?, üç buçuk, dörde çeyrek var',
+    blocks: [
+      { p: 'Ask *Saat kaç?* (What time is it?) and answer with saat and the hour: Saat üç. Half past is buçuk: Saat üç buçuk. Half past twelve is just *yarım*.' },
+      { p: 'Minutes past: the hour takes -i and the verb is *geçiyor*, "is passing": Saat üç*ü* on geçiyor. (3:10) Minutes to: the hour takes -e and the verb is *var*, "there are": Saat iki*ye* on var. (1:50) A quarter is *çeyrek*.' },
+      { p: 'For "at" a time, a full hour or buçuk takes -de: saat üç*te*, üç buçuk*ta*. With minutes, geçiyor becomes *geçe* and var becomes *kala*, "remaining". Ask *Saat kaçta?* (At what time?)' },
+      {
+        table: {
+          head: ['', 'It is…', 'At…'],
+          rows: [
+            ['3:00', 'saat üç', 'saat üç*te*'],
+            ['3:15', 'üçü çeyrek *geçiyor*', 'üçü çeyrek *geçe*'],
+            ['3:30', 'üç buçuk', 'üç buçuk*ta*'],
+            ['3:45', 'dörde çeyrek *var*', 'dörde çeyrek *kala*'],
+          ],
+        },
+      },
       {
         ex: [
           ['Saat kaç?', 'What time is it?'],
-          ['Saat üç buçuk.', "It's half past three."],
-          ['Saat sekiz*de* geliyorum.', "I'm coming at eight."],
-          ['Babam altmış beş yaşında.', 'Dad is sixty-five.'],
+          ['Saat ikiyi yirmi *geçiyor*.', "It's twenty past two."],
+          ['Toplantı onu çeyrek *geçe* başlıyor.', 'The meeting starts at a quarter past ten.'],
+          ['Film dokuza çeyrek *kala* bitiyor.', 'The film ends at a quarter to nine.'],
+          ['Yarın sabah yedi*de* kalkıyoruz.', "We're getting up at seven tomorrow morning."],
         ],
       },
-      { tip: 'The -de for "at" follows the number\'s last sound: bir*de*, iki*de*, üç*te*, dört*te*, beş*te*, altı*da*, yedi*de*, sekiz*de*, dokuz*da*, on*da*.' },
+      { tip: 'Pair the ending with the verb: -i goes with geçiyor and geçe, -e with var and kala. dört softens: dördü, dörde. And -de follows the last sound: bir*de*, iki*de*, üç*te*, dört*te*, beş*te*, altı*da*.' },
     ],
   },
   {

@@ -5,7 +5,7 @@ import { BOOK } from '../data/book.js';
 const IDS = [
   'letters', 'harmony', 'consonants', 'order', 'tobe', 'questions', 'negation',
   'plural', 'adjectives', 'cases', 'object', 'dative', 'locative', 'ablative', 'possessive', 'compounds', 'with', 'wordbuilding',
-  'pronouns', 'postpositions', 'numbers', 'iyor', 'aorist', 'past', 'future', 'modals', 'linking',
+  'pronouns', 'kendi', 'ki', 'postpositions', 'places', 'numbers', 'time', 'iyor', 'aorist', 'past', 'future', 'modals', 'linking',
 ];
 const CHAPTERS = [
   'Sounds and letters', 'Building a sentence', 'Nouns and their endings', 'Small words', 'Tenses', 'Moods and voice',
@@ -89,6 +89,12 @@ const COVERAGE = {
   compounds: ["ali'nin", 'kahvesi'],
   with: ['benimle', 'şekersiz'],
   wordbuilding: ['türkçe', 'kahveci', 'amerikalı'],
+  kendi: ['kendi kendime'],
+  ki: ['benimki', 'dünkü'],
+  postpositions: ['hakkında'],
+  places: ['altına'],
+  numbers: ['kaçıncı', 'buçuk'],
+  time: ['kala', 'geçiyor'],
 };
 test('every section covers the points the spec names', () => {
   for (const [id, terms] of Object.entries(COVERAGE)) {
