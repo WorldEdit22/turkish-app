@@ -870,10 +870,10 @@ export const BOOK = [
     id: 'past',
     chapter: 'Tenses',
     icon: '⏪',
-    title: 'Past -di and -miş',
-    sub: 'What happened, and what you heard happened',
+    title: 'Past -di',
+    sub: 'What happened: geldim, gelmedim, geldin mi?',
     blocks: [
-      { p: '-di is the plain past, for things you saw or know happened. It has 4-way harmony, and its d turns into t after f, s, t, k, ç, ş, h or p. That makes eight forms: -di, -dı, -du, -dü, -ti, -tı, -tu, -tü.' },
+      { p: '-di is the plain past, for things you saw happen or know happened. (For what you only heard about, see Reported past -miş.) It has 4-way harmony, and its d turns into t after f, s, t, k, ç, ş, h or p. That makes eight forms: -di, -dı, -du, -dü, -ti, -tı, -tu, -tü.' },
       {
         table: {
           head: ['', 'gel- (come)', 'yap- (do)'],
@@ -887,17 +887,46 @@ export const BOOK = [
           ],
         },
       },
-      { p: 'Note the short endings for I, you and we: -m, -n, -k. Negative: gel*me*di (he didn\'t come), yap*ma*dım (I didn\'t do it).' },
-      { p: '-miş (-miş, -mış, -muş, -müş) is the reported past: you heard it from someone, or you just found out. English needs "apparently" or "I hear" for this, like Swedish "tydligen".' },
+      { p: 'Note the short endings for I, you and we: -m, -n, -k. Negative: -me / -ma right after the stem: gel*me*di (he didn\'t come), yap*ma*dım (I didn\'t do it).' },
+      { p: 'For a question, mi comes after the whole verb, personal ending included: Gel*din mi*? (Did you come?), Gel*me*din mi? (Didn\'t you come?) It is the other way round with -iyor, where the ending moves onto mi: Geliyor musun?' },
+      { p: '-di also covers English "have done": Anahtarımı kaybettim. (I\'ve lost my key.)' },
       {
         ex: [
           ['Dün annemi ara*dım*.', 'I called my mum yesterday.'],
-          ['Kahvaltı yap*tın* mı?', 'Did you have breakfast?'],
-          ['Ayşe evlen*miş*!', 'I hear Ayşe got married!'],
-          ['Baban ara*mış*.', 'Your dad called, apparently.'],
+          ['Kahvaltı yap*tın mı*?', 'Did you have breakfast?'],
+          ['Otobüs daha gel*me*di.', "The bus hasn't come yet."],
+          ['Çok acık*tım*!', "I'm really hungry!"],
         ],
       },
-      { tip: 'Use -di for what you did yourself: Gittim. (I went.) Gitmişim means you only found out afterwards that you went, so it sounds odd about your own day.' },
+      { tip: '"I\'m hungry", "I\'m tired" and "I see" are often -di in Turkish, because the change has already happened: Acıktım (I got hungry), Yoruldum (I got tired), Anladım (I understood).' },
+    ],
+  },
+  {
+    id: 'mis',
+    chapter: 'Tenses',
+    icon: '👂',
+    title: 'Reported past -miş',
+    sub: 'What you heard, found out or worked out',
+    blocks: [
+      { p: '-miş is the past for things you did not see happen yourself. English adds "apparently", "I hear" or "it turns out"; Turkish only needs the ending. You use it when:' },
+      {
+        list: [
+          'you heard it: Ayşe evlen*miş*! (I hear Ayşe got married!)',
+          'you just found out: Cüzdanımı evde unut*muşum*. (Turns out I left my wallet at home.)',
+          'you worked it out: Yağmur yağ*mış*. (It must have rained: the street is wet.)',
+        ],
+      },
+      { p: 'It has 4-way harmony and never turns into t: -miş, -mış, -muş, -müş. Then come the personal endings of "to be": gel*mişim*, gel*mişsin*, gel*miş*, gel*mişiz*, gel*mişsiniz*, gel*mişler*. Negative: gel*memiş*.' },
+      { p: 'On a noun or adjective it is -(y)miş, "is" or "was" as you heard or found out: Ali hasta*ymış*. After -iyor it tells what is going on, as you heard it: -iyormuş, -ıyormuş, -uyormuş, -üyormuş.' },
+      {
+        ex: [
+          ['Baban ara*mış*.', 'Your dad called, apparently.'],
+          ['Ali hasta*ymış*, bugün gelmiyor.', "Ali is ill, I hear. He isn't coming today."],
+          ['Bu çorba çok güzel*miş*!', 'Oh, this soup is really good!'],
+          ['Ahmet de gel*iyormuş*.', 'Ahmet is coming too, I hear.'],
+        ],
+      },
+      { tip: 'For your own day, use -di: Dün sinemaya git*tim*. (I went to the cinema yesterday.) Gitmişim sounds as if you had forgotten it, so keep -miş about yourself for what you only realise now, like the wallet.' },
     ],
   },
   {
@@ -932,6 +961,75 @@ export const BOOK = [
         ],
       },
       { tip: 'Write gel*eceğim*, not gelecekim. In fast speech it often sounds like "gelicem" or "gelcem", so don\'t be thrown when you hear that.' },
+    ],
+  },
+  {
+    id: 'was',
+    chapter: 'Tenses',
+    icon: '🕰️',
+    title: '"Was" -(y)di',
+    sub: 'I was, I was doing, I had done',
+    blocks: [
+      { p: 'For "was" and "were", -di goes on the word itself, like the personal endings of "to be": yorgun*dum* = I was tired. After a vowel it takes a y: evde*ydik* = we were at home. It has 4-way harmony, turns into t after f, s, t, k, ç, ş, h or p (genç*tim*, I was young), and takes the short endings of the -di past: -m, -n, -k.' },
+      {
+        table: {
+          head: ['', 'öğretmen (teacher)', 'hasta (ill)'],
+          rows: [
+            ['ben', 'öğretmen*dim*', 'hasta*ydım*'],
+            ['sen', 'öğretmen*din*', 'hasta*ydın*'],
+            ['o', 'öğretmen*di*', 'hasta*ydı*'],
+            ['biz', 'öğretmen*dik*', 'hasta*ydık*'],
+            ['siz', 'öğretmen*diniz*', 'hasta*ydınız*'],
+            ['onlar', 'öğretmen*diler*', 'hasta*ydılar*'],
+          ],
+        },
+      },
+      { p: '"Wasn\'t" is değil*di*. In a question the ending goes on mi: Evde *miydin*? (Were you at home?) In formal writing you also see *idi*, the same ending as a separate word: hasta idi = hastaydı.' },
+      { p: 'After another tense, -di moves it into the past: gel*iyordu* (he was coming), gel*ecekti* (he was going to come), gel*mişti* (he had come). The -ir tense with -di has its own page: "Used to" -erdi.' },
+      {
+        ex: [
+          ['Dün akşam evde*ydik*.', 'We were at home last night.'],
+          ['Film hiç fena değil*di*.', "The film wasn't bad at all."],
+          ['Bütün gün yağmur yağ*ıyordu*.', 'It was raining all day.'],
+          ['Seni ara*yacaktım* ama unuttum.', 'I was going to call you, but I forgot.'],
+          ['Otobüs çoktan git*mişti*.', 'The bus had already left.'],
+        ],
+      },
+      { tip: '"I was at home" is just Evde*ydim*, with no verb. In the past, olmak means "become": Hasta oldum = I got ill, Doktor oldum = I became a doctor.' },
+    ],
+  },
+  {
+    id: 'usedto',
+    chapter: 'Tenses',
+    icon: '📼',
+    title: '"Used to" -erdi',
+    sub: 'What you used to do, and a polite isterdim',
+    blocks: [
+      { p: '-erdi is the -ir tense with -di after it: gel*ir* + *di* = gel*irdi*. Each verb keeps its form from the -ir tense (see Simple present -ir) and adds -di: içer → iç*erdi*, oturur → otur*urdu*, bekler → bekle*rdi*, alır → al*ırdı*.' },
+      { p: 'It is the past of habits, English "used to" or "would": Her yaz köye gid*erdik*. (We used to go to the village every summer.) For one single event, use -di.' },
+      {
+        table: {
+          head: ['', 'yes', 'no'],
+          rows: [
+            ['ben', 'gel*irdim*', 'gel*mezdim*'],
+            ['sen', 'gel*irdin*', 'gel*mezdin*'],
+            ['o', 'gel*irdi*', 'gel*mezdi*'],
+            ['biz', 'gel*irdik*', 'gel*mezdik*'],
+            ['siz', 'gel*irdiniz*', 'gel*mezdiniz*'],
+            ['onlar', 'gel*irlerdi*', 'gel*mezlerdi*'],
+          ],
+        },
+      },
+      { p: 'It also softens a wish. *isterdim* is "I would like", gentler than istiyorum, and often comes before a polite "but": Gelmek isterdim ama… (I\'d love to come, but…)' },
+      {
+        ex: [
+          ['Çocukken burada otur*urduk*.', 'We lived here when we were kids.'],
+          ['Dedem her sabah gazete oku*rdu*.', 'My grandad used to read the paper every morning.'],
+          ['Eskiden hiç kahve iç*mezdim*.', 'I never used to drink coffee.'],
+          ['Gelmek *isterdim* ama işim var.', "I'd love to come, but I have work to do."],
+        ],
+      },
+      { tip: '"I didn\'t use to" is gel*mezdim*, with the z. The short gelmem and gelmeyiz of the -ir tense do not carry over: gel*mezdim*, gel*mezdik*.' },
     ],
   },
   {
