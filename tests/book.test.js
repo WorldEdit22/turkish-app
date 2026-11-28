@@ -6,7 +6,9 @@ const IDS = [
   'letters', 'harmony', 'consonants', 'order', 'tobe', 'questions', 'negation',
   'plural', 'adjectives', 'cases', 'object', 'dative', 'locative', 'ablative', 'possessive', 'compounds', 'with', 'wordbuilding',
   'pronouns', 'kendi', 'ki', 'postpositions', 'places', 'numbers', 'time',
-  'iyor', 'aorist', 'past', 'mis', 'future', 'was', 'usedto', 'modals', 'linking',
+  'iyor', 'aorist', 'past', 'mis', 'future', 'was', 'usedto',
+  'commands', 'can', 'must', 'if', 'wishes', 'passive',
+  'linking',
 ];
 const CHAPTERS = [
   'Sounds and letters', 'Building a sentence', 'Nouns and their endings', 'Small words', 'Tenses', 'Moods and voice',
@@ -80,6 +82,7 @@ test('every grammar section has a tip, in about 120–250 words', () => {
 // Points the spec names for a section: each must appear in it (any case, without the * marks).
 const COVERAGE = {
   questions: ['yoksa', 'muyum'],
+  negation: ['-mez'],
   adjectives: ['daha', '-den daha'],
   cases: ['evlerimizde'],
   object: ['beni'],
@@ -99,6 +102,12 @@ const COVERAGE = {
   mis: ['hastaymış', 'iyormuş'],
   was: ['öğretmendim', 'değildi', 'mişti'],
   usedto: ['otururduk', 'isterdim'],
+  commands: ['elim', 'gelme!'],
+  can: ['yapamam', 'miyim'],
+  must: ['zorunda', 'lazım'],
+  if: ['eğer', 'gelirsem'],
+  wishes: ['keşke', 'olsaydı'],
+  passive: ['tarafından', 'içilmez'],
 };
 test('every section covers the points the spec names', () => {
   for (const [id, terms] of Object.entries(COVERAGE)) {
