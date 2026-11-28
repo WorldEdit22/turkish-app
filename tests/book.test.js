@@ -8,7 +8,7 @@ const IDS = [
   'pronouns', 'kendi', 'ki', 'postpositions', 'places', 'numbers', 'time',
   'iyor', 'aorist', 'past', 'mis', 'future', 'was', 'usedto',
   'commands', 'can', 'must', 'if', 'wishes', 'passive',
-  'linking',
+  'infinitive', 'gerunds', 'participle', 'dik', 'when', 'linking',
 ];
 const CHAPTERS = [
   'Sounds and letters', 'Building a sentence', 'Nouns and their endings', 'Small words', 'Tenses', 'Moods and voice',
@@ -108,6 +108,12 @@ const COVERAGE = {
   if: ['eğer', 'gelirsem'],
   wishes: ['keşke', 'olsaydı'],
   passive: ['tarafından', 'içilmez'],
+  infinitive: ['istiyorum', 'için'],
+  gerunds: ['gelmeni'],
+  participle: ['giden'],
+  dik: ['okuduğum', 'geldiğini'],
+  when: ['gelince', 'çocukken', 'meden önce'],
+  linking: ['hem', 'kalkıp'],
 };
 test('every section covers the points the spec names', () => {
   for (const [id, terms] of Object.entries(COVERAGE)) {
