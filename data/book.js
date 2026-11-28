@@ -1327,10 +1327,10 @@ export const BOOK = [
     title: 'When: -ince, -ken',
     sub: 'gelince, çocukken, gelmeden önce',
     blocks: [
-      { p: '"When", "while", "after" and "before" are often endings on the verb, and that part of the sentence comes first. They take no personal ending: the main verb at the end shows the tense and the person.' },
+      { p: '"When", "while", "after" and "before" are often endings on the verb, and that part of the sentence comes first. They take no personal ending: the main verb shows the tense, and the doer is clear from context or named: Annem gel*ince* çıktık. (We left when my mum came.)' },
       { p: '*-ince* (4-way: -ince, -ınca, -unca, -ünce) means "when, once": one thing happens, then the next. After a vowel it takes a y: bekle*yince*.' },
       { p: '*-ken* means "while" or "as", and it is always -ken, whatever the vowels. It usually goes on the -ir tense, or straight onto a noun or adjective: yürür*ken* (while walking), çocuk*ken* (as a child). After a vowel it takes a y: evde*yken* (while at home).' },
-      { p: '*-dikten sonra* (after) and *-meden önce* (before) are -dik and -me with -den sonra and -den önce (see Postpositions): ye*dikten sonra* (after eating), yat*madan önce* (before going to bed). -dikten starts with t after f, s, t, k, ç, ş, h or p: git*tikten* sonra. For "when" with -diği zaman, see The -dik form.' },
+      { p: '*-dikten sonra* (after) and *-meden önce* (before) are -dik and -me with -den sonra and -den önce (see Postpositions): ye*dikten sonra* (after eating), yat*madan önce* (before going to bed). For "when" with -diği zaman, see The -dik form.' },
       {
         ex: [
           ['Eve gel*ince* beni ara.', 'Call me when you get home.'],
