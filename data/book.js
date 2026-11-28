@@ -122,6 +122,7 @@ export const BOOK = [
       },
       { p: 'The endings follow 4-way harmony, and after a vowel "I" and "we" take a y. They work on places too: evde*yim* = I am at home.' },
       { p: '"Not" is *değil*, a separate word that takes the ending: aç değil*im* = I am not hungry.' },
+      { p: 'In writing, on signs and for general facts you also see *-dir* for "is" (4-way harmony; -tir after f, s, t, k, ç, ş, h or p): Müze pazartesi kapalı*dır*. (The museum is closed on Mondays.) Sigara içmek yasak*tır*. (No smoking.) In speech it often means "must be": Yorgun*dur*. (He must be tired.)' },
       { p: '*var* (there is) and *yok* (there is not) say whether something exists. With "my" on the thing, they mean "have": Bir sorum var. = I have a question (literally "a question of mine exists").' },
       {
         ex: [
@@ -318,7 +319,7 @@ export const BOOK = [
     title: 'The object ending -i',
     sub: '"The bread" or "bread", and beni, seni',
     blocks: [
-      { p: 'The object is what the verb acts on: in "I bought the bread", it is the bread. Turkish adds *-i* to an object you would say "the" about. It has 4-way harmony and takes a y after a vowel: ekmeğ*i*, okul*u*, kapı*yı*.' },
+      { p: 'The object is what the verb acts on: in "I bought the bread", it is the bread. Turkish adds *-i* to an object you would say "the" about. It has 4-way harmony and takes a y after a vowel: ekmeğ*i*, okul*u*, kapı*yı*. After the "his, her" ending it takes an n instead: arabası*nı*.' },
       { p: 'An object without "the" gets no ending. With *bir* it is "a" or "one". With no bir at all it just names the kind of thing, one or more, and stays right before the verb. Compare the first three examples.' },
       { p: '"The" is not the only sign. "This", "my", a name or a pronoun make the object definite too: bu kitab*ı*, kitabım*ı*, Ali\'*yi*. Pronouns always take the ending: *beni* (me), *seni* (you), onu, bizi, sizi, onları.' },
       {
@@ -340,7 +341,7 @@ export const BOOK = [
     title: 'To: the -e ending',
     sub: 'eve, bana, and verbs that take -e',
     blocks: [
-      { p: '*-e* means "to" or "towards". It has 2-way harmony (-e, -a) and takes a y after a vowel: ev*e*, okul*a*, oda*ya*. It marks where you go, and who you give, send or say something to.' },
+      { p: '*-e* means "to" or "towards". It has 2-way harmony (-e, -a) and takes a y after a vowel: ev*e*, okul*a*, oda*ya*. After the "his, her" ending it takes an n instead: arabası*na*. It marks where you go, and who you give, send or say something to.' },
       { p: 'With pronouns, ben and sen change their vowel: *bana* (to me), *sana* (to you). The others are regular: ona, bize, size, onlara.' },
       { p: 'Some verbs take -e where English says "at", "on" or nothing at all. Learn them with their case:' },
       {

@@ -81,6 +81,7 @@ test('every grammar section has a tip, in about 120–250 words', () => {
 
 // Points the spec names for a section: each must appear in it (any case, without the * marks).
 const COVERAGE = {
+  tobe: ['kapalıdır'],
   questions: ['yoksa', 'muyum'],
   negation: ['-mez'],
   adjectives: ['daha', '-den daha'],
